@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Grade 4 Learning Hub</title>
+<style>
+  :root{
+    --purple:#6c5ce7; --purple-dark:#5341c9; --blue:#4a90e2; --green:#27ae60;
+    --red:#e74c3c; --orange:#f39c12; --bg:#f4f2ff; --card:#ffffff; --text:#2d2d3a;
+  }
+  *{box-sizing:border-box;}
+  body{
+    font-family:'Segoe UI', Verdana, Arial, sans-serif;
+    background:linear-gradient(135deg,#eef0ff,#e6f7ff);
+    margin:0; padding:0; color:var(--text);
+    min-height:100vh;
+  }
+  .app{max-width:900px;margin:0 auto;padding:24px 16px 60px;}
+  header.top{
+    text-align:center; padding:18px 10px 22px;
+  }
+  header.top h1{
+    font-size:28px; margin:0; color:var(--purple-dark);
+  }
+  header.top p{margin:6px 0 0; color:#666; font-size:14px;}
+
+  .crumbs{
+    display:flex; align-items:center; gap:8px; margin-bottom:18px; flex-wrap:wrap;
+  }
+  .backbtn{
+    background:var(--purple); color:#fff; border:none; padding:8px 16px;
+    border-radius:20px; font-size:14px; cursor:pointer; font-weight:600;
+  }
+  .backbtn:hover{background:var(--purple-dark);}
+  .crumb-path{font-size:14px; color:#777;}
+
+  .screen{display:none;}
+  .screen.active{display:block;}
+
+  .grid-buttons{
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:18px; margin-top:10px;
+  }
+  .big-btn{
+    background:var(--card); border:2px solid #ddd6ff; border-radius:18px;
+    padding:28px 20px; text-align:center; cursor:pointer;
+    box-shadow:0 3px 10px rgba(108,92,231,0.08);
+    transition:transform .15s, box-shadow .15s, border-color .15s;
+  }
+  .big-btn:hover{
+    transform:translateY(-3px); border-color:var(--purple);
+    box-shadow:0 8px 18px rgba(108,92,231,0.18);
+  }
+  .big-btn .emoji{font-size:40px; display:block; margin-bottom:8px;}
+  .big-btn h3{margin:4px 0 4px; font-size:19px; color:var(--purple-dark);}
+  .big-btn p{margin:0; font-size:13px; color:#777;}
+  .big-btn.disabled{opacity:.45; cursor:not-allowed;}
+  .big-btn.disabled:hover{transform:none; box-shadow:0 3px 10px rgba(108,92,231,0.08); border-color:#ddd6ff;}
+
+  .tabs{display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap;}
+  .tab-btn{
+    background:#fff; border:2px solid #ddd6ff; color:var(--purple-dark);
+    padding:9px 18px; border-radius:20px; cursor:pointer; font-weight:600; font-size:14px;
+  }
+  .tab-btn.active{background:var(--purple); color:#fff; border-color:var(--purple);}
+  .tabpanel{display:none;}
+  .tabpanel.active{display:block;}
+
+  table.wordchart{width:100%; border-collapse:collapse; background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 3px 10px rgba(0,0,0,0.06);}
+  table.wordchart th, table.wordchart td{padding:12px 10px; text-align:left; font-size:14px; vertical-align:top;}
+  table.wordchart th{background:var(--purple); color:#fff;}
+  table.wordchart tr:nth-child(even){background:#f7f5ff;}
+  table.wordchart td.wordcell{font-weight:700; color:var(--purple-dark); white-space:nowrap;}
+  table.wordchart td .pron{display:block; font-weight:400; color:#888; font-size:12px;}
+
+  .card{
+    background:#fff; border-radius:16px; padding:20px 22px; margin-bottom:16px;
+    box-shadow:0 3px 10px rgba(0,0,0,0.06); border-left:6px solid var(--purple);
+  }
+
+  /* flashcards */
+  .flash-wrap{max-width:520px; margin:0 auto;}
+  .flashcard{
+    background:#fff; border-radius:18px; min-height:260px; padding:26px;
+    box-shadow:0 6px 20px rgba(108,92,231,0.18); cursor:pointer; position:relative;
+    display:flex; flex-direction:column; justify-content:center; text-align:center;
+  }
+  .flashcard .hint{position:absolute; top:12px; right:16px; font-size:11px; color:#aaa;}
+  .flash-term{font-size:28px; font-weight:700; color:var(--purple-dark);}
+  .flash-pron{color:#888; font-size:14px; margin-top:2px;}
+  .flash-pos{color:var(--blue); font-weight:600; font-size:14px; margin-top:8px;}
+  .flash-def{margin-top:10px; font-size:16px; line-height:1.4;}
+  .flash-back .flash-trick{background:#fff8e1; border-radius:10px; padding:12px 14px; margin-top:12px; font-size:14px; text-align:left;}
+  .flash-back .flash-ex{margin-top:12px; font-size:14px; font-style:italic; text-align:left;}
+  .flash-back .flash-syn-ant{margin-top:12px; font-size:13px; text-align:left; color:#555;}
+  .flash-nav{display:flex; justify-content:space-between; align-items:center; margin-top:16px;}
+  .flash-nav button{
+    background:var(--purple); color:#fff; border:none; padding:8px 16px; border-radius:10px;
+    cursor:pointer; font-weight:600;
+  }
+  .flash-nav button:disabled{background:#ccc; cursor:not-allowed;}
+  .flash-count{font-size:13px; color:#777;}
+
+  /* practice */
+  .qbox{background:#fff; border-radius:14px; padding:16px 18px; margin-bottom:14px; box-shadow:0 3px 8px rgba(0,0,0,0.06);}
+  .qbox .qnum{font-weight:700; color:var(--purple-dark); margin-right:6px;}
+  .qbox input[type=text]{
+    padding:7px 10px; border:2px solid #ddd6ff; border-radius:8px; font-size:14px; width:180px;
+  }
+  .choice-row{display:flex; gap:10px; flex-wrap:wrap; margin-top:8px;}
+  .choice-btn{
+    background:#f7f5ff; border:2px solid #ddd6ff; padding:8px 14px; border-radius:10px;
+    cursor:pointer; font-size:14px;
+  }
+  .choice-btn.selected{border-color:var(--purple); background:#ece8ff;}
+  .choice-btn.correct{border-color:var(--green); background:#e3f9ec;}
+  .choice-btn.wrong{border-color:var(--red); background:#fdecea;}
+  .qbox .feedback{margin-top:8px; font-size:13px; font-weight:600;}
+  .feedback.ok{color:var(--green);}
+  .feedback.no{color:var(--red);}
+
+  .action-row{display:flex; gap:12px; margin:18px 0; flex-wrap:wrap;}
+  .action-btn{
+    background:var(--blue); color:#fff; border:none; padding:10px 18px; border-radius:10px;
+    cursor:pointer; font-weight:600; font-size:14px;
+  }
+  .action-btn.secondary{background:#eee; color:#333;}
+  .score-banner{
+    background:var(--purple); color:#fff; padding:10px 16px; border-radius:12px;
+    font-weight:700; display:inline-block; margin-bottom:10px;
+  }
+  .answerkey{background:#fffbe6; border:1px dashed #e0c46c; border-radius:12px; padding:14px 18px; margin-top:10px; font-size:14px; display:none;}
+  .answerkey.show{display:block;}
+  .answerkey li{margin-bottom:4px;}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="top">
+    <h1>🎓 Grade 4 Learning Hub</h1>
+    <p>Pick a subject to start learning!</p>
+  </header>
+
+  <div class="crumbs" id="crumbs" style="display:none;">
+    <button class="backbtn" onclick="goBack()">&larr; Back</button>
+    <span class="crumb-path" id="crumbPath"></span>
+  </div>
+
+  <!-- SCREEN 1: HOME -->
+  <section class="screen active" id="screen-home">
+    <div class="grid-buttons">
+      <div class="big-btn" onclick="showScreen('screen-vocab')">
+        <span class="emoji">📚</span>
+        <h3>Vocabulary Workshop</h3>
+        <p>Learn new words, meanings, synonyms &amp; antonyms</p>
+      </div>
+      <div class="big-btn disabled">
+        <span class="emoji">📖</span>
+        <h3>Reading</h3>
+        <p>Coming soon</p>
+      </div>
+      <div class="big-btn disabled">
+        <span class="emoji">🔢</span>
+        <h3>Math</h3>
+        <p>Coming soon</p>
+      </div>
+      <div class="big-btn disabled">
+        <span class="emoji">🌎</span>
+        <h3>Social Studies</h3>
+        <p>Coming soon</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCREEN 2: VOCAB WORKSHOP (unit list) -->
+  <section class="screen" id="screen-vocab">
+    <h2 style="color:var(--purple-dark);">📚 Vocabulary Workshop</h2>
+    <div class="grid-buttons">
+      <div class="big-btn" onclick="openUnit1()">
+        <span class="emoji">1️⃣</span>
+        <h3>Unit 1</h3>
+        <p>12 words: word chart, flashcards &amp; practice</p>
+      </div>
+      <div class="big-btn disabled">
+        <span class="emoji">2️⃣</span>
+        <h3>Unit 2</h3>
+        <p>Coming soon</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCREEN 3: UNIT 1 -->
+  <section class="screen" id="screen-unit1">
+    <h2 style="color:var(--purple-dark);">Unit 1 &mdash; Vocabulary Workshop</h2>
+
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="tab-chart" onclick="showTab('tab-chart', this)">📋 Word Chart</button>
+      <button class="tab-btn" data-tab="tab-cards" onclick="showTab('tab-cards', this)">🃏 Study Cards</button>
+      <button class="tab-btn" data-tab="tab-practice" onclick="showTab('tab-practice', this)">✍️ Practice</button>
+    </div>
+
+    <!-- WORD CHART -->
+    <div class="tabpanel active" id="tab-chart">
+      <table class="wordchart">
+        <thead>
+          <tr><th>Word</th><th>Definition</th><th>Synonyms</th><th>Antonyms</th></tr>
+        </thead>
+        <tbody id="chartBody"></tbody>
+      </table>
+    </div>
+
+    <!-- STUDY CARDS -->
+    <div class="tabpanel" id="tab-cards">
+      <p style="text-align:center; color:#777; font-size:13px;">Tap the card to flip it and reveal the memory trick, example, and synonyms/antonyms.</p>
+      <div class="flash-wrap">
+        <div class="flashcard" id="flashcard" onclick="flipCard()">
+          <span class="hint">tap to flip</span>
+          <div id="flashFront"></div>
+          <div id="flashBack" style="display:none;"></div>
+        </div>
+        <div class="flash-nav">
+          <button id="flashPrev" onclick="flashMove(-1)">&larr; Prev</button>
+          <span class="flash-count" id="flashCount"></span>
+          <button id="flashNext" onclick="flashMove(1)">Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRACTICE -->
+    <div class="tabpanel" id="tab-practice">
+      <div class="tabs">
+        <button class="tab-btn active" data-ptab="p-fill" onclick="showPTab('p-fill', this)">Fill in the Blank</button>
+        <button class="tab-btn" data-ptab="p-syn" onclick="showPTab('p-syn', this)">Synonym Match</button>
+        <button class="tab-btn" data-ptab="p-ant" onclick="showPTab('p-ant', this)">Antonym Match</button>
+      </div>
+
+      <!-- FILL IN BLANK -->
+      <div class="tabpanel active" id="p-fill">
+        <div id="fillBox"></div>
+        <div class="action-row">
+          <button class="action-btn" onclick="checkFill()">Check My Answers</button>
+          <button class="action-btn secondary" onclick="toggleKey('fillKey')">Show Answer Key</button>
+        </div>
+        <div class="answerkey" id="fillKey"></div>
+      </div>
+
+      <!-- SYNONYM MATCH -->
+      <div class="tabpanel" id="p-syn">
+        <div id="synBox"></div>
+        <div class="action-row">
+          <button class="action-btn secondary" onclick="toggleKey('synKey')">Show Answer Key</button>
+        </div>
+        <div class="answerkey" id="synKey"></div>
+      </div>
+
+      <!-- ANTONYM MATCH -->
+      <div class="tabpanel" id="p-ant">
+        <div id="antBox"></div>
+        <div class="action-row">
+          <button class="action-btn secondary" onclick="toggleKey('antKey')">Show Answer Key</button>
+        </div>
+        <div class="answerkey" id="antKey"></div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+/* ---------------- DATA: Unit 1 ---------------- */
+const words = [
+  {
+    term:"celebrity", pron:"sə le' brə tē", pos:"(n.)",
+    def:"a well-known person; someone who is famous; fame",
+    trick:"Think: a CELEBrity gets CELEBrated everywhere they go!",
+    example:"After winning the singing contest, she became an overnight ______.",
+    answer:"celebrity",
+    syn:["a star"], ant:["an unknown","nobody","anonymity"]
+  },
+  {
+    term:"counsel", pron:"kaùn' səl", pos:"(n./v.)",
+    def:"(n.) opinions or ideas given for a plan of action; a talk that leads to a decision; a lawyer. (v.) to give advice or an opinion; to offer help",
+    trick:"COUNSEL sounds like 'council' — picture a wise council giving advice.",
+    example:"The students went to the guidance ______ for advice about high school.",
+    answer:"counsel",
+    syn:["advice","wisdom","guidance","to help","advise","recommend"], ant:[]
+  },
+  {
+    term:"demonstrate", pron:"dem' ən strāt", pos:"(v.)",
+    def:"to clearly explain, show, or prove with examples, models, or experiments; to gather in public to support an opinion or cause",
+    trick:"DEMONSTRATE = DEMO + illustrate. A demo shows how something works!",
+    example:"The scientist will ______ how volcanoes erupt using a model.",
+    answer:"demonstrate",
+    syn:["to model","illustrate","reveal"], ant:["to hide"]
+  },
+  {
+    term:"drowsy", pron:"draù' zē", pos:"(adj.)",
+    def:"ready to fall asleep, sleepy",
+    trick:"DROWSY rhymes with DOZY — both mean sleepy!",
+    example:"The warm blanket and quiet room made the baby feel ______.",
+    answer:"drowsy",
+    syn:["tired","sluggish"], ant:["alert","wakeful"]
+  },
+  {
+    term:"essential", pron:"i sen' chəl", pos:"(adj./n.)",
+    def:"(adj.) of the highest importance, necessary. (n.) something necessary or very important",
+    trick:"ESSENTIAL sounds like 'essence' — the essence of something is what's absolutely needed.",
+    example:"Sleep and healthy food are ______ for growing strong.",
+    answer:"essential",
+    syn:["vital","key","basic"], ant:["unimportant","minor","unnecessary"]
+  },
+  {
+    term:"hardship", pron:"härd' ship", pos:"(n.)",
+    def:"something that causes suffering or difficulty; a condition that is hard to bear",
+    trick:"HARD + SHIP — imagine a ship sailing through a HARD, stormy sea.",
+    example:"The family faced many ______ after losing their home in the storm.",
+    answer:"hardship",
+    syn:["a burden","ordeal","misfortune"], ant:["ease","comfort"]
+  },
+  {
+    term:"haul", pron:"hôl", pos:"(v./n.)",
+    def:"(v.) to move by pulling, dragging, or carting, sometimes in a vehicle; to apply force to transport something. (n.) the amount taken or won at one time",
+    trick:"HAUL sounds like 'hall' — imagine hauling boxes down a long hallway.",
+    example:"It took three trips to ______ all the boxes up the stairs.",
+    answer:"haul",
+    syn:["to lug","carry","lift","tug","a yield","catch"], ant:[]
+  },
+  {
+    term:"humble", pron:"hum' bəl", pos:"(adj./v.)",
+    def:"(adj.) low in rank or position; plain, not proud or grand. (v.) to take away one's spirit, power, fame, or independence",
+    trick:"HUMBLE sounds like 'HUM' quietly — humble people don't brag loudly.",
+    example:"Even after winning the trophy, the athlete stayed ______ and thanked her team.",
+    answer:"humble",
+    syn:["modest","simple","earthy","to shame","embarrass"], ant:["bold","grand","to empower","raise up"]
+  },
+  {
+    term:"pledge", pron:"plej", pos:"(n./v.)",
+    def:"(n.) something, such as money, that is promised for a good cause; a promise to fulfill an agreement. (v.) to promise",
+    trick:"PLEDGE rhymes with 'edge' — you stand on the edge of your word when you pledge.",
+    example:"Every morning, the class stands to say the ______ of allegiance.",
+    answer:"pledge",
+    syn:["a guarantee","to vow","swear","vouch"], ant:[]
+  },
+  {
+    term:"sincere", pron:"sin sēr'", pos:"(adj.)",
+    def:"without pretending; with honesty and real feeling",
+    trick:"SINCERE has 'CARE' hidden near the end — sincere people truly care.",
+    example:"He gave a ______ apology and promised to do better.",
+    answer:"sincere",
+    syn:["genuine","true","heartfelt"], ant:["false","phony"]
+  },
+  {
+    term:"stampede", pron:"stam pēd'", pos:"(n./v.)",
+    def:"(n.) a wild rush of animals or people, usually when frightened. (v.) to run away or cause to scatter in a wild manner, often in panic; to rush forward together as a crowd",
+    trick:"STAMPEDE sounds like 'stomp' + 'speed' — lots of feet stomping fast!",
+    example:"The loud thunder caused a ______ of frightened horses across the field.",
+    answer:"stampede",
+    syn:["a flight","dash","to bolt","charge"], ant:["to stroll","wander"]
+  },
+  {
+    term:"suitable", pron:"sü' tə bəl", pos:"(adj.)",
+    def:"just right or appropriate; well matched",
+    trick:"SUITABLE has 'SUIT' inside — like finding a suit that fits just right.",
+    example:"Sneakers are more ______ than sandals for a hike.",
+    answer:"suitable",
+    syn:["proper","fitting","right"], ant:["inappropriate","mismatched","improper"]
+  }
+];
+
+/* Synonym-match multiple choice bank */
+const synChoices = [
+  {word:"celebrity", correct:"star", options:["star","stranger","worker"]},
+  {word:"counsel", correct:"advice", options:["advice","silence","punishment"]},
+  {word:"demonstrate", correct:"illustrate", options:["illustrate","hide","forget"]},
+  {word:"drowsy", correct:"tired", options:["tired","energetic","loud"]},
+  {word:"essential", correct:"vital", options:["vital","optional","extra"]},
+  {word:"hardship", correct:"ordeal", options:["ordeal","comfort","celebration"]},
+  {word:"haul", correct:"carry", options:["carry","drop","ignore"]},
+  {word:"humble", correct:"modest", options:["modest","boastful","angry"]},
+  {word:"pledge", correct:"vow", options:["vow","refuse","forget"]},
+  {word:"sincere", correct:"genuine", options:["genuine","fake","silly"]},
+  {word:"stampede", correct:"charge", options:["charge","stroll","sleep"]},
+  {word:"suitable", correct:"fitting", options:["fitting","wrong","broken"]}
+];
+
+/* Antonym-match multiple choice bank (only words with true antonyms) */
+const antChoices = [
+  {word:"celebrity", correct:"unknown", options:["unknown","famous","popular"]},
+  {word:"demonstrate", correct:"hide", options:["hide","show","prove"]},
+  {word:"drowsy", correct:"alert", options:["alert","sleepy","tired"]},
+  {word:"essential", correct:"unnecessary", options:["unnecessary","vital","key"]},
+  {word:"hardship", correct:"comfort", options:["comfort","burden","misfortune"]},
+  {word:"humble", correct:"bold", options:["bold","modest","shy"]},
+  {word:"sincere", correct:"phony", options:["phony","honest","real"]},
+  {word:"stampede", correct:"stroll", options:["stroll","rush","charge"]},
+  {word:"suitable", correct:"inappropriate", options:["inappropriate","fitting","proper"]}
+];
+
+/* ---------------- NAVIGATION ---------------- */
+let history_stack = ["screen-home"];
+
+function showScreen(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  history_stack.push(id);
+  updateCrumbs();
+  window.scrollTo(0,0);
+}
+function goBack(){
+  if(history_stack.length>1){
+    history_stack.pop();
+    const prev = history_stack[history_stack.length-1];
+    document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+    document.getElementById(prev).classList.add("active");
+    updateCrumbs();
+    window.scrollTo(0,0);
+  }
+}
+function updateCrumbs(){
+  const crumbs = document.getElementById("crumbs");
+  const path = document.getElementById("crumbPath");
+  const names = {"screen-home":"Home","screen-vocab":"Vocabulary Workshop","screen-unit1":"Unit 1"};
+  if(history_stack.length<=1){ crumbs.style.display="none"; }
+  else{
+    crumbs.style.display="flex";
+    path.textContent = history_stack.map(id=>names[id]||id).join(" > ");
+  }
+}
+function openUnit1(){
+  buildChart();
+  buildFlashcards();
+  buildFill();
+  buildSyn();
+  buildAnt();
+  showScreen("screen-unit1");
+}
+
+function showTab(tabId, btn){
+  document.querySelectorAll("#screen-unit1 > .tabs .tab-btn").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+  document.querySelectorAll("#screen-unit1 > .tabpanel").forEach(p=>p.classList.remove("active"));
+  document.getElementById(tabId).classList.add("active");
+}
+function showPTab(tabId, btn){
+  document.querySelectorAll("#tab-practice .tabs .tab-btn").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+  document.querySelectorAll("#tab-practice .tabpanel").forEach(p=>p.classList.remove("active"));
+  document.getElementById(tabId).classList.add("active");
+}
+function toggleKey(id){
+  document.getElementById(id).classList.toggle("show");
+}
+
+/* ---------------- WORD CHART ---------------- */
+function buildChart(){
+  const body = document.getElementById("chartBody");
+  body.innerHTML = words.map(w=>`
+    <tr>
+      <td class="wordcell">${w.term}<span class="pron">${w.pron}</span></td>
+      <td>${w.def}</td>
+      <td>${w.syn.length? w.syn.join(", ") : "&mdash;"}</td>
+      <td>${w.ant.length? w.ant.join(", ") : "&mdash;"}</td>
+    </tr>
+  `).join("");
+}
+
+/* ---------------- FLASHCARDS ---------------- */
+let flashIdx = 0;
+let flashFlipped = false;
+function buildFlashcards(){
+  flashIdx = 0; flashFlipped = false;
+  renderFlash();
+}
+function renderFlash(){
+  const w = words[flashIdx];
+  document.getElementById("flashFront").innerHTML = `
+    <div class="flash-term">${w.term}</div>
+    <div class="flash-pron">${w.pron}</div>
+    <div class="flash-pos">${w.pos}</div>
+    <div class="flash-def">${w.def}</div>
+  `;
+  document.getElementById("flashBack").innerHTML = `
+    <div class="flash-term">${w.term}</div>
+    <div class="flash-trick">💡 <b>Memory trick:</b> ${w.trick}</div>
+    <div class="flash-ex">📝 <b>Example:</b> ${w.example.replace("______","<u>"+w.answer+"</u>")}</div>
+    <div class="flash-syn-ant">
+      <b>Synonyms:</b> ${w.syn.length? w.syn.join(", ") : "none listed"}<br>
+      <b>Antonyms:</b> ${w.ant.length? w.ant.join(", ") : "none listed"}
+    </div>
+  `;
+  document.getElementById("flashFront").style.display = flashFlipped ? "none" : "block";
+  document.getElementById("flashBack").style.display = flashFlipped ? "block" : "none";
+  document.getElementById("flashCount").textContent = (flashIdx+1) + " / " + words.length;
+  document.getElementById("flashPrev").disabled = flashIdx===0;
+  document.getElementById("flashNext").disabled = flashIdx===words.length-1;
+}
+function flipCard(){
+  flashFlipped = !flashFlipped;
+  renderFlash();
+}
+function flashMove(dir){
+  flashIdx = Math.max(0, Math.min(words.length-1, flashIdx+dir));
+  flashFlipped = false;
+  renderFlash();
+}
+
+/* ---------------- FILL IN THE BLANK ---------------- */
+function buildFill(){
+  const box = document.getElementById("fillBox");
+  box.innerHTML = words.map((w,i)=>`
+    <div class="qbox">
+      <span class="qnum">${i+1}.</span> ${w.example.replace("______", `<input type="text" id="fill-${i}" placeholder="word">`)}
+      <div class="feedback" id="fillFeedback-${i}"></div>
+    </div>
+  `).join("");
+
+  const key = document.getElementById("fillKey");
+  key.innerHTML = "<b>Answer Key</b><ol>" + words.map(w=>`<li>${w.answer}</li>`).join("") + "</ol>";
+}
+function checkFill(){
+  words.forEach((w,i)=>{
+    const input = document.getElementById("fill-"+i);
+    const fb = document.getElementById("fillFeedback-"+i);
+    const val = input.value.trim().toLowerCase();
+    if(val === w.answer.toLowerCase()){
+      fb.textContent = "✅ Correct!";
+      fb.className = "feedback ok";
+    } else if(val === ""){
+      fb.textContent = "";
+    } else {
+      fb.textContent = "❌ Try again.";
+      fb.className = "feedback no";
+    }
+  });
+}
+
+/* ---------------- SYNONYM MATCH ---------------- */
+function buildSyn(){
+  const box = document.getElementById("synBox");
+  box.innerHTML = synChoices.map((q,i)=>`
+    <div class="qbox">
+      <span class="qnum">${i+1}.</span> Which word is a <b>synonym</b> for <b>${q.word}</b>?
+      <div class="choice-row" id="synRow-${i}">
+        ${q.options.map(opt=>`<button class="choice-btn" onclick="pickChoice(${i},'${opt}','syn')">${opt}</button>`).join("")}
+      </div>
+    </div>
+  `).join("");
+  const key = document.getElementById("synKey");
+  key.innerHTML = "<b>Answer Key</b><ol>" + synChoices.map(q=>`<li>${q.word} &rarr; ${q.correct}</li>`).join("") + "</ol>";
+}
+
+/* ---------------- ANTONYM MATCH ---------------- */
+function buildAnt(){
+  const box = document.getElementById("antBox");
+  box.innerHTML = antChoices.map((q,i)=>`
+    <div class="qbox">
+      <span class="qnum">${i+1}.</span> Which word is an <b>antonym</b> for <b>${q.word}</b>?
+      <div class="choice-row" id="antRow-${i}">
+        ${q.options.map(opt=>`<button class="choice-btn" onclick="pickChoice(${i},'${opt}','ant')">${opt}</button>`).join("")}
+      </div>
+    </div>
+  `).join("");
+  const key = document.getElementById("antKey");
+  key.innerHTML = "<b>Answer Key</b><ol>" + antChoices.map(q=>`<li>${q.word} &rarr; ${q.correct}</li>`).join("") + "</ol>";
+}
+
+function pickChoice(i, chosen, kind){
+  const bank = kind==="syn" ? synChoices : antChoices;
+  const row = document.getElementById((kind==="syn"?"synRow-":"antRow-")+i);
+  const correct = bank[i].correct;
+  [...row.children].forEach(btn=>{
+    btn.classList.remove("selected","correct","wrong");
+    if(btn.textContent === chosen){
+      btn.classList.add(chosen===correct ? "correct" : "wrong");
+    }
+    if(btn.textContent === correct && chosen!==correct){
+      btn.classList.add("correct");
+    }
+  });
+}
+</script>
+</body>
+</html>
