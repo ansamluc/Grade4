@@ -43,6 +43,23 @@
     display: none;
   }
   header .back-btn.show { display: inline-block; }
+  .score-badge {
+    background: rgba(255,255,255,0.15); padding: 6px 12px; border-radius: 20px;
+    font-size: 0.85rem; white-space: nowrap;
+  }
+  .score-badge button {
+    background: none; border: none; color: white; cursor: pointer;
+    opacity: 0.7; font-size: 0.9rem; padding: 0 0 0 6px;
+  }
+  .score-badge button:hover { opacity: 1; }
+  .export-btn {
+    background: rgba(255,255,255,0.15); border: none; color: white;
+    padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 0.9rem;
+  }
+  .export-btn:hover { background: rgba(255,255,255,0.28); }
+  .print-field { margin-bottom: 14px; display: flex; gap: 14px; flex-wrap: wrap; align-items: center; font-size: 0.95rem; }
+  .print-field select { padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.9rem; background: white; }
+  .print-field > span { font-weight: 600; min-width: 110px; }
   main { max-width: 940px; margin: 0 auto; padding: 24px; }
 
   .subject-grid {
@@ -125,12 +142,43 @@
 
   .practice-block { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px; margin-bottom: 18px; }
   .practice-block h3 { margin-top: 0; }
-  .q-item { margin-bottom: 12px; font-size: 0.95rem; }
-  .q-item input[type="text"] { padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px; margin-left: 6px; width: 160px; }
-  .answer-key { display: none; margin-top: 14px; background: #f1f7f1; border-radius: 8px; padding: 12px; font-size: 0.88rem; }
-  .answer-key.show { display: block; }
-  .reveal-btn {
-    background: var(--accent-green); color: white; border: none; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 0.88rem;
+  .q-item { margin-bottom: 18px; font-size: 0.95rem; }
+  .opt-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+  .opt-btn {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+    padding: 7px 12px; cursor: pointer; font-size: 0.9rem; color: var(--text);
+  }
+  .opt-btn:hover { border-color: var(--primary); }
+  .opt-btn.correct { background: #e2f0e2; border-color: var(--accent-green); font-weight: 600; }
+  .opt-btn.wrong { background: #f7e3e3; border-color: #b04a4a; }
+  .opt-btn:disabled { cursor: default; }
+  .opt-btn .letter { font-weight: 700; color: var(--accent-blue); margin-right: 6px; }
+  .feedback { display: none; margin-top: 10px; padding: 10px 12px; border-radius: 8px; font-size: 0.88rem; line-height: 1.45; }
+  .feedback.ok { display: block; background: #e2f0e2; border: 1px solid var(--accent-green); }
+  .feedback.no { display: block; background: #f7e3e3; border: 1px solid #b04a4a; }
+  .practice-back {
+    background: none; border: 1px solid var(--border); border-radius: 8px;
+    padding: 8px 14px; cursor: pointer; font-size: 0.88rem; color: var(--muted); margin-bottom: 14px;
+  }
+  .practice-back:hover { color: var(--primary); border-color: var(--primary); }
+  .set-controls {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 12px;
+    background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+    padding: 10px 14px; margin-bottom: 14px; font-size: 0.9rem;
+  }
+  .score-pill { font-weight: 600; color: var(--primary-dark); }
+  .set-controls .spacer { flex: 1; }
+  .print-btn {
+    background: var(--accent-green); color: white; border: none;
+    padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 0.88rem;
+  }
+  .q-pick { font-size: 0.78rem; color: var(--muted); margin-left: 10px; white-space: nowrap; }
+  #printArea { display: none; }
+  @media print {
+    body > *:not(#printArea) { display: none !important; }
+    #printArea { display: block; color: #000; }
+    #printArea .pq { margin-bottom: 16px; font-size: 12pt; }
+    #printArea .key-page { page-break-before: always; }
   }
 
   .placeholder-box {
@@ -142,7 +190,11 @@
 
 <header>
   <h1 id="header-title">Grade 4 Learning Hub</h1>
-  <button class="back-btn" id="backBtn" onclick="goBack()">&larr; Back</button>
+  <div style="display:flex; align-items:center; gap:12px">
+    <span class="score-badge" id="globalScore"></span>
+    <button class="export-btn" onclick="exportLog()" title="Download an Excel log of all attempted questions">⬇ Export</button>
+    <button class="back-btn" id="backBtn" onclick="goBack()">&larr; Back</button>
+  </div>
 </header>
 
 <main>
@@ -150,7 +202,35 @@
   <!-- HOME SCREEN -->
   <section class="screen active" id="screen-home">
     <p class="intro">Pick a section to start practicing. Vocabulary Workshop Unit 1 is ready &mdash; more sections and units coming as material is added.</p>
+    <button class="print-btn" style="margin-bottom:18px" onclick="openPrintScreen()">🖨 Print worksheets</button>
     <div class="subject-grid" id="subjectGrid"></div>
+  </section>
+
+  <!-- PRINT SCREEN -->
+  <section class="screen" id="screen-print">
+    <div class="practice-block">
+      <h3>Print Worksheets</h3>
+      <p class="intro">Choose what to print. Selected question sets print as a worksheet, with the answer key on its own page at the end.</p>
+      <div class="print-field">
+        <span>Section:</span>
+        <select id="printSection"><option value="vocab">Vocabulary Workshop</option></select>
+      </div>
+      <div class="print-field">
+        <span>Unit:</span>
+        <select id="printUnit"><option value="unit1">Unit 1</option></select>
+      </div>
+      <div class="print-field">
+        <span>Question types:</span>
+        <label><input type="checkbox" id="pt-fill" checked> Fill in the Blank</label>
+        <label><input type="checkbox" id="pt-syn" checked> Synonyms</label>
+        <label><input type="checkbox" id="pt-ant" checked> Antonyms</label>
+      </div>
+      <div class="print-field">
+        <span>Answer key:</span>
+        <label><input type="checkbox" id="pt-key" checked> Include answer key</label>
+      </div>
+      <button class="print-btn" onclick="printWorksheets()">🖨 Print</button>
+    </div>
   </section>
 
   <!-- VOCABULARY WORKSHOP: UNIT LIST -->
@@ -186,24 +266,49 @@
     </div>
 
     <div id="unit1-practice" class="unit-tab" style="display:none">
-      <div class="practice-block">
-        <h3>1. Fill in the Blank</h3>
-        <div id="fillBlankQs"></div>
-        <button class="reveal-btn" onclick="toggleKey('fillBlankKey')">Show Answers</button>
-        <div class="answer-key" id="fillBlankKey"></div>
+
+      <!-- Practice type menu -->
+      <div id="practiceMenu">
+        <p class="intro">What would you like to practice?</p>
+        <div class="subject-grid" id="practiceGrid"></div>
       </div>
-      <div class="practice-block">
-        <h3>2. Synonym Match</h3>
-        <div id="synMatchQs"></div>
-        <button class="reveal-btn" onclick="toggleKey('synMatchKey')">Show Answers</button>
-        <div class="answer-key" id="synMatchKey"></div>
+
+      <!-- Fill in the Blank -->
+      <div class="practice-set" id="set-fill" style="display:none">
+        <button class="practice-back" onclick="backToPracticeMenu()">&larr; Question types</button>
+        <div class="set-controls">
+          <span class="score-pill" id="fill-score"></span>
+        </div>
+        <div class="practice-block">
+          <h3>Fill in the Blank</h3>
+          <div id="fillBlankQs"></div>
+        </div>
       </div>
-      <div class="practice-block">
-        <h3>3. Antonym Match</h3>
-        <div id="antMatchQs"></div>
-        <button class="reveal-btn" onclick="toggleKey('antMatchKey')">Show Answers</button>
-        <div class="answer-key" id="antMatchKey"></div>
+
+      <!-- Synonyms -->
+      <div class="practice-set" id="set-syn" style="display:none">
+        <button class="practice-back" onclick="backToPracticeMenu()">&larr; Question types</button>
+        <div class="set-controls">
+          <span class="score-pill" id="syn-score"></span>
+        </div>
+        <div class="practice-block">
+          <h3>Synonym Match</h3>
+          <div id="synMatchQs"></div>
+        </div>
       </div>
+
+      <!-- Antonyms -->
+      <div class="practice-set" id="set-ant" style="display:none">
+        <button class="practice-back" onclick="backToPracticeMenu()">&larr; Question types</button>
+        <div class="set-controls">
+          <span class="score-pill" id="ant-score"></span>
+        </div>
+        <div class="practice-block">
+          <h3>Antonym Match</h3>
+          <div id="antMatchQs"></div>
+        </div>
+      </div>
+
     </div>
   </section>
 
@@ -242,8 +347,8 @@
       trick: "You <em>celebrate</em> a <strong>celebrity</strong> — famous people get celebrated!",
       example: "Her paintings made her a celebrity in the art world." },
     { word: "counsel", pron: "kau̇n′ səl", pos: "n. / v.",
-      def: "(n.) advice or ideas for a plan of action; a lawyer &bull; (v.) to give advice; to offer help",
-      syn: "advice, wisdom, guidance; to advise, recommend", ant: "&mdash;",
+      def: "(n.) opinions or ideas given for a plan of action; a talk that leads to a decision; a lawyer &bull; (v.) to give advice or an opinion; to offer help",
+      syn: "advice, wisdom, guidance; to help, advise, recommend", ant: "&mdash;",
       trick: "A <strong>counsel</strong>or at school gives you advice — same word family!",
       example: "After we lost a very close game, our coach tried to counsel us on how to accept defeat." },
     { word: "demonstrate", pron: "dem′ ən strāt", pos: "v.",
@@ -299,45 +404,96 @@
   ];
 
   const fillBlank = [
-    { text: "The famous singer became a ___ after her song played on the radio.", answer: "celebrity" },
-    { text: "The coach tried to ___ the team on how to accept defeat.", answer: "counsel" },
-    { text: "To join the band, you must ___ some musical skill.", answer: "demonstrate" },
-    { text: "After the big dinner, I felt too ___ to read.", answer: "drowsy" },
-    { text: "Food, water, and shelter are ___ to survival.", answer: "essential" },
-    { text: "The pioneers faced many a ___ on their long journey west.", answer: "hardship" },
-    { text: "Trucks ___ all kinds of goods over the highways.", answer: "haul" },
-    { text: "The family lived in a ___ cottage.", answer: "humble" },
-    { text: "We gave a $10 ___ to the fund.", answer: "pledge" },
-    { text: "They offered a ___ apology and really meant it.", answer: "sincere" },
-    { text: "The thunder caused a ___ of frightened cattle.", answer: "stampede" },
-    { text: "I'm shopping for a ___ outfit to wear to the party.", answer: "suitable" },
+    { text: "The famous singer became a ___ after her song played on the radio.", options: ["celebrity", "hardship", "pledge"], answer: "celebrity",
+      why: "A <strong>celebrity</strong> is a well-known, famous person — a hit song makes a singer famous. A <em>hardship</em> is a difficulty and a <em>pledge</em> is a promise, so they don't fit." },
+    { text: "The coach tried to ___ the team on how to accept defeat.", options: ["stampede", "counsel", "haul"], answer: "counsel",
+      why: "To <strong>counsel</strong> means to give advice or help — that's what a coach does. <em>Stampede</em> means to rush wildly and <em>haul</em> means to drag something." },
+    { text: "To join the band, you must ___ some musical skill.", options: ["counsel", "pledge", "demonstrate"], answer: "demonstrate",
+      why: "To <strong>demonstrate</strong> means to clearly show or prove — you show your skill to join. <em>Counsel</em> means to advise and <em>pledge</em> means to promise." },
+    { text: "After the big dinner, I felt too ___ to read.", options: ["drowsy", "sincere", "suitable"], answer: "drowsy",
+      why: "<strong>Drowsy</strong> means sleepy — a big dinner can make you too sleepy to read. <em>Sincere</em> means honest and <em>suitable</em> means fitting." },
+    { text: "Food, water, and shelter are ___ to survival.", options: ["humble", "essential", "drowsy"], answer: "essential",
+      why: "<strong>Essential</strong> means necessary — you can't survive without these things. <em>Humble</em> means plain or modest and <em>drowsy</em> means sleepy." },
+    { text: "The pioneers faced many a ___ on their long journey west.", options: ["celebrity", "haul", "hardship"], answer: "hardship",
+      why: "A <strong>hardship</strong> is something that causes suffering or difficulty — pioneer journeys were full of them. A <em>celebrity</em> is a famous person and a <em>haul</em> is an amount carried or caught." },
+    { text: "Trucks ___ all kinds of goods over the highways.", options: ["haul", "demonstrate", "counsel"], answer: "haul",
+      why: "To <strong>haul</strong> means to move by pulling, dragging, or carting — exactly what trucks do. <em>Demonstrate</em> means to show and <em>counsel</em> means to advise." },
+    { text: "The family lived in a ___ cottage.", options: ["drowsy", "humble", "sincere"], answer: "humble",
+      why: "<strong>Humble</strong> means plain and simple, not grand — a humble cottage. <em>Drowsy</em> means sleepy and <em>sincere</em> means honest." },
+    { text: "We gave a $10 ___ to the fund.", options: ["stampede", "hardship", "pledge"], answer: "pledge",
+      why: "A <strong>pledge</strong> is money promised for a good cause. A <em>stampede</em> is a wild rush and a <em>hardship</em> is a difficulty." },
+    { text: "They offered a ___ apology and really meant it.", options: ["sincere", "suitable", "essential"], answer: "sincere",
+      why: "<strong>Sincere</strong> means honest, with real feeling — 'really meant it' is the clue. <em>Suitable</em> means fitting and <em>essential</em> means necessary." },
+    { text: "The thunder caused a ___ of frightened cattle.", options: ["pledge", "stampede", "celebrity"], answer: "stampede",
+      why: "A <strong>stampede</strong> is a wild rush of frightened animals. A <em>pledge</em> is a promise and a <em>celebrity</em> is a famous person." },
+    { text: "I'm shopping for a ___ outfit to wear to the party.", options: ["essential", "humble", "suitable"], answer: "suitable",
+      why: "<strong>Suitable</strong> means just right or appropriate — the right outfit for the occasion. <em>Essential</em> means necessary and <em>humble</em> means plain." },
+    { text: "The ___ kitten kept closing its eyes in the warm sun.", options: ["drowsy", "humble", "essential"], answer: "drowsy" },
+    { text: "Fans lined up for hours to meet the ___ at the mall.", options: ["celebrity", "counsel", "stampede"], answer: "celebrity" },
+    { text: "My grandmother's wise ___ helped me make the right choice.", options: ["counsel", "haul", "pledge"], answer: "counsel" },
+    { text: "The science teacher will ___ how volcanoes erupt using a model.", options: ["demonstrate", "haul", "stampede"], answer: "demonstrate" },
+    { text: "Packing a flashlight is ___ for the camping trip.", options: ["essential", "drowsy", "sincere"], answer: "essential" },
+    { text: "Losing the family farm was a terrible ___ for them.", options: ["hardship", "celebrity", "pledge"], answer: "hardship" },
+    { text: "It took two of us to ___ the heavy box up the stairs.", options: ["haul", "counsel", "demonstrate"], answer: "haul" },
+    { text: "Even after winning the trophy, she stayed ___ and thanked her team.", options: ["humble", "drowsy", "suitable"], answer: "humble" },
+    { text: "The scouts made a ___ to keep the park clean.", options: ["pledge", "stampede", "hardship"], answer: "pledge" },
+    { text: "His ___ smile showed he was truly glad to see us.", options: ["sincere", "essential", "drowsy"], answer: "sincere" },
+    { text: "The loud fireworks nearly caused a ___ at the fair.", options: ["stampede", "celebrity", "counsel"], answer: "stampede" },
+    { text: "Sneakers are not ___ for the fancy dinner.", options: ["suitable", "humble", "essential"], answer: "suitable" },
+    { text: "The actor became a ___ known all over the world.", options: ["celebrity", "pledge", "hardship"], answer: "celebrity" },
+    { text: "The medicine made him ___, so he took a nap.", options: ["drowsy", "sincere", "humble"], answer: "drowsy" },
+    { text: "Daily practice is ___ if you want to improve at piano.", options: ["essential", "humble", "drowsy"], answer: "essential" },
+    { text: "The fishermen brought in a big ___ of salmon.", options: ["haul", "pledge", "stampede"], answer: "haul" },
+    { text: "The lawyer served as lead ___ during the trial.", options: ["counsel", "celebrity", "hardship"], answer: "counsel" },
+    { text: "Marchers gathered downtown to ___ for cleaner parks.", options: ["demonstrate", "counsel", "haul"], answer: "demonstrate" },
   ];
 
   const synMatch = [
-    { word: "celebrity", options: ["a nobody", "a star", "a helper"], answer: "a star" },
-    { word: "counsel", options: ["advice", "anger", "silence"], answer: "advice" },
-    { word: "demonstrate", options: ["to hide", "to illustrate", "to forget"], answer: "to illustrate" },
-    { word: "drowsy", options: ["alert", "sluggish", "cheerful"], answer: "sluggish" },
-    { word: "essential", options: ["vital", "minor", "extra"], answer: "vital" },
-    { word: "hardship", options: ["comfort", "ordeal", "holiday"], answer: "ordeal" },
-    { word: "haul", options: ["to drop", "to lug", "to lose"], answer: "to lug" },
-    { word: "humble", options: ["modest", "grand", "loud"], answer: "modest" },
-    { word: "pledge", options: ["a guess", "a vow", "a question"], answer: "a vow" },
-    { word: "sincere", options: ["phony", "heartfelt", "confused"], answer: "heartfelt" },
-    { word: "stampede", options: ["a stroll", "a dash", "a nap"], answer: "a dash" },
-    { word: "suitable", options: ["fitting", "mismatched", "broken"], answer: "fitting" },
+    { word: "celebrity", options: ["a nobody", "a star", "a helper"], answer: "a star",
+      why: "A <strong>celebrity</strong> is a famous person — just like <strong>a star</strong>. <em>A nobody</em> is the opposite (an antonym), and <em>a helper</em> is unrelated." },
+    { word: "counsel", options: ["advice", "anger", "silence"], answer: "advice",
+      why: "<strong>Counsel</strong> means <strong>advice</strong> or guidance for making a decision. <em>Anger</em> and <em>silence</em> have nothing to do with giving advice." },
+    { word: "demonstrate", options: ["to hide", "to illustrate", "to forget"], answer: "to illustrate",
+      why: "To <strong>demonstrate</strong> is to show or explain clearly — the same as <strong>to illustrate</strong>. <em>To hide</em> is the opposite, and <em>to forget</em> is unrelated." },
+    { word: "drowsy", options: ["alert", "sluggish", "cheerful"], answer: "sluggish",
+      why: "<strong>Drowsy</strong> means sleepy and slow — <strong>sluggish</strong>. <em>Alert</em> is the opposite, and <em>cheerful</em> is about mood, not sleepiness." },
+    { word: "essential", options: ["vital", "minor", "extra"], answer: "vital",
+      why: "<strong>Essential</strong> means necessary — <strong>vital</strong> means the same. <em>Minor</em> and <em>extra</em> mean not important, closer to opposites." },
+    { word: "hardship", options: ["comfort", "ordeal", "holiday"], answer: "ordeal",
+      why: "A <strong>hardship</strong> is a difficult, painful experience — an <strong>ordeal</strong>. <em>Comfort</em> is the opposite, and a <em>holiday</em> is fun, not hard!" },
+    { word: "haul", options: ["to drop", "to lug", "to lose"], answer: "to lug",
+      why: "To <strong>haul</strong> is to pull or carry something heavy — <strong>to lug</strong>. <em>To drop</em> and <em>to lose</em> mean letting go, not carrying." },
+    { word: "humble", options: ["modest", "grand", "loud"], answer: "modest",
+      why: "<strong>Humble</strong> means not proud or fancy — <strong>modest</strong>. <em>Grand</em> is the opposite, and <em>loud</em> is unrelated." },
+    { word: "pledge", options: ["a guess", "a vow", "a question"], answer: "a vow",
+      why: "A <strong>pledge</strong> is a serious promise — <strong>a vow</strong>. <em>A guess</em> and <em>a question</em> aren't promises." },
+    { word: "sincere", options: ["phony", "heartfelt", "confused"], answer: "heartfelt",
+      why: "<strong>Sincere</strong> means with honest, real feeling — <strong>heartfelt</strong>. <em>Phony</em> is the opposite, and <em>confused</em> is unrelated." },
+    { word: "stampede", options: ["a stroll", "a dash", "a nap"], answer: "a dash",
+      why: "A <strong>stampede</strong> is a wild rush — <strong>a dash</strong>. <em>A stroll</em> is slow, calm walking (the opposite), and <em>a nap</em> is unrelated." },
+    { word: "suitable", options: ["fitting", "mismatched", "broken"], answer: "fitting",
+      why: "<strong>Suitable</strong> means just right — <strong>fitting</strong>. <em>Mismatched</em> is the opposite, and <em>broken</em> is unrelated." },
   ];
 
   const antMatch = [
-    { word: "celebrity", options: ["a star", "a nobody", "a singer"], answer: "a nobody" },
-    { word: "demonstrate", options: ["to hide", "to show", "to model"], answer: "to hide" },
-    { word: "drowsy", options: ["sleepy", "tired", "alert"], answer: "alert" },
-    { word: "essential", options: ["vital", "unimportant", "key"], answer: "unimportant" },
-    { word: "hardship", options: ["ordeal", "comfort", "burden"], answer: "comfort" },
-    { word: "humble", options: ["modest", "plain", "grand"], answer: "grand" },
-    { word: "sincere", options: ["genuine", "phony", "true"], answer: "phony" },
-    { word: "stampede", options: ["to bolt", "to stroll", "to charge"], answer: "to stroll" },
-    { word: "suitable", options: ["proper", "fitting", "mismatched"], answer: "mismatched" },
+    { word: "celebrity", options: ["a star", "a nobody", "a singer"], answer: "a nobody",
+      why: "A <strong>celebrity</strong> is famous; <strong>a nobody</strong> is unknown — exact opposites. <em>A star</em> is a synonym, not an antonym." },
+    { word: "demonstrate", options: ["to hide", "to show", "to model"], answer: "to hide",
+      why: "To <strong>demonstrate</strong> is to show clearly; <strong>to hide</strong> is the opposite. <em>To show</em> and <em>to model</em> are synonyms." },
+    { word: "drowsy", options: ["sleepy", "tired", "alert"], answer: "alert",
+      why: "<strong>Drowsy</strong> means sleepy; <strong>alert</strong> means wide awake — opposites. <em>Sleepy</em> and <em>tired</em> mean the same as drowsy." },
+    { word: "essential", options: ["vital", "unimportant", "key"], answer: "unimportant",
+      why: "<strong>Essential</strong> means necessary; <strong>unimportant</strong> is the opposite. <em>Vital</em> and <em>key</em> are synonyms." },
+    { word: "hardship", options: ["ordeal", "comfort", "burden"], answer: "comfort",
+      why: "A <strong>hardship</strong> makes life difficult; <strong>comfort</strong> makes it easy — opposites. <em>Ordeal</em> and <em>burden</em> are synonyms." },
+    { word: "humble", options: ["modest", "plain", "grand"], answer: "grand",
+      why: "<strong>Humble</strong> means plain and modest; <strong>grand</strong> means big and showy — opposites. <em>Modest</em> and <em>plain</em> are synonyms." },
+    { word: "sincere", options: ["genuine", "phony", "true"], answer: "phony",
+      why: "<strong>Sincere</strong> means truly meant; <strong>phony</strong> means fake — opposites. <em>Genuine</em> and <em>true</em> are synonyms." },
+    { word: "stampede", options: ["to bolt", "to stroll", "to charge"], answer: "to stroll",
+      why: "To <strong>stampede</strong> is to rush wildly; <strong>to stroll</strong> is to walk slowly and calmly — opposites. <em>To bolt</em> and <em>to charge</em> are synonyms." },
+    { word: "suitable", options: ["proper", "fitting", "mismatched"], answer: "mismatched",
+      why: "<strong>Suitable</strong> means well matched; <strong>mismatched</strong> is the opposite. <em>Proper</em> and <em>fitting</em> are synonyms." },
   ];
 
   let navStack = [];
@@ -416,21 +572,350 @@
     `).join("");
   }
 
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  const LETTERS = ["A", "B", "C", "D"];
+  const PRAISE = [
+    "Correct! Great job! 🎉",
+    "That's right! Nice work! ⭐",
+    "Correct! You've got it! 👏",
+    "Yes! Way to go! 🌟",
+  ];
+
+  // Info about each rendered question, keyed by "<qsId>-<index>"
+  const mcqInfo = {};
+  // Currently rendered question set per practice type (for scoring)
+  const currentSets = {};
+  const scores = {};
+
+  // Hub-wide running score — follows the user across sections and units,
+  // and survives page reloads via localStorage
+  let gScore = { answered: 0, correct: 0 };
+  try { gScore = JSON.parse(localStorage.getItem("g4hub-score")) || gScore; } catch (e) {}
+
+  function saveGlobalScore() {
+    try { localStorage.setItem("g4hub-score", JSON.stringify(gScore)); } catch (e) {}
+  }
+
+  function updateGlobalScore() {
+    document.getElementById("globalScore").innerHTML =
+      `⭐ Answered: ${gScore.answered} &nbsp;·&nbsp; Correct: ${gScore.correct}<button title="Reset score" onclick="resetGlobalScore()">↺</button>`;
+  }
+
+  function resetGlobalScore() {
+    if (!confirm("Reset the score and clear the practice log?")) return;
+    gScore = { answered: 0, correct: 0 };
+    attemptLog = [];
+    saveGlobalScore();
+    saveLog();
+    updateGlobalScore();
+  }
+
+  // ---- Attempt log (every question answered, for Excel export) ----
+  const SET_NAMES = { fill: "Fill in the Blank", syn: "Synonyms", ant: "Antonyms" };
+  let attemptLog = [];
+  try { attemptLog = JSON.parse(localStorage.getItem("g4hub-log")) || []; } catch (e) {}
+
+  function saveLog() {
+    try { localStorage.setItem("g4hub-log", JSON.stringify(attemptLog.slice(-2000))); } catch (e) {}
+  }
+
+  function stripHtml(s) {
+    return s.replace(/<[^>]*>/g, "").replace(/&ldquo;|&rdquo;/g, '"')
+      .replace(/&mdash;/g, "—").replace(/&bull;/g, "•").replace(/&nbsp;/g, " ");
+  }
+
+  function logAttempt(info, chosen, isCorrect) {
+    const now = new Date();
+    attemptLog.push({
+      time: now.getFullYear() + "-" + String(now.getMonth()+1).padStart(2,"0") + "-" + String(now.getDate()).padStart(2,"0")
+        + " " + String(now.getHours()).padStart(2,"0") + ":" + String(now.getMinutes()).padStart(2,"0"),
+      section: "Vocabulary Workshop",
+      unit: "Unit 1",
+      type: SET_NAMES[info.set] || info.set,
+      question: stripHtml(info.prompt),
+      chosen: chosen,
+      answer: info.answer,
+      result: isCorrect ? "Correct" : "Incorrect",
+    });
+    saveLog();
+  }
+
+  const LOG_HEADERS = ["Date/Time", "Section", "Unit", "Question Type", "Question", "Your Answer", "Correct Answer", "Result"];
+  function logRow(a) { return [a.time, a.section, a.unit, a.type, a.question, a.chosen, a.answer, a.result]; }
+
+  function exportLog() {
+    if (!attemptLog.length) { alert("No questions attempted yet — answer some practice questions first!"); return; }
+    if (window.XLSX) { exportXlsx(); return; }
+    // Load SheetJS for a true .xlsx; fall back to Excel-compatible CSV if offline
+    const s = document.createElement("script");
+    s.src = "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";
+    s.onload = exportXlsx;
+    s.onerror = exportCsv;
+    document.head.appendChild(s);
+  }
+
+  function exportXlsx() {
+    const wb = XLSX.utils.book_new();
+    const all = [LOG_HEADERS, ...attemptLog.map(logRow)];
+    const wrong = [LOG_HEADERS, ...attemptLog.filter(a => a.result === "Incorrect").map(logRow)];
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(all), "All Attempts");
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(wrong), "Incorrect Only");
+    XLSX.writeFile(wb, "vocabulary_practice_log.xlsx");
+  }
+
+  function exportCsv() {
+    const esc = v => '"' + String(v).replace(/"/g, '""') + '"';
+    const csv = "﻿" + [LOG_HEADERS, ...attemptLog.map(logRow)]
+      .map(r => r.map(esc).join(",")).join("\r\n");
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+    a.download = "vocabulary_practice_log.csv";
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  function updateScore(setId) {
+    const s = scores[setId];
+    document.getElementById(setId + "-score").innerHTML =
+      `This set — Answered: ${s.answered}/${s.total} &nbsp;·&nbsp; Correct: ${s.correct} ✔`;
+  }
+
+  function pickAnswer(btn, key, isCorrect) {
+    const row = btn.parentElement;
+    row.querySelectorAll(".opt-btn").forEach(b => {
+      b.disabled = true;
+      if (b.dataset.correct === "1") b.classList.add("correct");
+    });
+    const info = mcqInfo[key];
+    const fb = document.getElementById(key + "-fb");
+    if (isCorrect) {
+      fb.className = "feedback ok";
+      fb.innerHTML = "✅ " + PRAISE[Math.floor(Math.random() * PRAISE.length)];
+    } else {
+      btn.classList.add("wrong");
+      fb.className = "feedback no";
+      fb.innerHTML = `❌ Not quite — the answer is <strong>${info.letter}: ${info.answer}</strong>.<br>${info.why}`;
+    }
+    const s = scores[info.set];
+    s.answered++;
+    if (isCorrect) s.correct++;
+    updateScore(info.set);
+    gScore.answered++;
+    if (isCorrect) gScore.correct++;
+    saveGlobalScore();
+    updateGlobalScore();
+    logAttempt(info, btn.dataset.opt, isCorrect);
+  }
+
+  // Renders MCQs in shuffled question order (not chart order), with shuffled
+  // option order so correct answers land on different letters
+  function renderMCQ(qsId, setId, questions) {
+    const rendered = shuffle(questions).map(q => {
+      const opts = shuffle(q.options);
+      return { prompt: q.prompt, answer: q.answer, why: q.why, opts, correctIdx: opts.indexOf(q.answer) };
+    });
+    currentSets[setId] = rendered;
+    scores[setId] = { answered: 0, correct: 0, total: rendered.length };
+    updateScore(setId);
+    document.getElementById(qsId).innerHTML = rendered.map((q, i) => {
+      const key = qsId + "-" + i;
+      mcqInfo[key] = { letter: LETTERS[q.correctIdx], answer: q.answer, why: q.why, set: setId, prompt: q.prompt };
+      const btns = q.opts.map((o, j) =>
+        `<button class="opt-btn" data-correct="${o === q.answer ? 1 : 0}" data-opt="${o}" onclick="pickAnswer(this, '${key}', ${o === q.answer})"><span class="letter">${LETTERS[j]}</span>${o}</button>`
+      ).join("");
+      return `<div class="q-item">${i+1}. ${q.prompt}<div class="opt-row">${btns}</div><div class="feedback" id="${key}-fb"></div></div>`;
+    }).join("");
+  }
+
+  function openPrintScreen() {
+    navStack.push({ id: "screen-home", title: "Grade 4 Learning Hub" });
+    showScreen("screen-print", "Print Worksheets");
+  }
+
+  function printWorksheets() {
+    // Only Vocabulary Workshop / Unit 1 exist so far; the section and unit
+    // dropdowns are ready for more content later.
+    const picked = [
+      ["pt-fill", "Fill in the Blank", buildFillBank],
+      ["pt-syn", "Synonyms", buildSynBank],
+      ["pt-ant", "Antonyms", buildAntBank],
+    ].filter(t => document.getElementById(t[0]).checked);
+    if (!picked.length) { alert("Check at least one question type to print."); return; }
+    const withKey = document.getElementById("pt-key").checked;
+    const sectionName = "Vocabulary Workshop";
+    const unitName = "Unit 1";
+
+    const keyParts = [];
+    const qParts = picked.map(([id, title, builder], ti) => {
+      const set = shuffle(builder()).map(q => {
+        const opts = shuffle(q.options);
+        return { ...q, opts, correctIdx: opts.indexOf(q.answer) };
+      });
+      keyParts.push(`<h3>${title}</h3><p style="line-height:1.8">` +
+        set.map((q, i) => `${i+1}. ${LETTERS[q.correctIdx]} — ${q.answer}`).join("<br>") + `</p>`);
+      const qs = set.map((q, i) => {
+        const opts = q.opts.map((o, j) => `${LETTERS[j]}. ${o}`).join("&nbsp;&nbsp;&nbsp;&nbsp;");
+        return `<div class="pq">${i+1}. ${q.prompt}<br>${opts}</div>`;
+      }).join("");
+      return `<div${ti > 0 ? ' class="key-page"' : ''}><h2>${sectionName} ${unitName} — ${title}</h2>${qs}</div>`;
+    }).join("");
+
+    document.getElementById("printArea").innerHTML =
+      `<p>Name: ________________________ &nbsp;&nbsp; Date: ________________</p>
+       ${qParts}
+       ${withKey ? `<div class="key-page"><h2>Answer Key — ${sectionName} ${unitName}</h2>${keyParts.join("")}</div>` : ""}`;
+    window.print();
+  }
+
+  // Short definitions used to explain answers in reversed questions
+  const shortDef = {
+    celebrity: "a famous, well-known person",
+    counsel: "advice, or to give advice",
+    demonstrate: "to clearly show or prove",
+    drowsy: "sleepy",
+    essential: "necessary, very important",
+    hardship: "something that causes suffering or difficulty",
+    haul: "to pull, drag, or carry",
+    humble: "plain and modest, not proud",
+    pledge: "a promise",
+    sincere: "honest, with real feeling",
+    stampede: "a wild, panicked rush",
+    suitable: "just right or appropriate",
+  };
+
+  // Every synonym / antonym pair from the Unit 1 chart
+  const synPairs = {
+    celebrity: ["a star"],
+    counsel: ["advice", "wisdom", "guidance"],
+    demonstrate: ["to model", "to illustrate", "to reveal"],
+    drowsy: ["tired", "sluggish"],
+    essential: ["vital", "key", "basic"],
+    hardship: ["a burden", "an ordeal", "a misfortune"],
+    haul: ["to lug", "to carry", "to tug"],
+    humble: ["modest", "simple", "earthy"],
+    pledge: ["a guarantee", "a vow"],
+    sincere: ["genuine", "true", "heartfelt"],
+    stampede: ["a flight", "a dash", "to bolt", "to charge"],
+    suitable: ["proper", "fitting", "right"],
+  };
+  const antPairs = {
+    celebrity: ["a nobody", "an unknown"],
+    demonstrate: ["to hide"],
+    drowsy: ["alert", "wakeful"],
+    essential: ["unimportant", "minor", "unnecessary"],
+    hardship: ["ease", "comfort"],
+    humble: ["bold", "grand"],
+    sincere: ["false", "phony"],
+    stampede: ["to stroll", "to wander"],
+    suitable: ["inappropriate", "mismatched", "improper"],
+  };
+
+  function allPairs(obj) {
+    return Object.entries(obj).flatMap(([word, arr]) => arr.map(phrase => ({ word, phrase })));
+  }
+
+  // Forward: given the vocabulary word, pick its synonym/antonym
+  function forwardQ(q, rel) {
+    return {
+      prompt: `Choose the <em>${rel}</em> of <strong>${q.word}</strong>:`,
+      options: q.options, answer: q.answer, why: q.why,
+    };
+  }
+
+  // Generated forward antonym question (distractors are the word's own synonyms — a classic trap)
+  function genForwardAnt(word, ant) {
+    let d = (synPairs[word] || []).slice(0, 2);
+    const ownSyns = d.length;
+    while (d.length < 2) {
+      const w = shuffle(Object.keys(synPairs).filter(x => x !== word))[0];
+      const cand = synPairs[w][0];
+      if (!d.includes(cand)) d.push(cand);
+    }
+    const why = `<strong>${word}</strong> means ${shortDef[word]}; <strong>${ant}</strong> means the opposite. ` +
+      (ownSyns >= 2
+        ? `<em>${d[0]}</em> and <em>${d[1]}</em> mean about the same as ${word}, so they are synonyms, not antonyms.`
+        : `The other choices don't mean the opposite of ${word}.`);
+    return {
+      prompt: `Choose the <em>antonym</em> of <strong>${word}</strong>:`,
+      options: [ant, ...d], answer: ant, why,
+    };
+  }
+
+  // Reversed: given the synonym/antonym, pick which vocabulary word it belongs to
+  function reversedFrom(word, phrase, isSyn) {
+    const others = shuffle(Object.keys(shortDef).filter(w => w !== word)).slice(0, 2);
+    return {
+      prompt: `Which vocabulary word ${isSyn ? "means the same as" : "is the <em>opposite</em> of"} <strong>&ldquo;${phrase}&rdquo;</strong>?`,
+      options: [word, ...others],
+      answer: word,
+      why: `<strong>${word}</strong> means ${shortDef[word]} — ${isSyn ? `&ldquo;${phrase}&rdquo; is another way to say it` : `the opposite of &ldquo;${phrase}&rdquo;`}. <em>${others[0]}</em> means ${shortDef[others[0]]}, and <em>${others[1]}</em> means ${shortDef[others[1]]}, so they don't fit.`,
+    };
+  }
+
+  function autoWhy(q) {
+    const d = q.options.filter(o => o !== q.answer);
+    return `<strong>${q.answer}</strong> means ${shortDef[q.answer]}, which fits this sentence. <em>${d[0]}</em> means ${shortDef[d[0]]}, and <em>${d[1]}</em> means ${shortDef[d[1]]}, so they don't fit.`;
+  }
+
+  // Build the 30-question banks (fresh mix each time a set is opened)
+  function buildFillBank() {
+    return fillBlank.map(q => ({
+      prompt: q.text.replace("___", "<strong>______</strong>"),
+      options: q.options, answer: q.answer, why: q.why || autoWhy(q),
+    }));
+  }
+
+  function buildSynBank() {
+    const fwd = synMatch.map(q => forwardQ(q, "synonym"));                       // 12 hand-written
+    const rev = shuffle(allPairs(synPairs)).slice(0, 18).map(p => reversedFrom(p.word, p.phrase, true)); // 18 reversed
+    return [...fwd, ...rev];
+  }
+
+  function buildAntBank() {
+    const fwd = antMatch.map(q => forwardQ(q, "antonym"));                       // 9 hand-written
+    const covered = new Set(antMatch.map(q => q.word + "|" + q.answer));
+    const genFwd = allPairs(antPairs).filter(p => !covered.has(p.word + "|" + p.phrase))
+      .map(p => genForwardAnt(p.word, p.phrase));                                // 10 generated forward
+    const rev = shuffle(allPairs(antPairs)).slice(0, 30 - fwd.length - genFwd.length)
+      .map(p => reversedFrom(p.word, p.phrase, false));                          // 11 reversed
+    return [...fwd, ...genFwd, ...rev];
+  }
+
+  const practiceTypes = [
+    { id: "fill", icon: "✍️", name: "Fill in the Blank", status: "30 questions", enabled: true },
+    { id: "syn", icon: "🤝", name: "Synonyms", status: "30 questions", enabled: true },
+    { id: "ant", icon: "↔️", name: "Antonyms", status: "30 questions", enabled: true },
+  ];
+
+  function openPracticeType(t) {
+    document.getElementById("practiceMenu").style.display = "none";
+    document.querySelectorAll(".practice-set").forEach(el => el.style.display = "none");
+    document.getElementById("set-" + t.id).style.display = "block";
+    renderPracticeSet(t.id); // fresh shuffle + cleared answers every visit
+  }
+
+  function backToPracticeMenu() {
+    document.querySelectorAll(".practice-set").forEach(el => el.style.display = "none");
+    document.getElementById("practiceMenu").style.display = "block";
+  }
+
+  function renderPracticeSet(id) {
+    if (id === "fill") renderMCQ("fillBlankQs", "fill", buildFillBank());
+    if (id === "syn") renderMCQ("synMatchQs", "syn", buildSynBank());
+    if (id === "ant") renderMCQ("antMatchQs", "ant", buildAntBank());
+  }
+
   function renderPractice() {
-    document.getElementById("fillBlankQs").innerHTML = fillBlank.map((q, i) =>
-      `<div class="q-item">${i+1}. ${q.text.replace("___", "<input type='text' placeholder='answer'>")}</div>`
-    ).join("");
-    document.getElementById("fillBlankKey").innerHTML = fillBlank.map((q, i) => `${i+1}. ${q.answer}`).join("<br>");
-
-    document.getElementById("synMatchQs").innerHTML = synMatch.map((q, i) =>
-      `<div class="q-item">${i+1}. Choose the synonym of <strong>${q.word}</strong>: ${q.options.join(" / ")}</div>`
-    ).join("");
-    document.getElementById("synMatchKey").innerHTML = synMatch.map((q, i) => `${i+1}. ${q.answer}`).join("<br>");
-
-    document.getElementById("antMatchQs").innerHTML = antMatch.map((q, i) =>
-      `<div class="q-item">${i+1}. Choose the antonym of <strong>${q.word}</strong>: ${q.options.join(" / ")}</div>`
-    ).join("");
-    document.getElementById("antMatchKey").innerHTML = antMatch.map((q, i) => `${i+1}. ${q.answer}`).join("<br>");
+    renderGrid("practiceGrid", practiceTypes, openPracticeType);
+    ["fill", "syn", "ant"].forEach(renderPracticeSet);
   }
 
   function showUnitTab(tab) {
@@ -439,17 +924,16 @@
     document.getElementById("unit1-" + tab).style.display = "block";
   }
 
-  function toggleKey(id) {
-    document.getElementById(id).classList.toggle("show");
-  }
-
   renderGrid("subjectGrid", subjects, openSubject);
   renderGrid("unitGrid", units, openUnit);
   renderChart();
   renderLesson();
   renderCards();
   renderPractice();
+  updateGlobalScore();
 </script>
+
+<div id="printArea"></div>
 
 </body>
 </html>
