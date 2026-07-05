@@ -262,6 +262,7 @@
 
     <div id="unit1-cards" class="unit-tab" style="display:none">
       <p class="intro">Tap a card to flip it. Try to say the meaning before you flip!</p>
+      <button class="print-btn" style="margin-bottom:16px" onclick="shuffleCards()">🔀 Shuffle cards</button>
       <div class="card-grid" id="cardGrid"></div>
     </div>
 
@@ -561,8 +562,8 @@
     `).join("");
   }
 
-  function renderCards() {
-    document.getElementById("cardGrid").innerHTML = vocabWords.map(w => `
+  function renderCards(words) {
+    document.getElementById("cardGrid").innerHTML = (words || vocabWords).map(w => `
       <div class="flip-card" onclick="this.classList.toggle('flipped')">
         <div class="flip-inner">
           <div class="flip-front"><h4>${w.word}</h4><span>(${w.pos}) &mdash; Tap to flip</span></div>
@@ -570,6 +571,10 @@
         </div>
       </div>
     `).join("");
+  }
+
+  function shuffleCards() {
+    renderCards(shuffle(vocabWords)); // also resets any flipped cards
   }
 
   function shuffle(arr) {
