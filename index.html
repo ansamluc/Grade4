@@ -117,6 +117,11 @@
     background: var(--card); border: 1px solid var(--border); border-radius: 12px;
     padding: 16px 18px; margin-bottom: 14px;
   }
+  .lesson-card img.word-pic {
+    float: right; width: 150px; max-width: 40%; border-radius: 10px;
+    border: 1px solid var(--border); margin: 0 0 8px 12px;
+  }
+  .lesson-card::after { content: ""; display: block; clear: both; }
   .lesson-card h4 { margin: 0 0 4px 0; color: var(--primary-dark); font-size: 1.1rem; }
   .lesson-card .pron { color: var(--muted); font-size: 0.85rem; margin-left: 6px; font-weight: normal; }
   .lesson-card p { margin: 6px 0; font-size: 0.92rem; line-height: 1.45; }
@@ -553,6 +558,7 @@
   function renderLesson() {
     document.getElementById("lessonCards").innerHTML = vocabWords.map((w, i) => `
       <div class="lesson-card">
+        <img class="word-pic" src="images/unit1/${w.word}.png" alt="${w.word} illustration" onerror="this.style.display='none'">
         <h4>${i+1}. ${w.word} <span class="pron">(${w.pron}) &bull; ${w.pos}</span></h4>
         <p>${w.def}</p>
         <p class="trick">💡 <strong>Memory trick:</strong> ${w.trick}</p>
