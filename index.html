@@ -322,6 +322,45 @@
     </div>
   </section>
 
+  <!-- READING: STORY LIST -->
+  <section class="screen" id="screen-reading">
+    <p class="intro">Choose a story.</p>
+    <div class="subject-grid" id="storyGrid"></div>
+  </section>
+
+  <!-- STORY SCREEN (shared by all stories) -->
+  <section class="screen" id="screen-story">
+    <div class="tabs">
+      <button class="tab-btn active" data-story-tab="definition" onclick="showStoryTab('definition')">Definition</button>
+      <button class="tab-btn" data-story-tab="cards" onclick="showStoryTab('cards')">Study Cards</button>
+      <button class="tab-btn" data-story-tab="quiz" onclick="showStoryTab('quiz')">Quiz</button>
+    </div>
+
+    <div id="story-definition" class="story-tab">
+      <p class="intro">Vocabulary words from the story, with their meanings and an example sentence.</p>
+      <table class="word-chart">
+        <thead><tr><th>Word</th><th>Definition</th><th>Example Sentence</th></tr></thead>
+        <tbody id="storyDefBody"></tbody>
+      </table>
+    </div>
+
+    <div id="story-cards" class="story-tab" style="display:none">
+      <p class="intro">Tap a card to flip it. Try to say the meaning before you flip!</p>
+      <button class="print-btn" style="margin-bottom:16px" onclick="shuffleStoryCards()">🔀 Shuffle cards</button>
+      <div class="card-grid" id="storyCardGrid"></div>
+    </div>
+
+    <div id="story-quiz" class="story-tab" style="display:none">
+      <div class="set-controls">
+        <span class="score-pill" id="storyQuiz-score"></span>
+      </div>
+      <div class="practice-block">
+        <h3>Vocabulary Quiz</h3>
+        <div id="storyQuizQs"></div>
+      </div>
+    </div>
+  </section>
+
   <!-- PLACEHOLDER SCREEN -->
   <section class="screen" id="screen-placeholder">
     <div class="placeholder-box">
@@ -2650,11 +2689,357 @@
   };
 
   // =========================================================================
+  // READING: STORY DATA
+  // =========================================================================
+  const STORIES = {
+    story1: {
+      name: "Story 1: Kitoto the Mighty",
+      words: [
+        { word: "cautiously", pos: "adv.",
+          def: "you do something very carefully",
+          example: "The archaeologist moved <strong>cautiously</strong> around the fragile artifact to avoid damaging it." },
+        { word: "trickle", pos: "n.",
+          def: "a small amount of slowly flowing liquid",
+          example: "A thin <strong>trickle</strong> of water slid down the rock after the long drought finally ended." },
+        { word: "marvel", pos: "v.",
+          def: "you felt surprised or amazed by something",
+          example: "The tourists could only <strong>marvel</strong> at the ancient temple, amazed by its detailed carvings." },
+        { word: "mighty", pos: "adj.",
+          def: "strong and powerful",
+          example: "The villagers admired the <strong>mighty</strong> river that powered their entire town." },
+        { word: "distant", pos: "adj.",
+          def: "when something is far away",
+          example: "From the hilltop, they could see a <strong>distant</strong> light blinking near the horizon." },
+        { word: "proclaim", pos: "v.",
+          def: "something you said in a strong way to show it was important for others to hear",
+          example: "The announcer stood up to <strong>proclaim</strong> the winner so everyone in the arena could hear." },
+        { word: "majestic", pos: "adj.",
+          def: "when something is impressive and beautiful",
+          example: "The travelers stared at the <strong>majestic</strong> waterfall cascading down the mountainside." },
+        { word: "sumptuous", pos: "adj.",
+          def: "when something is impressive and expensive-looking; very fancy",
+          example: "The queen's banquet hall was decorated with <strong>sumptuous</strong> fabrics and golden plates." },
+        { word: "hoard", pos: "n.",
+          def: "a bunch of valuable things that is usually kept secret and carefully guarded by someone",
+          example: "Deep inside the cavern, they discovered a hidden <strong>hoard</strong> of glittering treasure guarded by the dragon." },
+        { word: "inadvertently", pos: "adv.",
+          def: "you do something by mistake or without realizing it; accidentally",
+          example: "She <strong>inadvertently</strong> revealed the surprise plan without realizing the birthday girl was standing right behind her." },
+      ],
+      quizBank: [
+        { prompt: "She <strong>______</strong> opened the old chest, afraid something might jump out.",
+          options: ["cautiously", "mighty", "distant", "sumptuous"], answer: "cautiously",
+          why: "<strong>Cautiously</strong> means very carefully — how you'd open a chest that might hold something surprising. <em>Mighty</em> means strong and powerful, and <em>sumptuous</em> means fancy and expensive-looking — neither fits." },
+        { prompt: "The hikers moved <strong>______</strong> along the narrow ledge, gripping the rock wall.",
+          options: ["proclaimed", "cautiously", "hoard", "marveled"], answer: "cautiously",
+          why: "<strong>Cautiously</strong> means very carefully, which is how hikers should move on a narrow ledge. <em>Proclaimed</em> means announced loudly, and <em>hoard</em> is a secret stash of treasure." },
+        { prompt: "Only a <strong>______</strong> of light came through the crack under the door.",
+          options: ["trickle", "hoard", "majestic", "distant"], answer: "trickle",
+          why: "<strong>Trickle</strong> means a small, slow flow — just enough light sneaking under a door. <em>Hoard</em> is a hidden pile of treasure, and <em>majestic</em> means impressive and beautiful." },
+        { prompt: "A <strong>______</strong> of sweat ran down his forehead during the race.",
+          options: ["mighty", "trickle", "sumptuous", "proclaimed"], answer: "trickle",
+          why: "<strong>Trickle</strong> describes a small, slow flow of liquid, like a thin line of sweat. <em>Mighty</em> means strong and powerful, and <em>sumptuous</em> means fancy-looking." },
+        { prompt: "Visitors <strong>______</strong> at the size of the dinosaur skeleton in the museum.",
+          options: ["marveled", "inadvertently", "hoard", "distant"], answer: "marveled",
+          why: "<strong>Marveled</strong> means felt amazed — exactly how visitors react to a huge dinosaur skeleton. <em>Inadvertently</em> means by accident, and <em>hoard</em> is a secret treasure pile." },
+        { prompt: "We <strong>______</strong> every time we watch the sunset over the ocean.",
+          options: ["marvel", "proclaim", "cautiously", "sumptuous"], answer: "marvel",
+          why: "To <strong>marvel</strong> means to feel amazed by something, like a beautiful sunset. <em>Proclaim</em> means to announce loudly, and <em>cautiously</em> means carefully." },
+        { prompt: "The <strong>______</strong> oak tree had stood in the field for two hundred years.",
+          options: ["mighty", "distant", "trickle", "inadvertently"], answer: "mighty",
+          why: "<strong>Mighty</strong> means strong and powerful — fitting for a tree that has survived two hundred years. <em>Distant</em> means far away, and <em>trickle</em> is a tiny flow of liquid." },
+        { prompt: "A <strong>______</strong> gust of wind knocked the tent right over.",
+          options: ["sumptuous", "mighty", "majestic", "hoard"], answer: "mighty",
+          why: "<strong>Mighty</strong> means strong and powerful, describing a forceful gust of wind. <em>Majestic</em> describes something impressive to look at, and <em>sumptuous</em> means fancy-looking — neither describes force." },
+        { prompt: "The sailors spotted a <strong>______</strong> shoreline just before sunset.",
+          options: ["distant", "mighty", "sumptuous", "proclaimed"], answer: "distant",
+          why: "<strong>Distant</strong> means far away — a shoreline seen just before sunset is far off. <em>Mighty</em> means strong and powerful, and <em>sumptuous</em> means fancy-looking." },
+        { prompt: "Thunder rumbled somewhere in the <strong>______</strong> hills.",
+          options: ["hoard", "cautiously", "distant", "marveled"], answer: "distant",
+          why: "<strong>Distant</strong> means far away, describing hills where thunder rumbles in the background. <em>Hoard</em> is a secret treasure pile, and <em>cautiously</em> means carefully." },
+        { prompt: "The teacher <strong>______</strong> that Friday would be a free reading day.",
+          options: ["proclaimed", "trickle", "marveled", "cautiously"], answer: "proclaimed",
+          why: "<strong>Proclaimed</strong> means announced loudly and officially — just what a teacher does to declare a special day. <em>Trickle</em> is a small flow of liquid, and <em>marveled</em> means felt amazed." },
+        { prompt: "The captain will <strong>______</strong> the ship's new course at noon.",
+          options: ["distant", "proclaim", "hoard", "sumptuous"], answer: "proclaim",
+          why: "To <strong>proclaim</strong> means to announce something clearly and officially, like a captain declaring a new course. <em>Distant</em> means far away, and <em>hoard</em> is a secret treasure pile." },
+        { prompt: "The <strong>______</strong> castle stood on the hill, towering over the village below.",
+          options: ["majestic", "mighty", "trickle", "inadvertently"], answer: "majestic",
+          why: "<strong>Majestic</strong> means impressive and beautiful, describing a grand castle on a hill. <em>Mighty</em> describes strength and power, and <em>trickle</em> is a tiny flow of liquid." },
+        { prompt: "Tourists photographed the <strong>______</strong> lion resting under the acacia tree.",
+          options: ["sumptuous", "distant", "majestic", "hoard"], answer: "majestic",
+          why: "<strong>Majestic</strong> means impressive and beautiful — a fitting word for a lion resting under a tree. <em>Sumptuous</em> describes fancy man-made things, and <em>hoard</em> is a secret treasure pile." },
+        { prompt: "The chef prepared a <strong>______</strong> feast for the wedding guests.",
+          options: ["sumptuous", "mighty", "cautiously", "distant"], answer: "sumptuous",
+          why: "<strong>Sumptuous</strong> means impressive and expensive-looking — a fitting word for a wedding feast. <em>Mighty</em> means strong and powerful, and <em>cautiously</em> means carefully." },
+        { prompt: "Velvet curtains and marble floors made the ballroom look <strong>______</strong>.",
+          options: ["majestic", "sumptuous", "trickle", "proclaimed"], answer: "sumptuous",
+          why: "<strong>Sumptuous</strong> describes something fancy and luxurious, like velvet and marble. <em>Majestic</em> describes grand, natural things like mountains, and <em>trickle</em> is a tiny flow of liquid." },
+        { prompt: "The dragon slept curled around its <strong>______</strong> of jewels.",
+          options: ["hoard", "marveled", "distant", "cautiously"], answer: "hoard",
+          why: "A <strong>hoard</strong> is a secret pile of valuable things — exactly what a dragon guards. <em>Marveled</em> means felt amazed, and <em>distant</em> means far away." },
+        { prompt: "Before winter, the ants built up a <strong>______</strong> of food underground.",
+          options: ["mighty", "hoard", "sumptuous", "inadvertently"], answer: "hoard",
+          why: "A <strong>hoard</strong> is a stash of things gathered and saved, like an ant colony's food supply. <em>Mighty</em> means strong and powerful, and <em>sumptuous</em> means fancy-looking." },
+        { prompt: "He <strong>______</strong> deleted his homework file while cleaning up his computer.",
+          options: ["inadvertently", "proclaimed", "majestic", "trickle"], answer: "inadvertently",
+          why: "<strong>Inadvertently</strong> means by mistake, without meaning to — deleting a file by accident. <em>Proclaimed</em> means announced on purpose, and <em>majestic</em> means impressive and beautiful." },
+        { prompt: "The waiter <strong>______</strong> brought the wrong dessert to our table.",
+          options: ["cautiously", "hoard", "inadvertently", "mighty"], answer: "inadvertently",
+          why: "<strong>Inadvertently</strong> means without meaning to — an accidental mix-up, like bringing the wrong dessert. <em>Cautiously</em> means carefully, on purpose, and <em>hoard</em> is a secret treasure pile." },
+        { prompt: "Which sentence uses <strong>cautiously</strong> correctly?",
+          options: ["He cautiously slammed the door as hard as he could.", "She read the warning label cautiously before taking the medicine.", "The dog ran cautiously across the busy highway.", "They cautiously shouted at the top of their lungs."],
+          answer: "She read the warning label cautiously before taking the medicine.",
+          why: "<strong>Cautiously</strong> means carefully, so reading a warning label with care fits. Slamming a door hard, running across a busy highway, and shouting loudly are reckless, not careful." },
+        { prompt: "Which situation best shows a <strong>trickle</strong>?",
+          options: ["A faucet dripping one drop at a time", "A dam bursting and flooding a town", "A fire hose blasting water", "Rain pouring down in a heavy storm"],
+          answer: "A faucet dripping one drop at a time",
+          why: "A <strong>trickle</strong> is a small, slow flow — a dripping faucet fits perfectly. The other choices describe large, fast, or powerful amounts of water." },
+        { prompt: "If you <strong>marveled</strong> at a magic trick, what were you feeling?",
+          options: ["Confusion about the rules", "Boredom while waiting", "Amazement and wonder", "Anger at being tricked"],
+          answer: "Amazement and wonder",
+          why: "To <strong>marvel</strong> means to feel amazed or full of wonder — exactly how most people feel watching a magic trick." },
+        { prompt: "Which of these would most likely be called <strong>mighty</strong>?",
+          options: ["A tiny kitten asleep on a pillow", "A gentle breeze on a summer day", "A charging elephant", "A single falling leaf"],
+          answer: "A charging elephant",
+          why: "<strong>Mighty</strong> means strong and powerful — a charging elephant shows real force. A sleeping kitten, a gentle breeze, and a falling leaf are all small or soft." },
+        { prompt: "Which sentence uses <strong>distant</strong> correctly?",
+          options: ["The distant photograph fell off the wall.", "I heard a distant train whistle from my backyard.", "She gave me a distant high five.", "He wore a distant hat to the party."],
+          answer: "I heard a distant train whistle from my backyard.",
+          why: "<strong>Distant</strong> means far away, so it fits a train whistle heard from far off. A photograph, a high five, and a hat aren't things that can be 'far away' in this sense." },
+        { prompt: "Which situation shows someone <strong>proclaiming</strong> something?",
+          options: ["Mumbling an answer under your breath", "A referee announcing the final score through a microphone", "Writing a private diary entry", "Nodding silently in agreement"],
+          answer: "A referee announcing the final score through a microphone",
+          why: "To <strong>proclaim</strong> means to announce something loudly and officially — exactly what a referee does with a microphone. The other choices are quiet or private." },
+        { prompt: "Which of the following would most likely be described as <strong>majestic</strong>?",
+          options: ["A crumpled piece of paper", "A soaring bald eagle against a clear sky", "A dirty puddle in the parking lot", "A worn-out pair of shoes"],
+          answer: "A soaring bald eagle against a clear sky",
+          why: "<strong>Majestic</strong> means impressive and beautiful — a soaring eagle fits that description. The other options are ordinary or unpleasant." },
+        { prompt: "Which sentence uses <strong>sumptuous</strong> correctly?",
+          options: ["The sumptuous banquet table overflowed with roasted meats and fresh fruit.", "The sumptuous trash can smelled terrible.", "His sumptuous socks had holes in them.", "The sumptuous parking lot was completely empty."],
+          answer: "The sumptuous banquet table overflowed with roasted meats and fresh fruit.",
+          why: "<strong>Sumptuous</strong> means impressive and luxurious — a banquet table overflowing with fine food fits perfectly. A trash can, worn socks, and an empty lot are not luxurious." },
+        { prompt: "Which situation describes a <strong>hoard</strong>?",
+          options: ["One coin sitting on a table", "A pirate's chest packed with gold and jewels, hidden away", "A single apple in a fruit bowl", "An empty jewelry box"],
+          answer: "A pirate's chest packed with gold and jewels, hidden away",
+          why: "A <strong>hoard</strong> is a large, carefully hidden collection of valuable things — a pirate's treasure chest is a classic example. The others describe just one item or nothing at all." },
+        { prompt: "Which sentence shows someone acting <strong>inadvertently</strong>?",
+          options: ["He carefully double-checked every answer before submitting the test.", "She planned her surprise party for months in advance.", "He accidentally sent the text to the wrong person.", "They intentionally rehearsed the speech ten times."],
+          answer: "He accidentally sent the text to the wrong person.",
+          why: "<strong>Inadvertently</strong> means without meaning to — sending a text to the wrong person by accident. The other choices describe careful, intentional actions." },
+
+        { prompt: "The nurse <strong>______</strong> removed the bandage so as not to hurt the patient.",
+          options: ["cautiously", "mighty", "sumptuous", "hoard"], answer: "cautiously",
+          why: "<strong>Cautiously</strong> means very carefully — removing a bandage gently to avoid pain. <em>Mighty</em> means strong and powerful, and <em>sumptuous</em> means fancy and expensive-looking — neither fits." },
+        { prompt: "He <strong>______</strong> tiptoed past the sleeping baby's room.",
+          options: ["distant", "cautiously", "proclaimed", "majestic"], answer: "cautiously",
+          why: "<strong>Cautiously</strong> means very carefully, matching the quiet tiptoeing past a sleeping baby. <em>Distant</em> means far away, and <em>proclaimed</em> means announced loudly — the opposite of tiptoeing quietly." },
+        { prompt: "The scientist <strong>______</strong> handled the bubbling chemicals in the lab.",
+          options: ["cautiously", "marveled", "trickle", "hoard"], answer: "cautiously",
+          why: "<strong>Cautiously</strong> means very carefully — exactly how you'd handle bubbling, possibly dangerous chemicals. <em>Marveled</em> means felt amazed, and <em>trickle</em> is a small flow of liquid." },
+        { prompt: "She <strong>______</strong> tested the water with her toe before jumping in.",
+          options: ["inadvertently", "mighty", "cautiously", "sumptuous"], answer: "cautiously",
+          why: "<strong>Cautiously</strong> means carefully, which is how you'd test water temperature before jumping in. <em>Inadvertently</em> means by accident, and <em>mighty</em> means strong and powerful." },
+        { prompt: "Only a <strong>______</strong> of visitors came to the museum on the rainy Monday.",
+          options: ["trickle", "hoard", "majestic", "proclaimed"], answer: "trickle",
+          why: "<strong>Trickle</strong> can describe a small, slow amount of something, like a handful of visitors on a quiet day. <em>Hoard</em> is a secret pile of treasure, and <em>majestic</em> means impressive and beautiful." },
+        { prompt: "A <strong>______</strong> of blood ran from the small cut on his knee.",
+          options: ["trickle", "mighty", "sumptuous", "distant"], answer: "trickle",
+          why: "<strong>Trickle</strong> means a small, slow flow of liquid — fitting for blood from a small cut. <em>Mighty</em> means strong and powerful, and <em>sumptuous</em> means fancy-looking." },
+        { prompt: "The leaky faucet let out a steady <strong>______</strong> all night long.",
+          options: ["hoard", "trickle", "majestic", "cautiously"], answer: "trickle",
+          why: "<strong>Trickle</strong> means a small, slow flow — just what a leaky faucet drips. <em>Hoard</em> is a secret treasure pile, and <em>majestic</em> means impressive and beautiful." },
+        { prompt: "Melting snow sent a <strong>______</strong> of water down the mountain path.",
+          options: ["mighty", "trickle", "proclaimed", "inadvertently"], answer: "trickle",
+          why: "<strong>Trickle</strong> means a small, slow flow of liquid, like melting snow seeping downhill. <em>Mighty</em> means strong and powerful, and <em>proclaimed</em> means announced loudly." },
+        { prompt: "The crowd <strong>______</strong> at the acrobat's daring flip high above the stage.",
+          options: ["marveled", "hoard", "distant", "cautiously"], answer: "marveled",
+          why: "<strong>Marveled</strong> means felt amazed — exactly how a crowd reacts to a daring stunt. <em>Hoard</em> is a secret treasure pile, and <em>distant</em> means far away." },
+        { prompt: "Scientists continue to <strong>______</strong> at how bees communicate through dance.",
+          options: ["marvel", "proclaim", "sumptuous", "hoard"], answer: "marvel",
+          why: "To <strong>marvel</strong> means to feel amazed by something, like the surprising way bees communicate. <em>Proclaim</em> means to announce loudly, and <em>sumptuous</em> means fancy-looking." },
+        { prompt: "I always <strong>______</strong> at how quickly my little sister learned to read.",
+          options: ["mighty", "marvel", "trickle", "distant"], answer: "marvel",
+          why: "To <strong>marvel</strong> means to feel amazed — impressed by a fast learner. <em>Mighty</em> means strong and powerful, and <em>trickle</em> is a small flow of liquid." },
+        { prompt: "The children <strong>______</strong> at the glowing jellyfish in the dark aquarium tank.",
+          options: ["marveled", "inadvertently", "majestic", "hoard"], answer: "marveled",
+          why: "<strong>Marveled</strong> means felt amazed — a natural reaction to glowing jellyfish. <em>Inadvertently</em> means by accident, and <em>majestic</em> describes the impressive thing itself, not the feeling." },
+        { prompt: "It took a <strong>______</strong> effort for the team to push the stalled bus off the road.",
+          options: ["mighty", "distant", "sumptuous", "hoard"], answer: "mighty",
+          why: "<strong>Mighty</strong> means strong and powerful — pushing a stalled bus takes real strength. <em>Distant</em> means far away, and <em>sumptuous</em> means fancy-looking." },
+        { prompt: "The knight swung his <strong>______</strong> sword and the crowd cheered.",
+          options: ["cautiously", "mighty", "trickle", "proclaimed"], answer: "mighty",
+          why: "<strong>Mighty</strong> means strong and powerful, describing a forceful sword swing. <em>Cautiously</em> means carefully, and <em>trickle</em> is a small flow of liquid — neither describes strength." },
+        { prompt: "A <strong>______</strong> roar echoed through the jungle as the lion announced its presence.",
+          options: ["distant", "mighty", "hoard", "inadvertently"], answer: "mighty",
+          why: "<strong>Mighty</strong> means strong and powerful, fitting a loud, forceful roar. <em>Distant</em> means far away, and <em>hoard</em> is a secret treasure pile." },
+        { prompt: "The <strong>______</strong> engines of the rocket shook the entire launch pad.",
+          options: ["sumptuous", "mighty", "majestic", "trickle"], answer: "mighty",
+          why: "<strong>Mighty</strong> means strong and powerful — engines strong enough to shake the ground. <em>Majestic</em> describes something impressive to look at, not raw power, and <em>trickle</em> is a small flow of liquid." },
+        { prompt: "You could just make out a <strong>______</strong> lighthouse blinking through the fog.",
+          options: ["distant", "hoard", "mighty", "sumptuous"], answer: "distant",
+          why: "<strong>Distant</strong> means far away — a lighthouse barely visible through fog is far off. <em>Hoard</em> is a secret treasure pile, and <em>mighty</em> means strong and powerful." },
+        { prompt: "The astronauts studied a <strong>______</strong> galaxy through the telescope.",
+          options: ["majestic", "distant", "proclaimed", "trickle"], answer: "distant",
+          why: "<strong>Distant</strong> means far away — a galaxy studied through a telescope is extremely far off. <em>Majestic</em> means impressive and beautiful, and <em>proclaimed</em> means announced loudly." },
+        { prompt: "Grandpa often talks about his childhood in a <strong>______</strong> country far across the sea.",
+          options: ["cautiously", "distant", "hoard", "marveled"], answer: "distant",
+          why: "<strong>Distant</strong> means far away — 'far across the sea' points right to it. <em>Cautiously</em> means carefully, and <em>hoard</em> is a secret treasure pile." },
+        { prompt: "A <strong>______</strong> dog barked somewhere on the other side of town.",
+          options: ["mighty", "sumptuous", "distant", "inadvertently"], answer: "distant",
+          why: "<strong>Distant</strong> means far away — a bark heard from across town is distant. <em>Mighty</em> means strong and powerful, and <em>sumptuous</em> means fancy-looking." },
+        { prompt: "The principal <strong>______</strong> that school would be closed due to the snowstorm.",
+          options: ["proclaimed", "trickle", "marveled", "cautiously"], answer: "proclaimed",
+          why: "<strong>Proclaimed</strong> means announced officially and clearly — exactly what a principal does over the intercom. <em>Trickle</em> is a small flow of liquid, and <em>marveled</em> means felt amazed." },
+        { prompt: "At the ceremony, the judge will <strong>______</strong> the winner of the contest.",
+          options: ["distant", "proclaim", "hoard", "sumptuous"], answer: "proclaim",
+          why: "To <strong>proclaim</strong> means to announce something officially, like naming a winner at a ceremony. <em>Distant</em> means far away, and <em>hoard</em> is a secret treasure pile." },
+        { prompt: "The town crier used to <strong>______</strong> the news in the village square each morning.",
+          options: ["mighty", "proclaim", "inadvertently", "majestic"], answer: "proclaim",
+          why: "To <strong>proclaim</strong> means to announce loudly in public — exactly a town crier's job. <em>Mighty</em> means strong and powerful, and <em>inadvertently</em> means by accident." },
+        { prompt: "The president <strong>______</strong> a national holiday to honor the astronauts.",
+          options: ["sumptuous", "proclaimed", "hoard", "distant"], answer: "proclaimed",
+          why: "<strong>Proclaimed</strong> means officially announced — a president declaring a holiday. <em>Sumptuous</em> means fancy-looking, and <em>hoard</em> is a secret treasure pile." },
+        { prompt: "The <strong>______</strong> redwood trees towered hundreds of feet above the hikers.",
+          options: ["majestic", "trickle", "cautiously", "hoard"], answer: "majestic",
+          why: "<strong>Majestic</strong> means impressive and beautiful, fitting towering ancient trees. <em>Trickle</em> is a small flow of liquid, and <em>cautiously</em> means carefully." },
+        { prompt: "Snow capped the <strong>______</strong> peaks of the mountain range.",
+          options: ["sumptuous", "majestic", "distant", "inadvertently"], answer: "majestic",
+          why: "<strong>Majestic</strong> means impressive and beautiful — grand, snow-capped mountains fit perfectly. <em>Sumptuous</em> describes fancy man-made things, and <em>inadvertently</em> means by accident." },
+        { prompt: "A <strong>______</strong> swan glided silently across the still lake.",
+          options: ["mighty", "majestic", "proclaimed", "hoard"], answer: "majestic",
+          why: "<strong>Majestic</strong> means impressive and beautiful, describing the swan's graceful glide. <em>Mighty</em> emphasizes strength rather than beauty, and <em>hoard</em> is a secret treasure pile." },
+        { prompt: "The palace's <strong>______</strong> staircase swept up three full floors.",
+          options: ["majestic", "trickle", "cautiously", "distant"], answer: "majestic",
+          why: "<strong>Majestic</strong> means impressive and beautiful — a grand staircase fits the word well. <em>Trickle</em> is a small flow of liquid, and <em>distant</em> means far away." },
+        { prompt: "The hotel served a <strong>______</strong> breakfast buffet with every food imaginable.",
+          options: ["sumptuous", "distant", "hoard", "cautiously"], answer: "sumptuous",
+          why: "<strong>Sumptuous</strong> means impressive and expensive-looking — a buffet with every food imaginable fits perfectly. <em>Distant</em> means far away, and <em>hoard</em> is a secret treasure pile." },
+        { prompt: "Guests admired the <strong>______</strong> silk gowns worn at the royal ball.",
+          options: ["mighty", "sumptuous", "trickle", "proclaimed"], answer: "sumptuous",
+          why: "<strong>Sumptuous</strong> means fancy and luxurious — silk gowns at a royal ball fit the word. <em>Mighty</em> means strong and powerful, and <em>trickle</em> is a small flow of liquid." },
+        { prompt: "Their new dining room felt <strong>______</strong> with its crystal chandelier and gold trim.",
+          options: ["sumptuous", "majestic", "inadvertently", "distant"], answer: "sumptuous",
+          why: "<strong>Sumptuous</strong> means fancy and luxurious — crystal and gold trim fit the word exactly. <em>Majestic</em> tends to describe grand, natural things, and <em>distant</em> means far away." },
+        { prompt: "The dessert table looked <strong>______</strong>, piled high with cakes and pastries.",
+          options: ["hoard", "sumptuous", "mighty", "cautiously"], answer: "sumptuous",
+          why: "<strong>Sumptuous</strong> means impressive and rich-looking — a table piled with cakes and pastries fits well. <em>Hoard</em> is a secret pile of treasure, and <em>mighty</em> means strong and powerful." },
+        { prompt: "Pirates were said to bury their <strong>______</strong> of gold on a hidden island.",
+          options: ["hoard", "trickle", "majestic", "distant"], answer: "hoard",
+          why: "A <strong>hoard</strong> is a secret pile of valuable things — a pirate's buried gold fits perfectly. <em>Trickle</em> is a small flow of liquid, and <em>majestic</em> means impressive and beautiful." },
+        { prompt: "The old miser kept a secret <strong>______</strong> of coins under his floorboards.",
+          options: ["mighty", "hoard", "cautiously", "proclaimed"], answer: "hoard",
+          why: "A <strong>hoard</strong> is a hidden pile of valuables, like coins kept secretly under the floor. <em>Mighty</em> means strong and powerful, and <em>proclaimed</em> means announced loudly." },
+        { prompt: "Chipmunks store a <strong>______</strong> of seeds in their burrow before winter.",
+          options: ["hoard", "sumptuous", "distant", "marveled"], answer: "hoard",
+          why: "A <strong>hoard</strong> is a stash of things gathered and saved — a chipmunk's stored seeds fit exactly. <em>Sumptuous</em> means fancy-looking, and <em>marveled</em> means felt amazed." },
+        { prompt: "Explorers finally found the ancient temple's hidden <strong>______</strong> of jewels.",
+          options: ["trickle", "hoard", "inadvertently", "majestic"], answer: "hoard",
+          why: "A <strong>hoard</strong> is a secret, guarded collection of valuables — the temple's hidden treasure. <em>Trickle</em> is a small flow of liquid, and <em>majestic</em> means impressive and beautiful." },
+        { prompt: "He <strong>______</strong> locked his keys inside the car while rushing to work.",
+          options: ["inadvertently", "majestic", "hoard", "distant"], answer: "inadvertently",
+          why: "<strong>Inadvertently</strong> means by mistake, without meaning to — locking keys inside by accident. <em>Majestic</em> means impressive and beautiful, and <em>hoard</em> is a secret treasure pile." },
+        { prompt: "The chef <strong>______</strong> added sugar instead of salt to the soup.",
+          options: ["cautiously", "inadvertently", "mighty", "proclaimed"], answer: "inadvertently",
+          why: "<strong>Inadvertently</strong> means by mistake — mixing up sugar and salt by accident. <em>Cautiously</em> means carefully, and <em>proclaimed</em> means announced loudly." },
+        { prompt: "She <strong>______</strong> left her phone on the bus after a long day.",
+          options: ["sumptuous", "trickle", "inadvertently", "majestic"], answer: "inadvertently",
+          why: "<strong>Inadvertently</strong> means without realizing it — forgetting a phone by accident. <em>Sumptuous</em> means fancy-looking, and <em>trickle</em> is a small flow of liquid." },
+        { prompt: "The player <strong>______</strong> tripped over the cone during practice.",
+          options: ["mighty", "inadvertently", "hoard", "distant"], answer: "inadvertently",
+          why: "<strong>Inadvertently</strong> means by accident — tripping without meaning to. <em>Mighty</em> means strong and powerful, and <em>hoard</em> is a secret treasure pile." },
+
+        { prompt: "Which sentence best shows someone acting <strong>cautiously</strong>?",
+          options: ["He drove cautiously through the school zone, watching for children.", "He cautiously threw the ball as hard as he could.", "She cautiously ran full speed down the stairs.", "They cautiously ignored the warning sign."],
+          answer: "He drove cautiously through the school zone, watching for children.",
+          why: "<strong>Cautiously</strong> means carefully, so driving slowly and watching for children fits. Throwing hard, running full speed, and ignoring a warning are all careless, not careful." },
+        { prompt: "If someone approaches a situation <strong>cautiously</strong>, what are they most likely doing?",
+          options: ["Rushing in without thinking", "Taking their time and watching for danger", "Getting angry and yelling", "Falling asleep"],
+          answer: "Taking their time and watching for danger",
+          why: "<strong>Cautiously</strong> means carefully — being alert and watching for danger, not rushing in or reacting with anger." },
+        { prompt: "Which best shows a <strong>trickle</strong> of something?",
+          options: ["A crowd of a thousand people arriving at once", "A single drop falling slowly, then another", "A tidal wave crashing on shore", "A packed stadium roaring at once"],
+          answer: "A single drop falling slowly, then another",
+          why: "A <strong>trickle</strong> is a small, slow flow — drops falling one at a time. The other choices describe huge, sudden amounts, the opposite of a trickle." },
+        { prompt: "If news <strong>trickles</strong> in, how is it most likely arriving?",
+          options: ["All at once in a sudden flood", "Never at all", "Slowly, bit by bit, over time", "Instantly through a loudspeaker"],
+          answer: "Slowly, bit by bit, over time",
+          why: "<strong>Trickle</strong> describes something arriving slowly and gradually, in small amounts — not all at once or instantly." },
+        { prompt: "Which situation shows someone <strong>marveling</strong> at something?",
+          options: ["Yawning through a boring lecture", "Gasping in wonder at a shooting star", "Complaining about the weather", "Falling asleep during a movie"],
+          answer: "Gasping in wonder at a shooting star",
+          why: "To <strong>marvel</strong> means to feel amazed or full of wonder — gasping at a shooting star is a perfect example. The other choices show boredom or annoyance." },
+        { prompt: "Which word means almost the same as <strong>marvel</strong>?",
+          options: ["Ignore", "Doubt", "Wonder", "Forget"],
+          answer: "Wonder",
+          why: "To <strong>marvel</strong> at something is to feel wonder or amazement about it." },
+        { prompt: "Which of these best fits the word <strong>mighty</strong>?",
+          options: ["A puppy learning to walk", "A hurricane strong enough to uproot trees", "A soft whisper", "A quiet library"],
+          answer: "A hurricane strong enough to uproot trees",
+          why: "<strong>Mighty</strong> means strong and powerful — a hurricane that uproots trees shows real force. The other choices are gentle or small." },
+        { prompt: "Which sentence uses <strong>mighty</strong> correctly?",
+          options: ["The mighty ant could barely lift the crumb.", "The mighty river carved a canyon over millions of years.", "Her mighty whisper could not be heard.", "The mighty feather drifted gently down."],
+          answer: "The mighty river carved a canyon over millions of years.",
+          why: "<strong>Mighty</strong> means strong and powerful — a river with enough force to carve a canyon fits. An ant struggling, a whisper, and a drifting feather all show weakness, not power." },
+        { prompt: "Which sentence uses <strong>distant</strong> correctly?",
+          options: ["I could barely see the distant island on the horizon.", "She gave me a distant cookie from the jar.", "The distant chair was right beside me.", "He wore a distant jacket to school."],
+          answer: "I could barely see the distant island on the horizon.",
+          why: "<strong>Distant</strong> means far away, so it fits an island barely visible on the horizon. A cookie, a chair 'right beside me,' and a jacket aren't things that are 'far away' in this sense." },
+        { prompt: "Which of these is an example of something <strong>distant</strong>?",
+          options: ["The book on your desk", "The pencil in your hand", "A star thousands of light-years away", "The chair you are sitting in"],
+          answer: "A star thousands of light-years away",
+          why: "<strong>Distant</strong> means far away — nothing is farther away than a star thousands of light-years off. The other choices are all things right next to you." },
+        { prompt: "Which situation best shows someone <strong>proclaiming</strong> something?",
+          options: ["A coach shouting the final score to the whole stadium", "A student passing a quiet note in class", "Someone reading silently in the library", "A person daydreaming during a meeting"],
+          answer: "A coach shouting the final score to the whole stadium",
+          why: "To <strong>proclaim</strong> means to announce something loudly and clearly so everyone knows. The other choices are quiet, private, or silent." },
+        { prompt: "Which word is closest in meaning to <strong>proclaim</strong>?",
+          options: ["Whisper", "Announce", "Hide", "Forget"],
+          answer: "Announce",
+          why: "To <strong>proclaim</strong> means to announce something officially and loudly." },
+        { prompt: "Which of these would most likely be called <strong>majestic</strong>?",
+          options: ["A crumpled napkin", "A grand cathedral with soaring stone arches", "A flat tire", "A paper cup"],
+          answer: "A grand cathedral with soaring stone arches",
+          why: "<strong>Majestic</strong> means impressive and beautiful — a grand cathedral fits perfectly. The other choices are small, ordinary objects." },
+        { prompt: "Which sentence uses <strong>majestic</strong> correctly?",
+          options: ["The majestic puddle splashed onto her shoes.", "The majestic waterfall roared over the cliff in a curtain of mist.", "The majestic sock had a hole in the toe.", "The majestic trash bag sat by the curb."],
+          answer: "The majestic waterfall roared over the cliff in a curtain of mist.",
+          why: "<strong>Majestic</strong> means impressive and beautiful — a grand, roaring waterfall fits the word well. A puddle, a sock, and a trash bag are ordinary, not majestic." },
+        { prompt: "Which situation best describes something <strong>sumptuous</strong>?",
+          options: ["A bare room with one folding chair", "A feast overflowing with rich, luxurious food", "A cracked, empty plate", "A plain glass of water"],
+          answer: "A feast overflowing with rich, luxurious food",
+          why: "<strong>Sumptuous</strong> means impressive and expensive-looking — a rich, overflowing feast fits perfectly. The other choices are plain or empty." },
+        { prompt: "Which word is closest in meaning to <strong>sumptuous</strong>?",
+          options: ["Plain", "Luxurious", "Broken", "Empty"],
+          answer: "Luxurious",
+          why: "<strong>Sumptuous</strong> means very fancy and luxurious." },
+        { prompt: "Which situation best describes a <strong>hoard</strong>?",
+          options: ["A single sock left on the floor", "A dragon's cave stuffed with piles of gold coins", "An empty backpack", "A single book on a shelf"],
+          answer: "A dragon's cave stuffed with piles of gold coins",
+          why: "A <strong>hoard</strong> is a large, secretly kept collection of valuable things — a dragon's gold fits perfectly. The other choices describe a single item or nothing at all." },
+        { prompt: "Which word is closest in meaning to <strong>hoard</strong>?",
+          options: ["Stash", "Loss", "Gift", "Trash"],
+          answer: "Stash",
+          why: "A <strong>hoard</strong> is a stash — a secret, carefully kept collection of valuable things." },
+        { prompt: "Which sentence shows someone acting <strong>inadvertently</strong>?",
+          options: ["He carefully planned his outfit the night before.", "She accidentally pressed the wrong button and closed the whole document.", "They intentionally skipped the last step.", "He read the instructions three times before starting."],
+          answer: "She accidentally pressed the wrong button and closed the whole document.",
+          why: "<strong>Inadvertently</strong> means without meaning to — an accident, like closing a document by mistake. The other choices describe careful, intentional actions." },
+        { prompt: "Which word is closest in meaning to <strong>inadvertently</strong>?",
+          options: ["On purpose", "Accidentally", "Slowly", "Loudly"],
+          answer: "Accidentally",
+          why: "<strong>Inadvertently</strong> means accidentally, without meaning to." },
+      ],
+    },
+    // __MORE_STORIES__
+  };
+
+  // =========================================================================
   // NAVIGATION
   // =========================================================================
   const subjects = [
     { id: "vocab", icon: "📖", name: "Vocabulary Workshop", status: "Units 1–18 ready", enabled: true },
-    { id: "reading", icon: "📚", name: "Reading", status: "Coming soon", enabled: false },
+    { id: "reading", icon: "📚", name: "Reading", status: "Story 1 ready", enabled: true },
     { id: "math", icon: "🔢", name: "Math", status: "Coming soon", enabled: false },
     { id: "grammar", icon: "✏️", name: "Grammar", status: "Coming soon", enabled: false },
     { id: "social", icon: "🌍", name: "Social Studies", status: "Coming soon", enabled: false },
@@ -2666,6 +3051,14 @@
     id, icon: String(i + 1), name: UNITS[id].name,
     status: UNITS[id].words.length + " words ready", enabled: true,
   }));
+
+  const stories = Object.keys(STORIES).map((id, i) => ({
+    id, icon: "📖", name: STORIES[id].name,
+    status: STORIES[id].words.length + " words ready", enabled: true,
+  }));
+
+  let currentStory = "story1";
+  function S() { return STORIES[currentStory]; }
 
   let currentUnit = "unit1";
   function U() { return UNITS[currentUnit]; }
@@ -2694,6 +3087,8 @@
     navStack.push({ id: "screen-home", title: "Grade 4 Learning Hub" });
     if (subj.id === "vocab") {
       showScreen("screen-vocab", "Vocabulary Workshop");
+    } else if (subj.id === "reading") {
+      showScreen("screen-reading", "Reading");
     } else {
       document.getElementById("placeholderSubject").textContent = subj.name;
       showScreen("screen-placeholder", subj.name);
@@ -2710,6 +3105,19 @@
     } else {
       document.getElementById("placeholderSubject").textContent = "Vocabulary Workshop " + unit.name;
       showScreen("screen-placeholder", unit.name);
+    }
+  }
+
+  function openStory(story) {
+    navStack.push({ id: "screen-reading", title: "Reading" });
+    if (story.enabled) {
+      currentStory = story.id;
+      renderStoryContent();
+      showStoryTab("definition");
+      showScreen("screen-story", "Reading — " + story.name);
+    } else {
+      document.getElementById("placeholderSubject").textContent = story.name;
+      showScreen("screen-placeholder", story.name);
     }
   }
 
@@ -2734,6 +3142,45 @@
     document.querySelectorAll(".tab-btn").forEach(b => b.classList.toggle("active", b.dataset.tab === tab));
     document.querySelectorAll(".unit-tab").forEach(el => el.style.display = "none");
     document.getElementById("unit-" + tab).style.display = "block";
+  }
+
+  // =========================================================================
+  // READING: STORY CONTENT (definition, quiz)
+  // =========================================================================
+  function showStoryTab(tab) {
+    document.querySelectorAll("[data-story-tab]").forEach(b => b.classList.toggle("active", b.dataset.storyTab === tab));
+    document.querySelectorAll(".story-tab").forEach(el => el.style.display = "none");
+    document.getElementById("story-" + tab).style.display = "block";
+    if (tab === "quiz") renderStoryQuiz(); // fresh random set from the question bank every time
+  }
+
+  function renderStoryContent() {
+    document.getElementById("storyDefBody").innerHTML = S().words.map(w =>
+      `<tr><td><strong>${w.word}</strong><br><span class="pos">(${w.pos})</span></td><td>${w.def}</td><td>${w.example}</td></tr>`
+    ).join("");
+    renderStoryCards();
+  }
+
+  function renderStoryCards(words) {
+    document.getElementById("storyCardGrid").innerHTML = (words || S().words).map(w => `
+      <div class="flip-card" onclick="this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="flip-front"><h4>${w.word}</h4><span>(${w.pos}) &mdash; Tap to flip</span></div>
+          <div class="flip-back"><strong>${w.def}</strong><br><br><em>${w.example}</em></div>
+        </div>
+      </div>
+    `).join("");
+  }
+
+  function shuffleStoryCards() {
+    renderStoryCards(shuffle(S().words)); // also resets any flipped cards
+  }
+
+  // How many questions to pull from the story's quiz bank per attempt.
+  const STORY_QUIZ_SIZE = 30;
+
+  function renderStoryQuiz() {
+    renderMCQ("storyQuizQs", "storyQuiz", shuffle(S().quizBank).slice(0, STORY_QUIZ_SIZE));
   }
 
   // =========================================================================
@@ -2875,7 +3322,9 @@
     updateScore(setId);
     document.getElementById(qsId).innerHTML = rendered.map((q, i) => {
       const key = qsId + "-" + i;
-      mcqInfo[key] = { letter: LETTERS[q.correctIdx], answer: q.answer, why: q.why, set: setId, prompt: q.prompt, unitName: U().name };
+      mcqInfo[key] = setId === "storyQuiz"
+        ? { letter: LETTERS[q.correctIdx], answer: q.answer, why: q.why, set: setId, prompt: q.prompt, unitName: S().name, section: "Reading" }
+        : { letter: LETTERS[q.correctIdx], answer: q.answer, why: q.why, set: setId, prompt: q.prompt, unitName: U().name };
       const btns = q.opts.map((o, j) =>
         `<button class="opt-btn" data-correct="${o === q.answer ? 1 : 0}" data-opt="${o}" onclick="pickAnswer(this, '${key}', ${o === q.answer})"><span class="letter">${LETTERS[j]}</span>${o}</button>`
       ).join("");
@@ -3064,7 +3513,7 @@
   // =========================================================================
   // ATTEMPT LOG + EXCEL EXPORT
   // =========================================================================
-  const SET_NAMES = { fill: "Fill in the Blank", syn: "Synonyms", ant: "Antonyms" };
+  const SET_NAMES = { fill: "Fill in the Blank", syn: "Synonyms", ant: "Antonyms", storyQuiz: "Vocabulary Quiz" };
   let attemptLog = [];
   try { attemptLog = JSON.parse(localStorage.getItem("g4hub-log")) || []; } catch (e) {}
 
@@ -3082,7 +3531,7 @@
     attemptLog.push({
       time: now.getFullYear() + "-" + String(now.getMonth()+1).padStart(2,"0") + "-" + String(now.getDate()).padStart(2,"0")
         + " " + String(now.getHours()).padStart(2,"0") + ":" + String(now.getMinutes()).padStart(2,"0"),
-      section: "Vocabulary Workshop",
+      section: info.section || "Vocabulary Workshop",
       unit: info.unitName || "",
       type: SET_NAMES[info.set] || info.set,
       question: stripHtml(info.prompt),
@@ -3132,6 +3581,7 @@
   // =========================================================================
   renderGrid("subjectGrid", subjects, openSubject);
   renderGrid("unitGrid", units, openUnit);
+  renderGrid("storyGrid", stories, openStory);
   document.getElementById("printUnit").innerHTML =
     Object.keys(UNITS).map(id => `<option value="${id}">${UNITS[id].name}</option>`).join("");
   renderUnitContent();
