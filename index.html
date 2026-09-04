@@ -164,6 +164,33 @@
     background: none; border: 1px solid var(--border); border-radius: 8px;
     padding: 8px 14px; cursor: pointer; font-size: 0.88rem; color: var(--muted); margin-bottom: 14px;
   }
+
+  .bar-model-hint { font-size: 0.85rem; color: var(--muted); margin: 8px 0 6px; }
+  .bar-model {
+    background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+    padding: 12px 14px 6px; margin: 0 0 10px;
+  }
+  .bar-row { display: flex; align-items: stretch; margin-bottom: 6px; flex-wrap: nowrap; }
+  .bar-row .bar-label {
+    width: 92px; flex-shrink: 0; font-size: 0.82rem; color: var(--muted);
+    display: flex; align-items: center; line-height: 1.2;
+  }
+  .bar-seg {
+    border: 2px dashed var(--muted); background: repeating-linear-gradient(45deg, #fff, #fff 6px, #f4f1ec 6px, #f4f1ec 12px);
+    color: var(--muted); display: flex; align-items: center; justify-content: center; text-align: center;
+    font-size: 0.78rem; padding: 6px 4px; margin-right: 3px; border-radius: 4px;
+    min-width: 46px; min-height: 30px; line-height: 1.25;
+  }
+  .bar-seg.target {
+    border-color: var(--primary); background: repeating-linear-gradient(45deg, #fff, #fff 6px, #fbf3ea 6px, #fbf3ea 12px);
+    color: var(--primary-dark); font-weight: 700;
+  }
+  .bar-note { font-size: 0.85rem; color: var(--text); margin: 2px 0 10px 0; }
+  .bar-blank-inline {
+    display: inline-block; min-width: 34px; border: 2px dashed var(--primary);
+    border-radius: 4px; padding: 1px 8px; font-weight: 700; color: var(--primary-dark);
+    background: #fbf3ea; text-align: center;
+  }
   .practice-back:hover { color: var(--primary); border-color: var(--primary); }
   .set-controls {
     display: flex; flex-wrap: wrap; align-items: center; gap: 12px;
@@ -198,6 +225,7 @@
   <h1 id="header-title">Grade 4 Learning Hub</h1>
   <div style="display:flex; align-items:center; gap:12px">
     <span class="score-badge" id="globalScore"></span>
+    <button class="export-btn" onclick="openPrintScreen()" title="Download and print practice questions for any section">🖨 Print</button>
     <button class="export-btn" onclick="exportLog()" title="Download an Excel log of all attempted questions">⬇ Export</button>
     <button class="back-btn" id="backBtn" onclick="goBack()">&larr; Back</button>
   </div>
@@ -219,20 +247,47 @@
       <p class="intro">Choose what to print. Selected question sets print as a worksheet, with the answer key on its own page at the end.</p>
       <div class="print-field">
         <span>Section:</span>
-        <select id="printSection"><option value="vocab">Vocabulary Workshop</option></select>
+        <select id="printSection" onchange="updatePrintFields()">
+          <option value="vocab">Vocabulary Workshop</option>
+          <option value="reading">Reading</option>
+          <option value="math">Math</option>
+          <option value="grammar">ENG Grammar</option>
+        </select>
       </div>
-      <div class="print-field">
+      <div class="print-field" id="printUnitField">
         <span>Unit:</span>
         <select id="printUnit">
           <option value="unit1">Unit 1</option>
           <option value="unit2">Unit 2</option>
         </select>
       </div>
-      <div class="print-field">
+      <div class="print-field" id="printStoryField" style="display:none">
+        <span>Story:</span>
+        <select id="printStory"></select>
+      </div>
+      <div class="print-field" id="printChapterField" style="display:none">
+        <span>Chapter:</span>
+        <select id="printChapter"></select>
+      </div>
+      <div class="print-field" id="printGrammarUnitField" style="display:none">
+        <span>Unit:</span>
+        <select id="printGrammarUnit"></select>
+      </div>
+      <div class="print-field" id="printVocabTypesField">
         <span>Question types:</span>
         <label><input type="checkbox" id="pt-fill" checked> Fill in the Blank</label>
         <label><input type="checkbox" id="pt-syn" checked> Synonyms</label>
         <label><input type="checkbox" id="pt-ant" checked> Antonyms</label>
+      </div>
+      <div class="print-field" id="printCountField" style="display:none">
+        <span># of Questions:</span>
+        <select id="printCount">
+          <option value="10">10</option>
+          <option value="20">20</option>
+          <option value="30" selected>30</option>
+          <option value="60">60</option>
+          <option value="all">All</option>
+        </select>
       </div>
       <div class="print-field">
         <span>Answer key:</span>
@@ -357,6 +412,52 @@
       <div class="practice-block">
         <h3>Vocabulary Quiz</h3>
         <div id="storyQuizQs"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MATH: CHAPTER LIST -->
+  <section class="screen" id="screen-math">
+    <p class="intro">Choose a chapter.</p>
+    <div class="subject-grid" id="chapterGrid"></div>
+  </section>
+
+  <!-- MATH: CHAPTER SCREEN (shared by all chapters) -->
+  <section class="screen" id="screen-chapter">
+    <div class="set-controls">
+      <span class="score-pill" id="chapterQuiz-score"></span>
+    </div>
+    <div class="practice-block">
+      <h3 id="chapterQuizTitle">Chapter Quiz</h3>
+      <div id="chapterQuizQs"></div>
+    </div>
+  </section>
+
+  <!-- ENG GRAMMAR: UNIT LIST -->
+  <section class="screen" id="screen-grammar">
+    <p class="intro">Choose a unit.</p>
+    <div class="subject-grid" id="grammarUnitGrid"></div>
+  </section>
+
+  <!-- ENG GRAMMAR: UNIT SCREEN (shared by all units) -->
+  <section class="screen" id="screen-grammarunit">
+    <div class="tabs">
+      <button class="tab-btn active" data-grammar-tab="lesson" onclick="showGrammarTab('lesson')">Lesson</button>
+      <button class="tab-btn" data-grammar-tab="quiz" onclick="showGrammarTab('quiz')">Quiz</button>
+    </div>
+
+    <div id="grammarunit-lesson" class="grammarunit-tab">
+      <p class="intro">Read each rule card, then look at the example. Try covering the card and explaining the rule in your own words.</p>
+      <div id="grammarLessonCards"></div>
+    </div>
+
+    <div id="grammarunit-quiz" class="grammarunit-tab" style="display:none">
+      <div class="set-controls">
+        <span class="score-pill" id="grammarUnitQuiz-score"></span>
+      </div>
+      <div class="practice-block">
+        <h3 id="grammarUnitQuizTitle">Unit Quiz</h3>
+        <div id="grammarUnitQuizQs"></div>
       </div>
     </div>
   </section>
@@ -3035,13 +3136,1090 @@
   };
 
   // =========================================================================
+  // MATH: CHAPTER DATA
+  // =========================================================================
+  const MATH_CHAPTERS = {
+    chapter1: {
+      name: "Chapter 1: Working with Whole Numbers",
+      quizBank: [
+        { prompt: "Which number is <strong>seventy-two thousand, six</strong> written in standard form?",
+          options: ["72,006", "72,060", "720,006", "72,600"], answer: "72,006",
+          why: "&ldquo;Seventy-two thousand&rdquo; is 72,000; add &ldquo;six&rdquo; ones: 72,000 + 6 = <strong>72,006</strong>." },
+        { prompt: "Which number is <strong>three hundred forty thousand, one hundred fifteen</strong> written in standard form?",
+          options: ["340,115", "340,015", "34,115", "304,115"], answer: "340,115",
+          why: "&ldquo;Three hundred forty thousand&rdquo; is 340,000; add &ldquo;one hundred fifteen&rdquo;: 340,000 + 115 = <strong>340,115</strong>." },
+        { prompt: "Which is the correct word form of <strong>84,507</strong>?",
+          options: ["eighty-four thousand, five hundred seven", "eight thousand, four hundred fifty-seven", "eighty-four thousand, fifty-seven", "eighty-four thousand, five hundred seventy"],
+          answer: "eighty-four thousand, five hundred seven",
+          why: "84,507 = 84,000 + 500 + 7 = <strong>eighty-four thousand, five hundred seven</strong>." },
+        { prompt: "Which is the correct word form of <strong>216,908</strong>?",
+          options: ["two hundred sixteen thousand, nine hundred eight", "twenty-one thousand, six hundred nine", "two hundred sixteen thousand, ninety-eight", "two hundred sixty thousand, nine hundred eight"],
+          answer: "two hundred sixteen thousand, nine hundred eight",
+          why: "216,908 = 216,000 + 900 + 8 = <strong>two hundred sixteen thousand, nine hundred eight</strong>." },
+        { prompt: "In <strong>58,342</strong>, what is the value of the digit 5?",
+          options: ["5", "500", "5,000", "50,000"], answer: "50,000",
+          why: "The 5 is in the ten thousands place, so its value is <strong>50,000</strong>." },
+        { prompt: "In <strong>726,914</strong>, which digit is in the hundred thousands place?",
+          options: ["7", "2", "6", "9"], answer: "7",
+          why: "Counting place values from the right: 4 ones, 1 ten, 9 hundreds, 6 thousands, 2 ten thousands, 7 hundred thousands. The <strong>7</strong> is in the hundred thousands place." },
+        { prompt: "In <strong>493,057</strong>, what is the value of the digit 9?",
+          options: ["9", "90", "9,000", "90,000"], answer: "90,000",
+          why: "The 9 is in the ten thousands place, so its value is <strong>90,000</strong>." },
+        { prompt: "Which expanded form matches <strong>62,438</strong>?",
+          options: ["60,000 + 2,000 + 400 + 30 + 8", "6,000 + 2,000 + 400 + 30 + 8", "60,000 + 2,000 + 40 + 3 + 8", "60,000 + 200 + 400 + 30 + 8"],
+          answer: "60,000 + 2,000 + 400 + 30 + 8",
+          why: "62,438 = <strong>60,000 + 2,000 + 400 + 30 + 8</strong> — each digit multiplied by its place value." },
+        { prompt: "150,000 + 30,000 + 900 + 20 + 4 equals which number?",
+          options: ["180,924", "153,924", "180,294", "18,924"], answer: "180,924",
+          why: "150,000 + 30,000 = 180,000; 180,000 + 900 + 20 + 4 = <strong>180,924</strong>." },
+        { prompt: "Which comparison is correct?",
+          options: ["47,285 &gt; 47,825", "47,825 &gt; 47,285", "47,285 = 47,825", "47,825 &lt; 47,285"],
+          answer: "47,825 &gt; 47,285",
+          why: "Comparing digit by digit, 47,825 has an 8 in the hundreds place while 47,285 has a 2 there, so <strong>47,825 &gt; 47,285</strong>." },
+        { prompt: "Which comparison is correct?",
+          options: ["310,462 &lt; 309,999", "309,999 &gt; 310,462", "310,462 &gt; 309,999", "310,462 = 309,999"],
+          answer: "310,462 &gt; 309,999",
+          why: "Both numbers have a 3 in the hundred thousands place, but 310,462 has a 1 in the ten thousands place while 309,999 has a 0 there, so <strong>310,462 &gt; 309,999</strong>." },
+        { prompt: "Order these numbers from greatest to least: 56,234&nbsp;&nbsp; 56,432&nbsp;&nbsp; 54,999&nbsp;&nbsp; 56,199",
+          options: ["56,432, 56,234, 56,199, 54,999", "54,999, 56,199, 56,234, 56,432", "56,234, 56,432, 56,199, 54,999", "56,432, 54,999, 56,234, 56,199"],
+          answer: "56,432, 56,234, 56,199, 54,999",
+          why: "Comparing the numbers: <strong>56,432</strong> is greatest, then 56,234, then 56,199, then 54,999 is least." },
+        { prompt: "Order these numbers from least to greatest: 128,405&nbsp;&nbsp; 128,045&nbsp;&nbsp; 129,000&nbsp;&nbsp; 127,999",
+          options: ["127,999, 128,045, 128,405, 129,000", "129,000, 128,405, 128,045, 127,999", "128,045, 127,999, 128,405, 129,000", "127,999, 128,405, 129,000, 128,045"],
+          answer: "127,999, 128,045, 128,405, 129,000",
+          why: "From least to greatest: 127,999 &lt; 128,045 &lt; 128,405 &lt; <strong>129,000</strong>." },
+        { prompt: "What is the missing number in this pattern? 45,200&nbsp;&nbsp; 44,200&nbsp;&nbsp; 43,200&nbsp;&nbsp; 42,200&nbsp;&nbsp; ______",
+          options: ["41,200", "41,000", "40,200", "42,000"], answer: "41,200",
+          why: "Each number decreases by 1,000, so 42,200 − 1,000 = <strong>41,200</strong>." },
+        { prompt: "What is the missing number in this pattern? 18,500&nbsp;&nbsp; 19,000&nbsp;&nbsp; 19,500&nbsp;&nbsp; ______&nbsp;&nbsp; 20,500",
+          options: ["20,000", "19,750", "20,250", "19,900"], answer: "20,000",
+          why: "Each number increases by 500, so 19,500 + 500 = <strong>20,000</strong>." },
+        { prompt: "Start from 7 and use the rule &ldquo;add 15.&rdquo; What is the 4th number in the pattern?",
+          options: ["37", "52", "22", "45"], answer: "52",
+          why: "The pattern is 7, 22, 37, <strong>52</strong>, ... — adding 15 each time." },
+        { prompt: "Round <strong>6,482</strong> to the nearest thousand.",
+          options: ["6,000", "7,000", "6,500", "6,400"], answer: "6,000",
+          why: "The hundreds digit is 4, which is less than 5, so round down to <strong>6,000</strong>." },
+        { prompt: "Round <strong>24,758</strong> to the nearest thousand.",
+          options: ["24,000", "25,000", "24,700", "24,800"], answer: "25,000",
+          why: "The hundreds digit is 7, which is 5 or more, so round up to <strong>25,000</strong>." },
+        { prompt: "What is 8,246 + 3,579?",
+          options: ["11,825", "11,725", "12,825", "11,815"], answer: "11,825",
+          why: "8,246 + 3,579 = <strong>11,825</strong>. (Estimate: 8,000 + 4,000 = 12,000 — close to 11,825, so it's reasonable.)" },
+        { prompt: "What is 62,153 − 27,486?",
+          options: ["34,667", "35,667", "34,777", "24,667"], answer: "34,667",
+          why: "62,153 − 27,486 = <strong>34,667</strong>. (Estimate: 62,000 − 27,000 = 35,000 — close to 34,667, so it's reasonable.)" },
+        { prompt: "What is 145,872 + 68,459?",
+          options: ["214,331", "213,331", "214,431", "204,331"], answer: "214,331",
+          why: "145,872 + 68,459 = <strong>214,331</strong>. (Estimate: 146,000 + 68,000 = 214,000 — close to 214,331, so it's reasonable.)" },
+        { prompt: "A bakery sold 4,825 muffins in March. It sold 1,340 more muffins in April than in March. How many muffins did the bakery sell in April?",
+          options: ["6,165", "5,165", "6,265", "3,485"], answer: "6,165",
+          why: "April's sales = March's sales + 1,340 = 4,825 + 1,340 = <strong>6,165</strong> muffins.",
+          barModel: `<div class="bar-model">
+            <div class="bar-row"><span class="bar-label">March</span><div class="bar-seg" style="width:160px">&nbsp;</div></div>
+            <div class="bar-row"><span class="bar-label">April</span><div class="bar-seg" style="width:160px">same as March</div><div class="bar-seg" style="width:60px">extra</div></div>
+          </div>
+          <p class="bar-note">Fill in each box with a number from the problem. April's muffins sold = <span class="bar-blank-inline">?</span></p>` },
+        { prompt: "A warehouse had 18,600 boxes. It shipped out 4,250 boxes on Monday and 3,975 boxes on Tuesday. How many boxes were left?",
+          options: ["10,375", "10,475", "11,375", "10,175"], answer: "10,375",
+          why: "Total shipped = 4,250 + 3,975 = 8,225. Boxes left = 18,600 − 8,225 = <strong>10,375</strong>.",
+          barModel: `<div class="bar-model">
+            <div class="bar-row"><span class="bar-label">Total boxes</span><div class="bar-seg" style="width:230px">&nbsp;</div></div>
+            <div class="bar-row"><span class="bar-label">&nbsp;</span><div class="bar-seg" style="width:75px">Mon</div><div class="bar-seg" style="width:70px">Tue</div><div class="bar-seg target" style="width:85px">Left ?</div></div>
+          </div>
+          <p class="bar-note">Fill in each box with a number from the problem. Boxes shipped in all = <span class="bar-blank-inline">?</span> &nbsp;&bull;&nbsp; Boxes left = <span class="bar-blank-inline">?</span></p>` },
+        { prompt: "Store A sold 12,480 toy cars last year. Store A sold 3,215 more toy cars than Store B. How many toy cars did the two stores sell in all?",
+          options: ["21,745", "21,695", "22,745", "21,845"], answer: "21,745",
+          why: "Store B sold 12,480 − 3,215 = 9,265 toy cars. Together they sold 12,480 + 9,265 = <strong>21,745</strong> toy cars.",
+          barModel: `<div class="bar-model">
+            <div class="bar-row"><span class="bar-label">Store A</span><div class="bar-seg" style="width:190px">&nbsp;</div></div>
+            <div class="bar-row"><span class="bar-label">Store B</span><div class="bar-seg target" style="width:150px">Store B ?</div><div class="bar-seg" style="width:40px">extra</div></div>
+          </div>
+          <p class="bar-note">Fill in each box with a number from the problem. Store B's toy cars = <span class="bar-blank-inline">?</span> &nbsp;&bull;&nbsp; Total sold = <span class="bar-blank-inline">?</span></p>` },
+        { prompt: "A zoo had 82,340 visitors in June. There were 15,670 fewer visitors in July than in June. In August, there were 9,215 more visitors than the total in June and July. How many visitors were there in August?",
+          options: ["158,225", "157,225", "159,225", "148,225"], answer: "158,225",
+          why: "July had 82,340 − 15,670 = 66,670 visitors. June and July together had 82,340 + 66,670 = 149,010 visitors. August had 149,010 + 9,215 = <strong>158,225</strong> visitors.",
+          barModel: `<div class="bar-model">
+            <div class="bar-row"><span class="bar-label">June</span><div class="bar-seg" style="width:210px">&nbsp;</div></div>
+            <div class="bar-row"><span class="bar-label">July</span><div class="bar-seg target" style="width:170px">July ?</div><div class="bar-seg" style="width:40px">fewer</div></div>
+            <div class="bar-row"><span class="bar-label">August</span><div class="bar-seg" style="width:210px">June</div><div class="bar-seg" style="width:170px">July</div><div class="bar-seg" style="width:50px">extra</div></div>
+          </div>
+          <p class="bar-note">Fill in each box with a number from the problem. July visitors = <span class="bar-blank-inline">?</span> &nbsp;&bull;&nbsp; June + July = <span class="bar-blank-inline">?</span> &nbsp;&bull;&nbsp; August visitors = <span class="bar-blank-inline">?</span></p>` },
+        { prompt: "Maria, Josh, and Ben played a trivia game. Maria scored 6,240 points and Josh scored 2,815 points. Their total score was 3,190 points more than Ben's score. What was Ben's score?",
+          options: ["5,865", "5,965", "5,755", "6,865"], answer: "5,865",
+          why: "Maria and Josh scored 6,240 + 2,815 = 9,055 points together. Since that is 3,190 more than Ben's score, Ben scored 9,055 − 3,190 = <strong>5,865</strong> points.",
+          barModel: `<div class="bar-model">
+            <div class="bar-row"><span class="bar-label">Maria &amp; Josh</span><div class="bar-seg" style="width:150px">Maria</div><div class="bar-seg" style="width:75px">Josh</div></div>
+            <div class="bar-row"><span class="bar-label">Ben</span><div class="bar-seg target" style="width:180px">Ben ?</div><div class="bar-seg" style="width:40px">extra</div></div>
+          </div>
+          <p class="bar-note">Fill in each box with a number from the problem. Maria + Josh's total = <span class="bar-blank-inline">?</span> &nbsp;&bull;&nbsp; Ben's score = <span class="bar-blank-inline">?</span></p>` },
+        { prompt: "A farm produced 5,180 kilograms of pears and 14,600 kilograms of red and yellow apples combined. The mass of pears was 2,075 kilograms more than the mass of red apples. What was the mass of yellow apples produced?",
+          options: ["11,495", "11,395", "11,595", "9,420"], answer: "11,495",
+          why: "Red apples' mass = 5,180 − 2,075 = 3,105 kilograms. Yellow apples' mass = 14,600 − 3,105 = <strong>11,495</strong> kilograms.",
+          barModel: `<div class="bar-model">
+            <div class="bar-row"><span class="bar-label">Pears</span><div class="bar-seg" style="width:115px">&nbsp;</div></div>
+            <div class="bar-row"><span class="bar-label">Red apples</span><div class="bar-seg target" style="width:85px">Red ?</div><div class="bar-seg" style="width:30px">extra</div></div>
+            <div class="bar-row"><span class="bar-label">All apples</span><div class="bar-seg" style="width:85px">Red</div><div class="bar-seg target" style="width:170px">Yellow ?</div></div>
+          </div>
+          <p class="bar-note">Fill in each box with a number from the problem. Red apples' mass = <span class="bar-blank-inline">?</span> &nbsp;&bull;&nbsp; Yellow apples' mass = <span class="bar-blank-inline">?</span></p>` },
+        { prompt: "Which number makes the comparison true? ______ &gt; 73,406",
+          options: ["73,046", "73,460", "72,999", "73,400"], answer: "73,460",
+          why: "<strong>73,460</strong> is greater than 73,406 because in the tens place, 6 &gt; 0. The other choices are all less than or equal to 73,406." },
+        { prompt: "In which number is the value of the digit 4 <strong>ten times</strong> the value of the digit 4 in 352,140?",
+          options: ["84,215", "147,632", "693,418", "214,908"], answer: "693,418",
+          why: "In 352,140, the digit 4 is in the tens place, so its value is 40. Ten times 40 is 400. In <strong>693,418</strong>, the digit 4 is in the hundreds place, so its value is 400 — exactly ten times as much." },
+        { prompt: "Is this equation true or false? 512 − 289 = 612 − 389",
+          options: ["True — both sides equal 223.", "False — the left side is greater.", "False — the right side is greater.", "True — both sides equal 200."],
+          answer: "True — both sides equal 223.",
+          why: "512 − 289 = 223 and 612 − 389 = 223. Both numbers on the right side of each equation increased by exactly 100 from the left, so the difference stays the same — the equation is <strong>true</strong>." },
+
+        { prompt: "Which number is <strong>sixty-one thousand, forty</strong> written in standard form?",
+          options: ["61,040", "61,400", "610,040", "61,004"], answer: "61,040",
+          why: "&ldquo;Sixty-one thousand&rdquo; is 61,000; add &ldquo;forty&rdquo;: 61,000 + 40 = <strong>61,040</strong>." },
+        { prompt: "Which number is <strong>four hundred five thousand, eight hundred twenty</strong> written in standard form?",
+          options: ["405,820", "450,820", "45,820", "405,082"], answer: "405,820",
+          why: "&ldquo;Four hundred five thousand&rdquo; is 405,000; add &ldquo;eight hundred twenty&rdquo;: 405,000 + 820 = <strong>405,820</strong>." },
+        { prompt: "Which number is <strong>ninety thousand, three</strong> written in standard form?",
+          options: ["90,003", "90,030", "900,003", "9,003"], answer: "90,003",
+          why: "&ldquo;Ninety thousand&rdquo; is 90,000; add &ldquo;three&rdquo;: 90,000 + 3 = <strong>90,003</strong>." },
+        { prompt: "Which number is <strong>two hundred eighteen thousand, six hundred</strong> written in standard form?",
+          options: ["218,600", "281,600", "218,060", "218,006"], answer: "218,600",
+          why: "&ldquo;Two hundred eighteen thousand&rdquo; is 218,000; add &ldquo;six hundred&rdquo;: 218,000 + 600 = <strong>218,600</strong>." },
+        { prompt: "Which is the correct word form of <strong>76,209</strong>?",
+          options: ["seventy-six thousand, two hundred nine", "seventy-six thousand, twenty-nine", "seven thousand, six hundred nine", "seventy-six thousand, two hundred ninety"],
+          answer: "seventy-six thousand, two hundred nine",
+          why: "76,209 = 76,000 + 200 + 9 = <strong>seventy-six thousand, two hundred nine</strong>." },
+        { prompt: "Which is the correct word form of <strong>305,014</strong>?",
+          options: ["three hundred five thousand, fourteen", "thirty thousand, five hundred fourteen", "three hundred fifty thousand, fourteen", "three hundred five thousand, one hundred four"],
+          answer: "three hundred five thousand, fourteen",
+          why: "305,014 = 305,000 + 14 = <strong>three hundred five thousand, fourteen</strong>." },
+        { prompt: "Which is the correct word form of <strong>128,730</strong>?",
+          options: ["one hundred twenty-eight thousand, seven hundred thirty", "one hundred twenty-eight thousand, seventy-three", "twelve thousand, eight hundred seventy-three", "one hundred twenty-eight thousand, seven hundred three"],
+          answer: "one hundred twenty-eight thousand, seven hundred thirty",
+          why: "128,730 = 128,000 + 700 + 30 = <strong>one hundred twenty-eight thousand, seven hundred thirty</strong>." },
+        { prompt: "Which is the correct word form of <strong>940,056</strong>?",
+          options: ["nine hundred forty thousand, fifty-six", "ninety-four thousand, fifty-six", "nine hundred forty thousand, five hundred six", "nine hundred four thousand, fifty-six"],
+          answer: "nine hundred forty thousand, fifty-six",
+          why: "940,056 = 940,000 + 56 = <strong>nine hundred forty thousand, fifty-six</strong>." },
+        { prompt: "In <strong>37,915</strong>, what is the value of the digit 3?",
+          options: ["3", "30", "3,000", "30,000"], answer: "30,000",
+          why: "The 3 is in the ten thousands place, so its value is <strong>30,000</strong>." },
+        { prompt: "In <strong>582,671</strong>, which digit is in the ten thousands place?",
+          options: ["5", "8", "2", "6"], answer: "8",
+          why: "Place values from the right: 1 one, 7 tens, 6 hundreds, 2 thousands, 8 ten thousands, 5 hundred thousands. The <strong>8</strong> is in the ten thousands place." },
+        { prompt: "In <strong>264,830</strong>, what is the value of the digit 6?",
+          options: ["6", "60", "6,000", "60,000"], answer: "60,000",
+          why: "The 6 is in the ten thousands place, so its value is <strong>60,000</strong>." },
+        { prompt: "In <strong>719,042</strong>, what is the value of the digit 7?",
+          options: ["7", "70", "700,000", "70,000"], answer: "700,000",
+          why: "The 7 is in the hundred thousands place, so its value is <strong>700,000</strong>." },
+        { prompt: "In <strong>45,296</strong>, which digit is in the hundreds place?",
+          options: ["4", "5", "2", "9"], answer: "2",
+          why: "Place values from the right: 6 ones, 9 tens, 2 hundreds, 5 thousands, 4 ten thousands. The <strong>2</strong> is in the hundreds place." },
+        { prompt: "In <strong>803,417</strong>, what is the value of the digit 4?",
+          options: ["4", "40", "400", "4,000"], answer: "400",
+          why: "The 4 is in the hundreds place, so its value is <strong>400</strong>." },
+        { prompt: "Which expanded form matches <strong>45,706</strong>?",
+          options: ["40,000 + 5,000 + 700 + 6", "40,000 + 5,000 + 70 + 6", "4,000 + 5,000 + 700 + 6", "40,000 + 500 + 700 + 6"],
+          answer: "40,000 + 5,000 + 700 + 6",
+          why: "45,706 = <strong>40,000 + 5,000 + 700 + 6</strong>." },
+        { prompt: "270,000 + 8,000 + 300 + 40 + 9 equals which number?",
+          options: ["278,349", "287,349", "278,439", "27,349"], answer: "278,349",
+          why: "270,000 + 8,000 = 278,000; 278,000 + 300 + 40 + 9 = <strong>278,349</strong>." },
+        { prompt: "Which expanded form matches <strong>96,043</strong>?",
+          options: ["90,000 + 6,000 + 40 + 3", "90,000 + 6,000 + 400 + 3", "9,000 + 6,000 + 40 + 3", "90,000 + 600 + 40 + 3"],
+          answer: "90,000 + 6,000 + 40 + 3",
+          why: "96,043 = <strong>90,000 + 6,000 + 40 + 3</strong>." },
+        { prompt: "130,000 + 40,000 + 2,000 + 50 + 8 equals which number?",
+          options: ["172,058", "172,580", "170,258", "172,508"], answer: "172,058",
+          why: "130,000 + 40,000 + 2,000 = 172,000; 172,000 + 50 + 8 = <strong>172,058</strong>." },
+        { prompt: "Which comparison is correct?",
+          options: ["63,214 &gt; 63,412", "63,412 &gt; 63,214", "63,214 = 63,412", "63,412 &lt; 63,214"],
+          answer: "63,412 &gt; 63,214",
+          why: "Comparing digit by digit, 63,412 has a 4 in the hundreds place while 63,214 has a 2 there, so <strong>63,412 &gt; 63,214</strong>." },
+        { prompt: "Which comparison is correct?",
+          options: ["205,600 &lt; 205,060", "205,060 &gt; 205,600", "205,600 &gt; 205,060", "205,600 = 205,060"],
+          answer: "205,600 &gt; 205,060",
+          why: "Both start with 205, but 205,600 has a 6 in the hundreds place while 205,060 has a 0 there, so <strong>205,600 &gt; 205,060</strong>." },
+        { prompt: "Which comparison is correct?",
+          options: ["91,847 &lt; 91,748", "91,748 &gt; 91,847", "91,847 &gt; 91,748", "91,847 = 91,748"],
+          answer: "91,847 &gt; 91,748",
+          why: "Both start with 91, but 91,847 has an 8 in the hundreds place while 91,748 has a 7 there, so <strong>91,847 &gt; 91,748</strong>." },
+        { prompt: "Which comparison is correct?",
+          options: ["500,120 &gt; 500,210", "500,210 &gt; 500,120", "500,120 = 500,210", "500,210 &lt; 500,120"],
+          answer: "500,210 &gt; 500,120",
+          why: "Both start with 500 thousand, but in the hundreds place, 500,210 has a 2 while 500,120 has a 1, so <strong>500,210 &gt; 500,120</strong>." },
+        { prompt: "Order these numbers from greatest to least: 73,081&nbsp;&nbsp; 73,810&nbsp;&nbsp; 73,018&nbsp;&nbsp; 73,108",
+          options: ["73,810, 73,108, 73,081, 73,018", "73,810, 73,081, 73,108, 73,018", "73,018, 73,081, 73,108, 73,810", "73,108, 73,810, 73,081, 73,018"],
+          answer: "73,810, 73,108, 73,081, 73,018",
+          why: "From greatest to least: <strong>73,810</strong>, then 73,108, then 73,081, then 73,018 is least." },
+        { prompt: "Order these numbers from least to greatest: 156,042&nbsp;&nbsp; 156,420&nbsp;&nbsp; 156,204&nbsp;&nbsp; 156,024",
+          options: ["156,024, 156,042, 156,204, 156,420", "156,420, 156,204, 156,042, 156,024", "156,042, 156,024, 156,204, 156,420", "156,024, 156,204, 156,042, 156,420"],
+          answer: "156,024, 156,042, 156,204, 156,420",
+          why: "From least to greatest: 156,024 &lt; 156,042 &lt; 156,204 &lt; <strong>156,420</strong>." },
+        { prompt: "Order these numbers from greatest to least: 8,940&nbsp;&nbsp; 89,400&nbsp;&nbsp; 8,490&nbsp;&nbsp; 84,900",
+          options: ["89,400, 84,900, 8,940, 8,490", "84,900, 89,400, 8,490, 8,940", "89,400, 84,900, 8,490, 8,940", "8,940, 8,490, 84,900, 89,400"],
+          answer: "89,400, 84,900, 8,940, 8,490",
+          why: "The five-digit numbers 89,400 and 84,900 are greater than the four-digit numbers 8,940 and 8,490. Order: <strong>89,400</strong>, 84,900, 8,940, 8,490." },
+        { prompt: "Order these numbers from least to greatest: 302,500&nbsp;&nbsp; 320,500&nbsp;&nbsp; 300,520&nbsp;&nbsp; 305,200",
+          options: ["300,520, 302,500, 305,200, 320,500", "320,500, 305,200, 302,500, 300,520", "300,520, 305,200, 302,500, 320,500", "302,500, 300,520, 305,200, 320,500"],
+          answer: "300,520, 302,500, 305,200, 320,500",
+          why: "From least to greatest: 300,520 &lt; 302,500 &lt; 305,200 &lt; <strong>320,500</strong>." },
+        { prompt: "What is the missing number in this pattern? 62,750&nbsp;&nbsp; 61,750&nbsp;&nbsp; 60,750&nbsp;&nbsp; 59,750&nbsp;&nbsp; ______",
+          options: ["58,750", "58,650", "57,750", "59,650"], answer: "58,750",
+          why: "Each number decreases by 1,000, so 59,750 − 1,000 = <strong>58,750</strong>." },
+        { prompt: "What is the missing number in this pattern? 14,200&nbsp;&nbsp; 14,700&nbsp;&nbsp; 15,200&nbsp;&nbsp; ______&nbsp;&nbsp; 16,200",
+          options: ["15,700", "15,600", "15,750", "15,800"], answer: "15,700",
+          why: "Each number increases by 500, so 15,200 + 500 = <strong>15,700</strong>." },
+        { prompt: "Start from 12 and use the rule &ldquo;add 20.&rdquo; What is the 5th number in the pattern?",
+          options: ["92", "72", "112", "82"], answer: "92",
+          why: "The pattern is 12, 32, 52, 72, <strong>92</strong>, ... — adding 20 each time." },
+        { prompt: "Start from 500 and use the rule &ldquo;subtract 45.&rdquo; What is the 4th number in the pattern?",
+          options: ["365", "410", "320", "375"], answer: "365",
+          why: "The pattern is 500, 455, 410, <strong>365</strong>, ... — subtracting 45 each time." },
+        { prompt: "What is the missing number in this pattern? 97,600&nbsp;&nbsp; 95,600&nbsp;&nbsp; 93,600&nbsp;&nbsp; ______&nbsp;&nbsp; 89,600",
+          options: ["91,600", "91,000", "92,600", "90,600"], answer: "91,600",
+          why: "Each number decreases by 2,000, so 93,600 − 2,000 = <strong>91,600</strong>." },
+        { prompt: "Write the first number in this pattern if the rule is &ldquo;add 250&rdquo; and the 3rd number is 1,250.",
+          options: ["750", "500", "1,000", "1,500"], answer: "750",
+          why: "Working backward with &ldquo;add 250&rdquo;: the 2nd number is 1,250 − 250 = 1,000, and the 1st number is 1,000 − 250 = <strong>750</strong>." },
+        { prompt: "Round <strong>3,725</strong> to the nearest thousand.",
+          options: ["3,000", "4,000", "3,700", "3,800"], answer: "4,000",
+          why: "The hundreds digit is 7, which is 5 or more, so round up to <strong>4,000</strong>." },
+        { prompt: "Round <strong>58,204</strong> to the nearest thousand.",
+          options: ["58,000", "59,000", "58,200", "58,300"], answer: "58,000",
+          why: "The hundreds digit is 2, which is less than 5, so round down to <strong>58,000</strong>." },
+        { prompt: "Round <strong>149,500</strong> to the nearest thousand.",
+          options: ["149,000", "150,000", "149,600", "148,000"], answer: "150,000",
+          why: "The hundreds digit is 5, so round up to <strong>150,000</strong>." },
+        { prompt: "Round <strong>82,499</strong> to the nearest thousand.",
+          options: ["82,000", "83,000", "82,500", "81,000"], answer: "82,000",
+          why: "The hundreds digit is 4, which is less than 5, so round down to <strong>82,000</strong>." },
+        { prompt: "What is 5,738 + 4,186?",
+          options: ["9,924", "9,824", "10,924", "9,914"], answer: "9,924",
+          why: "5,738 + 4,186 = <strong>9,924</strong>. (Estimate: 6,000 + 4,000 = 10,000 — close to 9,924, so it's reasonable.)" },
+        { prompt: "What is 71,206 − 38,459?",
+          options: ["32,747", "33,747", "32,647", "22,747"], answer: "32,747",
+          why: "71,206 − 38,459 = <strong>32,747</strong>. (Estimate: 71,000 − 38,000 = 33,000 — close to 32,747, so it's reasonable.)" },
+        { prompt: "What is 234,615 + 97,382?",
+          options: ["331,997", "332,997", "321,997", "331,897"], answer: "331,997",
+          why: "234,615 + 97,382 = <strong>331,997</strong>. (Estimate: 235,000 + 97,000 = 332,000 — close to 331,997, so it's reasonable.)" },
+        { prompt: "What is 9,406 − 2,758?",
+          options: ["6,648", "6,748", "6,548", "7,648"], answer: "6,648",
+          why: "9,406 − 2,758 = <strong>6,648</strong>. (Estimate: 9,000 − 3,000 = 6,000 — close to 6,648, so it's reasonable.)" },
+        { prompt: "What is 156,090 + 84,725?",
+          options: ["240,815", "241,815", "239,815", "240,715"], answer: "240,815",
+          why: "156,090 + 84,725 = <strong>240,815</strong>. (Estimate: 156,000 + 85,000 = 241,000 — close to 240,815, so it's reasonable.)" },
+        { prompt: "What is 48,300 − 19,675?",
+          options: ["28,625", "28,725", "29,625", "27,625"], answer: "28,625",
+          why: "48,300 − 19,675 = <strong>28,625</strong>. (Estimate: 48,000 − 20,000 = 28,000 — close to 28,625, so it's reasonable.)" },
+        { prompt: "A toy store sold 3,640 puzzles in one month. It sold 1,825 more board games than puzzles that month. How many board games did the store sell?",
+          options: ["5,465", "5,365", "5,565", "4,815"], answer: "5,465",
+          why: "Board games sold = puzzles sold + 1,825 = 3,640 + 1,825 = <strong>5,465</strong>.",
+          barModel: `<div class="bar-model">
+            <div class="bar-row"><span class="bar-label">Puzzles</span><div class="bar-seg" style="width:150px">&nbsp;</div></div>
+            <div class="bar-row"><span class="bar-label">Board games</span><div class="bar-seg" style="width:150px">same as puzzles</div><div class="bar-seg" style="width:60px">extra</div></div>
+          </div>
+          <p class="bar-note">Fill in each box with a number from the problem. Board games sold = <span class="bar-blank-inline">?</span></p>` },
+        { prompt: "A library had 24,500 books. It donated 6,340 books in spring and 5,215 books in fall. How many books were left?",
+          options: ["12,945", "13,945", "12,845", "11,945"], answer: "12,945",
+          why: "Total donated = 6,340 + 5,215 = 11,555. Books left = 24,500 − 11,555 = <strong>12,945</strong>.",
+          barModel: `<div class="bar-model">
+            <div class="bar-row"><span class="bar-label">Total books</span><div class="bar-seg" style="width:220px">&nbsp;</div></div>
+            <div class="bar-row"><span class="bar-label">&nbsp;</span><div class="bar-seg" style="width:70px">Spring</div><div class="bar-seg" style="width:65px">Fall</div><div class="bar-seg target" style="width:85px">Left ?</div></div>
+          </div>
+          <p class="bar-note">Fill in each box with a number from the problem. Books donated in all = <span class="bar-blank-inline">?</span> &nbsp;&bull;&nbsp; Books left = <span class="bar-blank-inline">?</span></p>` },
+        { prompt: "Store C sold 9,720 sneakers last year. Store C sold 2,860 more sneakers than Store D. How many sneakers did the two stores sell in all?",
+          options: ["16,580", "16,480", "17,580", "16,380"], answer: "16,580",
+          why: "Store D sold 9,720 − 2,860 = 6,860 sneakers. Together they sold 9,720 + 6,860 = <strong>16,580</strong> sneakers.",
+          barModel: `<div class="bar-model">
+            <div class="bar-row"><span class="bar-label">Store C</span><div class="bar-seg" style="width:180px">&nbsp;</div></div>
+            <div class="bar-row"><span class="bar-label">Store D</span><div class="bar-seg target" style="width:140px">Store D ?</div><div class="bar-seg" style="width:40px">extra</div></div>
+          </div>
+          <p class="bar-note">Fill in each box with a number from the problem. Store D's sneakers = <span class="bar-blank-inline">?</span> &nbsp;&bull;&nbsp; Total sold = <span class="bar-blank-inline">?</span></p>` },
+        { prompt: "A theater had 68,420 guests in week one. There were 12,150 fewer guests in week two than in week one. In week three, there were 7,860 more guests than the total of weeks one and two. How many guests were there in week three?",
+          options: ["132,550", "131,550", "133,550", "122,550"], answer: "132,550",
+          why: "Week two had 68,420 − 12,150 = 56,270 guests. Weeks one and two together had 68,420 + 56,270 = 124,690 guests. Week three had 124,690 + 7,860 = <strong>132,550</strong> guests.",
+          barModel: `<div class="bar-model">
+            <div class="bar-row"><span class="bar-label">Week 1</span><div class="bar-seg" style="width:210px">&nbsp;</div></div>
+            <div class="bar-row"><span class="bar-label">Week 2</span><div class="bar-seg target" style="width:170px">Week 2 ?</div><div class="bar-seg" style="width:40px">fewer</div></div>
+            <div class="bar-row"><span class="bar-label">Week 3</span><div class="bar-seg" style="width:210px">Week 1</div><div class="bar-seg" style="width:170px">Week 2</div><div class="bar-seg" style="width:50px">extra</div></div>
+          </div>
+          <p class="bar-note">Fill in each box with a number from the problem. Week 2 guests = <span class="bar-blank-inline">?</span> &nbsp;&bull;&nbsp; Week 1 + Week 2 = <span class="bar-blank-inline">?</span> &nbsp;&bull;&nbsp; Week 3 guests = <span class="bar-blank-inline">?</span></p>` },
+        { prompt: "Nina, Omar, and Priya sold raffle tickets. Nina sold 4,730 tickets and Omar sold 3,910 tickets. Their total was 2,650 tickets more than Priya's. How many tickets did Priya sell?",
+          options: ["5,990", "6,090", "5,890", "6,990"], answer: "5,990",
+          why: "Nina and Omar sold 4,730 + 3,910 = 8,640 tickets together. Since that is 2,650 more than Priya's total, Priya sold 8,640 − 2,650 = <strong>5,990</strong> tickets.",
+          barModel: `<div class="bar-model">
+            <div class="bar-row"><span class="bar-label">Nina &amp; Omar</span><div class="bar-seg" style="width:150px">Nina</div><div class="bar-seg" style="width:75px">Omar</div></div>
+            <div class="bar-row"><span class="bar-label">Priya</span><div class="bar-seg target" style="width:180px">Priya ?</div><div class="bar-seg" style="width:40px">extra</div></div>
+          </div>
+          <p class="bar-note">Fill in each box with a number from the problem. Nina + Omar's total = <span class="bar-blank-inline">?</span> &nbsp;&bull;&nbsp; Priya's tickets = <span class="bar-blank-inline">?</span></p>` },
+        { prompt: "A garden produced 6,240 kilograms of tomatoes and 15,800 kilograms of cucumbers and peppers combined. The mass of tomatoes was 1,865 kilograms more than the mass of cucumbers. What was the mass of peppers produced?",
+          options: ["11,425", "11,325", "11,525", "9,935"], answer: "11,425",
+          why: "Cucumbers' mass = 6,240 − 1,865 = 4,375 kilograms. Peppers' mass = 15,800 − 4,375 = <strong>11,425</strong> kilograms.",
+          barModel: `<div class="bar-model">
+            <div class="bar-row"><span class="bar-label">Tomatoes</span><div class="bar-seg" style="width:115px">&nbsp;</div></div>
+            <div class="bar-row"><span class="bar-label">Cucumbers</span><div class="bar-seg target" style="width:85px">Cucumbers ?</div><div class="bar-seg" style="width:30px">extra</div></div>
+            <div class="bar-row"><span class="bar-label">All produce</span><div class="bar-seg" style="width:85px">Cucumbers</div><div class="bar-seg target" style="width:170px">Peppers ?</div></div>
+          </div>
+          <p class="bar-note">Fill in each box with a number from the problem. Cucumbers' mass = <span class="bar-blank-inline">?</span> &nbsp;&bull;&nbsp; Peppers' mass = <span class="bar-blank-inline">?</span></p>` },
+        { prompt: "A farmer picked 7,215 apples in the morning. He picked 2,480 more apples in the afternoon than in the morning. How many apples did he pick in the afternoon?",
+          options: ["9,695", "9,595", "9,795", "4,735"], answer: "9,695",
+          why: "Afternoon apples = morning apples + 2,480 = 7,215 + 2,480 = <strong>9,695</strong>.",
+          barModel: `<div class="bar-model">
+            <div class="bar-row"><span class="bar-label">Morning</span><div class="bar-seg" style="width:150px">&nbsp;</div></div>
+            <div class="bar-row"><span class="bar-label">Afternoon</span><div class="bar-seg" style="width:150px">same as morning</div><div class="bar-seg" style="width:60px">extra</div></div>
+          </div>
+          <p class="bar-note">Fill in each box with a number from the problem. Afternoon apples picked = <span class="bar-blank-inline">?</span></p>` },
+        { prompt: "A shipping company had 32,900 packages. It delivered 8,415 packages on Friday and 7,260 packages on Saturday. How many packages were left?",
+          options: ["17,225", "17,325", "18,225", "16,225"], answer: "17,225",
+          why: "Total delivered = 8,415 + 7,260 = 15,675. Packages left = 32,900 − 15,675 = <strong>17,225</strong>.",
+          barModel: `<div class="bar-model">
+            <div class="bar-row"><span class="bar-label">Total packages</span><div class="bar-seg" style="width:220px">&nbsp;</div></div>
+            <div class="bar-row"><span class="bar-label">&nbsp;</span><div class="bar-seg" style="width:70px">Fri</div><div class="bar-seg" style="width:65px">Sat</div><div class="bar-seg target" style="width:85px">Left ?</div></div>
+          </div>
+          <p class="bar-note">Fill in each box with a number from the problem. Packages delivered in all = <span class="bar-blank-inline">?</span> &nbsp;&bull;&nbsp; Packages left = <span class="bar-blank-inline">?</span></p>` },
+        { prompt: "Team X scored 14,650 points in a video game tournament. Team X scored 4,920 more points than Team Y. How many points did the two teams score in all?",
+          options: ["24,380", "24,280", "25,380", "24,180"], answer: "24,380",
+          why: "Team Y scored 14,650 − 4,920 = 9,730 points. Together they scored 14,650 + 9,730 = <strong>24,380</strong> points.",
+          barModel: `<div class="bar-model">
+            <div class="bar-row"><span class="bar-label">Team X</span><div class="bar-seg" style="width:190px">&nbsp;</div></div>
+            <div class="bar-row"><span class="bar-label">Team Y</span><div class="bar-seg target" style="width:150px">Team Y ?</div><div class="bar-seg" style="width:40px">extra</div></div>
+          </div>
+          <p class="bar-note">Fill in each box with a number from the problem. Team Y's points = <span class="bar-blank-inline">?</span> &nbsp;&bull;&nbsp; Total points = <span class="bar-blank-inline">?</span></p>` },
+        { prompt: "An amusement park had 45,600 visitors on Saturday. There were 9,340 fewer visitors on Sunday than on Saturday. On Monday, there were 3,215 more visitors than the total of Saturday and Sunday. How many visitors were there on Monday?",
+          options: ["85,075", "84,075", "86,075", "75,075"], answer: "85,075",
+          why: "Sunday had 45,600 − 9,340 = 36,260 visitors. Saturday and Sunday together had 45,600 + 36,260 = 81,860 visitors. Monday had 81,860 + 3,215 = <strong>85,075</strong> visitors.",
+          barModel: `<div class="bar-model">
+            <div class="bar-row"><span class="bar-label">Saturday</span><div class="bar-seg" style="width:210px">&nbsp;</div></div>
+            <div class="bar-row"><span class="bar-label">Sunday</span><div class="bar-seg target" style="width:170px">Sunday ?</div><div class="bar-seg" style="width:40px">fewer</div></div>
+            <div class="bar-row"><span class="bar-label">Monday</span><div class="bar-seg" style="width:210px">Saturday</div><div class="bar-seg" style="width:170px">Sunday</div><div class="bar-seg" style="width:50px">extra</div></div>
+          </div>
+          <p class="bar-note">Fill in each box with a number from the problem. Sunday visitors = <span class="bar-blank-inline">?</span> &nbsp;&bull;&nbsp; Saturday + Sunday = <span class="bar-blank-inline">?</span> &nbsp;&bull;&nbsp; Monday visitors = <span class="bar-blank-inline">?</span></p>` },
+        { prompt: "Carlos, Dana, and Eli collected cans for recycling. Carlos collected 5,180 cans and Dana collected 4,065 cans. Their total was 2,940 cans more than Eli's. How many cans did Eli collect?",
+          options: ["6,305", "6,405", "6,205", "7,305"], answer: "6,305",
+          why: "Carlos and Dana collected 5,180 + 4,065 = 9,245 cans together. Since that is 2,940 more than Eli's total, Eli collected 9,245 − 2,940 = <strong>6,305</strong> cans.",
+          barModel: `<div class="bar-model">
+            <div class="bar-row"><span class="bar-label">Carlos &amp; Dana</span><div class="bar-seg" style="width:150px">Carlos</div><div class="bar-seg" style="width:75px">Dana</div></div>
+            <div class="bar-row"><span class="bar-label">Eli</span><div class="bar-seg target" style="width:180px">Eli ?</div><div class="bar-seg" style="width:40px">extra</div></div>
+          </div>
+          <p class="bar-note">Fill in each box with a number from the problem. Carlos + Dana's total = <span class="bar-blank-inline">?</span> &nbsp;&bull;&nbsp; Eli's cans = <span class="bar-blank-inline">?</span></p>` },
+        { prompt: "A bookstore had 8,420 novels and 19,300 comics and magazines combined. The number of novels was 2,150 more than the number of comics. How many magazines were there?",
+          options: ["13,030", "12,930", "13,130", "11,150"], answer: "13,030",
+          why: "Comics = 8,420 − 2,150 = 6,270. Magazines = 19,300 − 6,270 = <strong>13,030</strong>.",
+          barModel: `<div class="bar-model">
+            <div class="bar-row"><span class="bar-label">Novels</span><div class="bar-seg" style="width:115px">&nbsp;</div></div>
+            <div class="bar-row"><span class="bar-label">Comics</span><div class="bar-seg target" style="width:85px">Comics ?</div><div class="bar-seg" style="width:30px">extra</div></div>
+            <div class="bar-row"><span class="bar-label">All books</span><div class="bar-seg" style="width:85px">Comics</div><div class="bar-seg target" style="width:170px">Magazines ?</div></div>
+          </div>
+          <p class="bar-note">Fill in each box with a number from the problem. Comics count = <span class="bar-blank-inline">?</span> &nbsp;&bull;&nbsp; Magazines count = <span class="bar-blank-inline">?</span></p>` },
+        { prompt: "Which number makes the comparison true? ______ &lt; 58,214",
+          options: ["58,241", "57,999", "58,410", "59,000"], answer: "57,999",
+          why: "<strong>57,999</strong> is less than 58,214 because in the thousands place, 7 &lt; 8. The other choices are all greater than 58,214." },
+        { prompt: "In which number is the value of the digit 5 <strong>ten times</strong> the value of the digit 5 in 461,850?",
+          options: ["152,047", "725,914", "340,592", "805,213"], answer: "340,592",
+          why: "In 461,850, the digit 5 is in the tens place, so its value is 50. Ten times 50 is 500. In <strong>340,592</strong>, the digit 5 is in the hundreds place, so its value is 500 — exactly ten times as much." },
+        { prompt: "Is this equation true or false? 748 − 316 = 848 − 416",
+          options: ["True — both sides equal 432.", "False — the left side is greater.", "False — the right side is greater.", "True — both sides equal 400."],
+          answer: "True — both sides equal 432.",
+          why: "748 − 316 = 432 and 848 − 416 = 432. Both numbers increased by exactly 100, so the difference stays the same — the equation is <strong>true</strong>." },
+        { prompt: "Which number makes the comparison true? 96,430 &gt; ______",
+          options: ["96,340", "96,431", "96,500", "97,000"], answer: "96,340",
+          why: "<strong>96,340</strong> is less than 96,430 because in the hundreds place, 3 &lt; 4. The other choices are all greater than 96,430." },
+        { prompt: "In which number is the value of the digit 8 <strong>ten times</strong> the value of the digit 8 in 583,247?",
+          options: ["829,150", "148,290", "218,340", "385,712"], answer: "829,150",
+          why: "In 583,247, the digit 8 is in the ten thousands place, so its value is 80,000. Ten times 80,000 is 800,000. In <strong>829,150</strong>, the digit 8 is in the hundred thousands place, so its value is 800,000 — exactly ten times as much." },
+        { prompt: "Is this equation true or false? 6,205 + 1,830 = 6,305 + 1,730",
+          options: ["True — both sides equal 8,035.", "False — the left side is greater.", "False — the right side is greater.", "True — both sides equal 8,135."],
+          answer: "True — both sides equal 8,035.",
+          why: "6,205 + 1,830 = 8,035 and 6,305 + 1,730 = 8,035. The first number increased by 100 while the second decreased by 100, so the sum stays the same — the equation is <strong>true</strong>." },
+      ],
+    },
+    // __MORE_CHAPTERS__
+  };
+
+  const GRAMMAR_UNITS = {
+    unit1: {
+      name: "Unit 1: The Sentence",
+      lessons: [
+        {
+          title: '1. 📝 What Is a Sentence?',
+          rule: 'A <strong>sentence</strong> is like a mini story &mdash; it has a beginning and an end, and it makes complete sense all by itself! It has to tell <em>who</em> or <em>what</em> it\'s about, AND <em>what they do or are</em>. If a piece is missing, it\'s just a <strong>fragment</strong> &mdash; like a puzzle with a piece missing!',
+          tip: 'Ask yourself: &ldquo;Does this make full sense all on its own?&rdquo; If yes &mdash; it\'s a sentence! 🎉',
+          examples: [
+            { label: '✅ Sentence', text: 'The soccer team practiced hard all afternoon.' },
+            { label: '❌ Not a sentence', text: 'Practiced hard every single afternoon.' },
+          ],
+        },
+        {
+          title: '2. ❔ Statements and Questions',
+          rule: 'A <strong>statement</strong> is just telling someone something &mdash; nice and calm. It ends with a period (.). A <strong>question</strong> is asking something you want to know. It ends with a question mark (?). And remember: every sentence starts with a CAPITAL letter!',
+          tip: 'If you could answer it, it\'s a question. If you\'re just sharing news, it\'s a statement! 🗣️',
+          examples: [
+            { label: '💬 Statement', text: 'The library opens at nine o\'clock.' },
+            { label: '❓ Question', text: 'What time does the library open?' },
+          ],
+        },
+        {
+          title: '3. ❗ Commands and Exclamations',
+          rule: 'A <strong>command</strong> tells someone to DO something &mdash; like giving directions. It usually ends with a period. An <strong>exclamation</strong> shows BIG feelings, like excitement or surprise! It ends with an exclamation point (!).',
+          tip: 'If you\'d shout it out loud, it\'s probably an exclamation! 🎊',
+          examples: [
+            { label: '👉 Command', text: 'Close the door quietly.' },
+            { label: '🎉 Exclamation', text: 'What an amazing goal that was!' },
+          ],
+        },
+        {
+          title: '4. 🧩 Subjects and Predicates',
+          rule: 'Every sentence has two puzzle pieces! The <strong>complete subject</strong> is WHO or WHAT the sentence is about. The <strong>complete predicate</strong> tells what that subject DOES or IS. Snap them together and you get a whole sentence!',
+          tip: 'Subject = the star of the sentence ⭐. Predicate = what the star is doing! 🏃',
+          examples: [
+            { label: '🧍 Complete subject', text: 'The tall basketball player' },
+            { label: '🏀 Complete predicate', text: 'scored the winning point.' },
+          ],
+        },
+        {
+          title: '5. ⭐ Simple Subjects',
+          rule: 'Hiding inside the complete subject is ONE super-important word &mdash; the <strong>simple subject</strong>! It\'s the single main word that tells exactly who or what the sentence is really about.',
+          tip: 'Ask: &ldquo;Who or what is this sentence REALLY about?&rdquo; That one word is your simple subject! 🔍',
+          examples: [
+            { label: '📖 Sentence', text: 'The excited young campers set up their tent.' },
+            { label: '⭐ Simple subject', text: 'campers' },
+          ],
+        },
+        {
+          title: '6. 🏃 Simple Predicates',
+          rule: 'Hiding inside the complete predicate is ONE key word &mdash; the <strong>simple predicate</strong>! It tells exactly what the subject does or is, without any of the extra describing words.',
+          tip: 'Simple predicates are usually action words. Ask: &ldquo;What did they DO?&rdquo; 💪',
+          examples: [
+            { label: '📖 Sentence', text: 'The hungry campers quickly ate dinner.' },
+            { label: '🏃 Simple predicate', text: 'ate' },
+          ],
+        },
+        {
+          title: '7. 🚦 Fixing Run-on Sentences',
+          rule: 'A <strong>run-on sentence</strong> happens when two complete ideas crash into each other with no stop sign in between! Fix it by splitting them into two separate sentences &mdash; each one gets its own capital letter and end mark. Just tossing in a comma is <em>not</em> enough to fix it!',
+          tip: 'Think of a stop sign 🛑 &mdash; every complete idea needs its own full stop before the next one zooms in!',
+          examples: [
+            { label: '🚫 Run-on', text: 'The rain started we ran inside.' },
+            { label: '✅ Correct', text: 'The rain started. We ran inside.' },
+          ],
+        },
+      ],
+      quizBank: [
+        { prompt: 'Which group of words is a complete sentence?',
+          options: ['Running across the field.', 'The excited dog ran across the field.', 'Across the wide, sunny field.', 'The playful, energetic dog.'],
+          answer: 'The excited dog ran across the field.',
+          why: 'A sentence must name who or what (the dog) and tell what it does (ran). The others are missing a subject, a predicate, or both.' },
+        { prompt: 'Which group of words is a complete sentence?',
+          options: ['Baked a batch of cookies.', 'My grandmother baked a batch of cookies.', 'A warm batch of chocolate cookies.', 'Fresh out of the oven.'],
+          answer: 'My grandmother baked a batch of cookies.',
+          why: 'This choice names who (my grandmother) and what she did (baked). The rest are fragments missing a subject or a predicate.' },
+        { prompt: 'Which group of words is a complete sentence?',
+          options: ['The tired hikers.', 'Climbed to the top of the ridge.', 'The tired hikers reached the summit at noon.', 'To the top of the ridge.'],
+          answer: 'The tired hikers reached the summit at noon.',
+          why: 'Only this option has both a subject (hikers) and a predicate (reached the summit).' },
+        { prompt: 'Which group of words is a complete sentence?',
+          options: ['Studied for the science test.', 'Every night this week.', 'Late into the evening.', 'Maria studied for the science test.'],
+          answer: 'Maria studied for the science test.',
+          why: 'This is the only choice that tells who (Maria) and what she did (studied).' },
+        { prompt: 'Which group of words is a complete sentence?',
+          options: ['The old wooden bridge over the creek.', 'Over the creek and through the woods.', 'The old wooden bridge creaked loudly.', 'Creaked loudly in the wind.'],
+          answer: 'The old wooden bridge creaked loudly.',
+          why: 'It names a subject (bridge) and a predicate (creaked), so it expresses a complete thought.' },
+        { prompt: 'Which group of words is a complete sentence?',
+          options: ['Painted a mural on the wall.', 'The art class painted a mural on the wall.', 'A colorful mural of the ocean.', 'On the cafeteria wall.'],
+          answer: 'The art class painted a mural on the wall.',
+          why: 'This choice has a subject (the art class) and a predicate (painted), making it a full sentence.' },
+        { prompt: 'Which group of words is a complete sentence?',
+          options: ['Waiting quietly by the door.', 'The nervous puppy waited quietly by the door.', 'By the door for an hour.', 'The nervous, shivering puppy.'],
+          answer: 'The nervous puppy waited quietly by the door.',
+          why: 'It tells who (the puppy) and what it did (waited), so the thought is complete.' },
+        { prompt: 'Which group of words is a complete sentence?',
+          options: ['Collected shells along the beach.', 'All morning long.', 'Colorful shells and smooth stones.', 'The twins collected shells along the beach.'],
+          answer: 'The twins collected shells along the beach.',
+          why: 'Only this option names a subject (the twins) and a predicate (collected).' },
+        { prompt: 'Which group of words is a complete sentence?',
+          options: ['Practicing the piano every day.', 'Since last September.', 'Jenna practices the piano every day.', 'The shiny black piano.'],
+          answer: 'Jenna practices the piano every day.',
+          why: 'This is the only complete thought — it names who (Jenna) and what she does (practices).' },
+        { prompt: 'Which group of words is a complete sentence?',
+          options: ['The loud thunderstorm last night.', 'Woke up the whole neighborhood.', 'The loud thunderstorm woke up the whole neighborhood.', 'Late into the night.'],
+          answer: 'The loud thunderstorm woke up the whole neighborhood.',
+          why: 'This choice has both a subject (the thunderstorm) and a predicate (woke up).' },
+        { prompt: 'Which group of words is a complete sentence?',
+          options: ['Building a treehouse in the backyard.', 'With hammers and nails.', 'The two brothers built a treehouse in the backyard.', 'A sturdy treehouse with a rope ladder.'],
+          answer: 'The two brothers built a treehouse in the backyard.',
+          why: 'It is the only option with a subject (the brothers) and a predicate (built).' },
+        { prompt: 'Which group of words is a complete sentence?',
+          options: ['Delivered newspapers before sunrise.', 'Every single morning.', 'Fast on his bicycle.', 'Marcus delivered newspapers before sunrise.'],
+          answer: 'Marcus delivered newspapers before sunrise.',
+          why: 'This choice names who (Marcus) and what he did (delivered), so it is a full sentence.' },
+        { prompt: 'Which end mark correctly completes this sentence: “The museum closes at five o\'clock”?',
+          options: ['.', '?', '!', ','],
+          answer: '.',
+          why: 'A statement tells something and ends with a period.' },
+        { prompt: 'Which end mark correctly completes this sentence: “Have you finished your homework yet”?',
+          options: ['.', '?', '!', ','],
+          answer: '?',
+          why: 'A question asks something and ends with a question mark.' },
+        { prompt: 'Which end mark correctly completes this sentence: “What an incredible sunset that is”?',
+          options: ['.', '?', '!', ','],
+          answer: '!',
+          why: 'This sentence shows strong feeling, so it needs an exclamation point.' },
+        { prompt: 'Which end mark correctly completes this sentence: “Please water the plants before you leave”?',
+          options: ['.', '?', '!', ','],
+          answer: '.',
+          why: 'This is a command telling someone to do something, so it ends with a period.' },
+        { prompt: 'Which end mark correctly completes this sentence: “How many countries have you visited”?',
+          options: ['.', '?', '!', ','],
+          answer: '?',
+          why: 'A question asks something, so it ends with a question mark.' },
+        { prompt: 'Which end mark correctly completes this sentence: “Watch out for the icy sidewalk”?',
+          options: ['.', '?', '!', ','],
+          answer: '!',
+          why: 'This warning shows urgency and strong feeling, so it takes an exclamation point.' },
+        { prompt: 'Which end mark correctly completes this sentence: “The chef added fresh basil to the sauce”?',
+          options: ['.', '?', '!', ','],
+          answer: '.',
+          why: 'This sentence simply states a fact, so it ends with a period.' },
+        { prompt: 'Which end mark correctly completes this sentence: “Why did the power go out during the storm”?',
+          options: ['.', '?', '!', ','],
+          answer: '?',
+          why: 'This is a question, so it ends with a question mark.' },
+        { prompt: 'Which end mark correctly completes this sentence: “Turn off the lights before you go”?',
+          options: ['.', '?', '!', ','],
+          answer: '.',
+          why: 'This command tells someone to do something and ends with a period.' },
+        { prompt: 'Which end mark correctly completes this sentence: “I can\'t believe we won the championship”?',
+          options: ['.', '?', '!', ','],
+          answer: '!',
+          why: 'This sentence shows excitement, so it ends with an exclamation point.' },
+        { prompt: 'Which end mark correctly completes this sentence: “Did the package arrive this morning”?',
+          options: ['.', '?', '!', ','],
+          answer: '?',
+          why: 'This sentence asks something, so it needs a question mark.' },
+        { prompt: 'Which end mark correctly completes this sentence: “Fold the laundry and put it away”?',
+          options: ['.', '?', '!', ','],
+          answer: '.',
+          why: 'This is a command, so it ends with a period.' },
+        { prompt: 'What kind of sentence is this: “The train arrives at platform six.”?',
+          options: ['Statement', 'Question', 'Command', 'Exclamation'],
+          answer: 'Statement',
+          why: 'This sentence is a statement — it simply tells something and ends with a period.' },
+        { prompt: 'What kind of sentence is this: “Could you pass the salt, please?”?',
+          options: ['Statement', 'Question', 'Command', 'Exclamation'],
+          answer: 'Question',
+          why: 'This sentence is a question — it asks something and ends with a question mark.' },
+        { prompt: 'What kind of sentence is this: “Hand me that red folder.”?',
+          options: ['Statement', 'Question', 'Command', 'Exclamation'],
+          answer: 'Command',
+          why: 'This sentence is a command — it tells someone to do something and ends with a period.' },
+        { prompt: 'What kind of sentence is this: “What a fantastic surprise this is!”?',
+          options: ['Statement', 'Question', 'Command', 'Exclamation'],
+          answer: 'Exclamation',
+          why: 'This sentence is a exclamation — it shows strong feeling and ends with an exclamation point.' },
+        { prompt: 'What kind of sentence is this: “Our class visited the aquarium yesterday.”?',
+          options: ['Statement', 'Question', 'Command', 'Exclamation'],
+          answer: 'Statement',
+          why: 'This sentence is a statement — it simply tells something and ends with a period.' },
+        { prompt: 'What kind of sentence is this: “Is the bakery open on Sundays?”?',
+          options: ['Statement', 'Question', 'Command', 'Exclamation'],
+          answer: 'Question',
+          why: 'This sentence is a question — it asks something and ends with a question mark.' },
+        { prompt: 'What kind of sentence is this: “Sit down and fasten your seatbelt.”?',
+          options: ['Statement', 'Question', 'Command', 'Exclamation'],
+          answer: 'Command',
+          why: 'This sentence is a command — it tells someone to do something and ends with a period.' },
+        { prompt: 'What kind of sentence is this: “I finally solved the puzzle!”?',
+          options: ['Statement', 'Question', 'Command', 'Exclamation'],
+          answer: 'Exclamation',
+          why: 'This sentence is a exclamation — it shows strong feeling and ends with an exclamation point.' },
+        { prompt: 'What kind of sentence is this: “The garden needs watering twice a week.”?',
+          options: ['Statement', 'Question', 'Command', 'Exclamation'],
+          answer: 'Statement',
+          why: 'This sentence is a statement — it simply tells something and ends with a period.' },
+        { prompt: 'What kind of sentence is this: “Where did you put my backpack?”?',
+          options: ['Statement', 'Question', 'Command', 'Exclamation'],
+          answer: 'Question',
+          why: 'This sentence is a question — it asks something and ends with a question mark.' },
+        { prompt: 'What kind of sentence is this: “Please recycle these bottles and cans.”?',
+          options: ['Statement', 'Question', 'Command', 'Exclamation'],
+          answer: 'Command',
+          why: 'This sentence is a command — it tells someone to do something and ends with a period.' },
+        { prompt: 'What kind of sentence is this: “Watch out, the floor is wet!”?',
+          options: ['Statement', 'Question', 'Command', 'Exclamation'],
+          answer: 'Exclamation',
+          why: 'This sentence is a exclamation — it shows strong feeling and ends with an exclamation point.' },
+        { prompt: 'What is the simple subject of this sentence: “The tall oak tree in our backyard dropped its leaves.”?',
+          options: ['tree', 'backyard', 'leaves', 'oak'],
+          answer: 'tree',
+          why: 'The simple subject is the one main word that tells exactly who or what the sentence is about &mdash; here, that word is “tree.”' },
+        { prompt: 'What is the simple subject of this sentence: “The friendly new librarian organized the bookshelves.”?',
+          options: ['librarian', 'bookshelves', 'friendly', 'new'],
+          answer: 'librarian',
+          why: 'The simple subject is the one main word that tells exactly who or what the sentence is about &mdash; here, that word is “librarian.”' },
+        { prompt: 'What is the simple subject of this sentence: “A sudden gust of wind knocked over the tent.”?',
+          options: ['gust', 'wind', 'tent', 'sudden'],
+          answer: 'gust',
+          why: 'The simple subject is the one main word that tells exactly who or what the sentence is about &mdash; here, that word is “gust.”' },
+        { prompt: 'What is the simple subject of this sentence: “The youngest player on the team scored twice.”?',
+          options: ['player', 'team', 'twice', 'youngest'],
+          answer: 'player',
+          why: 'The simple subject is the one main word that tells exactly who or what the sentence is about &mdash; here, that word is “player.”' },
+        { prompt: 'What is the simple subject of this sentence: “Several colorful kites soared above the beach.”?',
+          options: ['kites', 'beach', 'colorful', 'soared'],
+          answer: 'kites',
+          why: 'The simple subject is the one main word that tells exactly who or what the sentence is about &mdash; here, that word is “kites.”' },
+        { prompt: 'What is the simple subject of this sentence: “My grandfather\'s old fishing boat needed new paint.”?',
+          options: ['boat', 'grandfather', 'paint', 'fishing'],
+          answer: 'boat',
+          why: 'The simple subject is the one main word that tells exactly who or what the sentence is about &mdash; here, that word is “boat.”' },
+        { prompt: 'What is the simple subject of this sentence: “The science teacher explained the experiment carefully.”?',
+          options: ['teacher', 'experiment', 'science', 'carefully'],
+          answer: 'teacher',
+          why: 'The simple subject is the one main word that tells exactly who or what the sentence is about &mdash; here, that word is “teacher.”' },
+        { prompt: 'What is the simple subject of this sentence: “A thick fog covered the entire valley this morning.”?',
+          options: ['fog', 'valley', 'morning', 'thick'],
+          answer: 'fog',
+          why: 'The simple subject is the one main word that tells exactly who or what the sentence is about &mdash; here, that word is “fog.”' },
+        { prompt: 'What is the simple subject of this sentence: “The school choir performed three new songs.”?',
+          options: ['choir', 'songs', 'school', 'three'],
+          answer: 'choir',
+          why: 'The simple subject is the one main word that tells exactly who or what the sentence is about &mdash; here, that word is “choir.”' },
+        { prompt: 'What is the simple subject of this sentence: “Two curious kittens explored the empty box.”?',
+          options: ['kittens', 'box', 'curious', 'empty'],
+          answer: 'kittens',
+          why: 'The simple subject is the one main word that tells exactly who or what the sentence is about &mdash; here, that word is “kittens.”' },
+        { prompt: 'What is the simple subject of this sentence: “The busy chef prepared dinner for forty guests.”?',
+          options: ['chef', 'dinner', 'guests', 'busy'],
+          answer: 'chef',
+          why: 'The simple subject is the one main word that tells exactly who or what the sentence is about &mdash; here, that word is “chef.”' },
+        { prompt: 'What is the simple subject of this sentence: “An old wooden clock ticked loudly in the hallway.”?',
+          options: ['clock', 'hallway', 'wooden', 'old'],
+          answer: 'clock',
+          why: 'The simple subject is the one main word that tells exactly who or what the sentence is about &mdash; here, that word is “clock.”' },
+        { prompt: 'What is the simple predicate of this sentence: “The excited students quickly finished their science project.”?',
+          options: ['students', 'finished', 'science', 'project'],
+          answer: 'finished',
+          why: 'The simple predicate is the one main word that tells exactly what the subject does or is &mdash; here, that word is “finished.”' },
+        { prompt: 'What is the simple predicate of this sentence: “Our neighbor\'s dog barked loudly all night.”?',
+          options: ['neighbor', 'dog', 'barked', 'night'],
+          answer: 'barked',
+          why: 'The simple predicate is the one main word that tells exactly what the subject does or is &mdash; here, that word is “barked.”' },
+        { prompt: 'What is the simple predicate of this sentence: “The old bridge finally collapsed after the flood.”?',
+          options: ['bridge', 'collapsed', 'flood', 'old'],
+          answer: 'collapsed',
+          why: 'The simple predicate is the one main word that tells exactly what the subject does or is &mdash; here, that word is “collapsed.”' },
+        { prompt: 'What is the simple predicate of this sentence: “A flock of geese flew south for the winter.”?',
+          options: ['flock', 'geese', 'flew', 'winter'],
+          answer: 'flew',
+          why: 'The simple predicate is the one main word that tells exactly what the subject does or is &mdash; here, that word is “flew.”' },
+        { prompt: 'What is the simple predicate of this sentence: “The bakery sells fresh bread every morning.”?',
+          options: ['bakery', 'sells', 'bread', 'morning'],
+          answer: 'sells',
+          why: 'The simple predicate is the one main word that tells exactly what the subject does or is &mdash; here, that word is “sells.”' },
+        { prompt: 'What is the simple predicate of this sentence: “Two engineers designed the new bridge downtown.”?',
+          options: ['engineers', 'designed', 'bridge', 'downtown'],
+          answer: 'designed',
+          why: 'The simple predicate is the one main word that tells exactly what the subject does or is &mdash; here, that word is “designed.”' },
+        { prompt: 'What is the simple predicate of this sentence: “The thunder rumbled across the dark sky.”?',
+          options: ['thunder', 'rumbled', 'sky', 'dark'],
+          answer: 'rumbled',
+          why: 'The simple predicate is the one main word that tells exactly what the subject does or is &mdash; here, that word is “rumbled.”' },
+        { prompt: 'What is the simple predicate of this sentence: “Our team practices every Tuesday and Thursday.”?',
+          options: ['team', 'practices', 'Tuesday', 'Thursday'],
+          answer: 'practices',
+          why: 'The simple predicate is the one main word that tells exactly what the subject does or is &mdash; here, that word is “practices.”' },
+        { prompt: 'What is the simple predicate of this sentence: “The curious cat knocked the vase off the shelf.”?',
+          options: ['cat', 'knocked', 'vase', 'shelf'],
+          answer: 'knocked',
+          why: 'The simple predicate is the one main word that tells exactly what the subject does or is &mdash; here, that word is “knocked.”' },
+        { prompt: 'What is the simple predicate of this sentence: “The volunteers cleaned the park on Saturday.”?',
+          options: ['volunteers', 'cleaned', 'park', 'Saturday'],
+          answer: 'cleaned',
+          why: 'The simple predicate is the one main word that tells exactly what the subject does or is &mdash; here, that word is “cleaned.”' },
+        { prompt: 'What is the simple predicate of this sentence: “A gentle breeze cooled the crowded beach.”?',
+          options: ['breeze', 'cooled', 'beach', 'crowded'],
+          answer: 'cooled',
+          why: 'The simple predicate is the one main word that tells exactly what the subject does or is &mdash; here, that word is “cooled.”' },
+        { prompt: 'What is the simple predicate of this sentence: “The mechanic repaired the engine in an hour.”?',
+          options: ['mechanic', 'repaired', 'engine', 'hour'],
+          answer: 'repaired',
+          why: 'The simple predicate is the one main word that tells exactly what the subject does or is &mdash; here, that word is “repaired.”' },
+        { prompt: 'Which words make up the complete predicate of this sentence: “My little sister painted a colorful picture.”?',
+          options: ['My little sister', 'painted a colorful picture', 'a colorful picture', 'My little'],
+          answer: 'painted a colorful picture',
+          why: 'The complete predicate is every word that tells what the subject does or is; the rest of the sentence is the complete subject.' },
+        { prompt: 'Which words make up the complete predicate of this sentence: “The entire baseball team celebrated the victory.”?',
+          options: ['The entire baseball team', 'celebrated the victory', 'the victory', 'entire baseball'],
+          answer: 'celebrated the victory',
+          why: 'The complete predicate is every word that tells what the subject does or is; the rest of the sentence is the complete subject.' },
+        { prompt: 'Which words make up the complete predicate of this sentence: “A tall stack of books toppled onto the floor.”?',
+          options: ['A tall stack of books', 'toppled onto the floor', 'onto the floor', 'tall stack'],
+          answer: 'toppled onto the floor',
+          why: 'The complete predicate is every word that tells what the subject does or is; the rest of the sentence is the complete subject.' },
+        { prompt: 'Which words make up the complete predicate of this sentence: “The scientists carefully recorded their observations.”?',
+          options: ['The scientists', 'carefully recorded their observations', 'their observations', 'The careful scientists'],
+          answer: 'carefully recorded their observations',
+          why: 'The complete predicate is every word that tells what the subject does or is; the rest of the sentence is the complete subject.' },
+        { prompt: 'Which words make up the complete predicate of this sentence: “Our whole family enjoys camping in the mountains.”?',
+          options: ['Our whole family', 'enjoys camping in the mountains', 'in the mountains', 'Our whole'],
+          answer: 'enjoys camping in the mountains',
+          why: 'The complete predicate is every word that tells what the subject does or is; the rest of the sentence is the complete subject.' },
+        { prompt: 'Which words make up the complete predicate of this sentence: “The brave firefighters rescued the stranded kitten.”?',
+          options: ['The brave firefighters', 'rescued the stranded kitten', 'the stranded kitten', 'brave firefighters'],
+          answer: 'rescued the stranded kitten',
+          why: 'The complete predicate is every word that tells what the subject does or is; the rest of the sentence is the complete subject.' },
+        { prompt: 'Which words make up the complete predicate of this sentence: “Several bright stars appeared in the evening sky.”?',
+          options: ['Several bright stars', 'appeared in the evening sky', 'in the evening sky', 'bright evening stars'],
+          answer: 'appeared in the evening sky',
+          why: 'The complete predicate is every word that tells what the subject does or is; the rest of the sentence is the complete subject.' },
+        { prompt: 'Which words make up the complete predicate of this sentence: “The museum\'s newest exhibit features ancient pottery.”?',
+          options: ['The museum\'s newest exhibit', 'features ancient pottery', 'ancient pottery', 'newest exhibit'],
+          answer: 'features ancient pottery',
+          why: 'The complete predicate is every word that tells what the subject does or is; the rest of the sentence is the complete subject.' },
+        { prompt: 'Which words make up the complete predicate of this sentence: “A friendly stranger helped us carry the boxes.”?',
+          options: ['A friendly stranger', 'helped us carry the boxes', 'carry the boxes', 'friendly stranger'],
+          answer: 'helped us carry the boxes',
+          why: 'The complete predicate is every word that tells what the subject does or is; the rest of the sentence is the complete subject.' },
+        { prompt: 'Which words make up the complete predicate of this sentence: “The determined runner finished the marathon in record time.”?',
+          options: ['The determined runner', 'finished the marathon in record time', 'in record time', 'determined runner'],
+          answer: 'finished the marathon in record time',
+          why: 'The complete predicate is every word that tells what the subject does or is; the rest of the sentence is the complete subject.' },
+        { prompt: 'Which words make up the complete predicate of this sentence: “My favorite author will visit our school next week.”?',
+          options: ['My favorite author', 'will visit our school next week', 'our school', 'favorite author'],
+          answer: 'will visit our school next week',
+          why: 'The complete predicate is every word that tells what the subject does or is; the rest of the sentence is the complete subject.' },
+        { prompt: 'Which words make up the complete predicate of this sentence: “The heavy rain flooded several streets downtown.”?',
+          options: ['The heavy rain', 'flooded several streets downtown', 'several streets', 'heavy rain'],
+          answer: 'flooded several streets downtown',
+          why: 'The complete predicate is every word that tells what the subject does or is; the rest of the sentence is the complete subject.' },
+        { prompt: 'Is this sentence a run-on or is it correct: “The bell rang the students lined up quickly.”?',
+          options: ['Run-on', 'Correct'],
+          answer: 'Run-on',
+          why: 'This sentence joins two complete thoughts with no punctuation between them, so it is a run-on.' },
+        { prompt: 'Is this sentence a run-on or is it correct: “Our team won the game last night.”?',
+          options: ['Run-on', 'Correct'],
+          answer: 'Correct',
+          why: 'This sentence expresses one complete thought with correct punctuation, so it is not a run-on.' },
+        { prompt: 'Is this sentence a run-on or is it correct: “The power went out we lit some candles.”?',
+          options: ['Run-on', 'Correct'],
+          answer: 'Run-on',
+          why: 'This sentence joins two complete thoughts with no punctuation between them, so it is a run-on.' },
+        { prompt: 'Is this sentence a run-on or is it correct: “She packed her lunch before school.”?',
+          options: ['Run-on', 'Correct'],
+          answer: 'Correct',
+          why: 'This sentence expresses one complete thought with correct punctuation, so it is not a run-on.' },
+        { prompt: 'Is this sentence a run-on or is it correct: “The movie started late everyone was disappointed.”?',
+          options: ['Run-on', 'Correct'],
+          answer: 'Run-on',
+          why: 'This sentence joins two complete thoughts with no punctuation between them, so it is a run-on.' },
+        { prompt: 'Is this sentence a run-on or is it correct: “He practices karate three times a week.”?',
+          options: ['Run-on', 'Correct'],
+          answer: 'Correct',
+          why: 'This sentence expresses one complete thought with correct punctuation, so it is not a run-on.' },
+        { prompt: 'Is this sentence a run-on or is it correct: “The kitchen was a mess we cleaned it together.”?',
+          options: ['Run-on', 'Correct'],
+          answer: 'Run-on',
+          why: 'This sentence joins two complete thoughts with no punctuation between them, so it is a run-on.' },
+        { prompt: 'Is this sentence a run-on or is it correct: “The bakery smells like fresh cinnamon rolls.”?',
+          options: ['Run-on', 'Correct'],
+          answer: 'Correct',
+          why: 'This sentence expresses one complete thought with correct punctuation, so it is not a run-on.' },
+        { prompt: 'Is this sentence a run-on or is it correct: “The wind picked up we hurried to close the windows.”?',
+          options: ['Run-on', 'Correct'],
+          answer: 'Run-on',
+          why: 'This sentence joins two complete thoughts with no punctuation between them, so it is a run-on.' },
+        { prompt: 'Which is the correct way to fix this run-on sentence: “The bus was late we waited at the stop.”?',
+          options: ['The bus was late. We waited at the stop.', 'The bus was late, we waited at the stop.', 'The bus was late we waited, at the stop.', 'the bus was late. we waited at the stop.'],
+          answer: 'The bus was late. We waited at the stop.',
+          why: 'A run-on is fixed by splitting it into two separate sentences, each starting with a capital letter and ending with its own end mark &mdash; not by joining the thoughts with just a comma.' },
+        { prompt: 'Which is the correct way to fix this run-on sentence: “Snow covered the driveway we shoveled it before breakfast.”?',
+          options: ['Snow covered the driveway. We shoveled it before breakfast.', 'Snow covered the driveway, we shoveled it before breakfast.', 'Snow covered the driveway we shoveled, it before breakfast.', 'snow covered the driveway. we shoveled it before breakfast.'],
+          answer: 'Snow covered the driveway. We shoveled it before breakfast.',
+          why: 'A run-on is fixed by splitting it into two separate sentences, each starting with a capital letter and ending with its own end mark &mdash; not by joining the thoughts with just a comma.' },
+        { prompt: 'Which is the correct way to fix this run-on sentence: “The library was quiet everyone read their books.”?',
+          options: ['The library was quiet. Everyone read their books.', 'The library was quiet, everyone read their books.', 'The library was quiet everyone, read their books.', 'the library was quiet. everyone read their books.'],
+          answer: 'The library was quiet. Everyone read their books.',
+          why: 'A run-on is fixed by splitting it into two separate sentences, each starting with a capital letter and ending with its own end mark &mdash; not by joining the thoughts with just a comma.' },
+        { prompt: 'Which is the correct way to fix this run-on sentence: “The puppy chewed my shoe I was not happy about it.”?',
+          options: ['The puppy chewed my shoe. I was not happy about it.', 'The puppy chewed my shoe, I was not happy about it.', 'The puppy chewed my shoe I was, not happy about it.', 'the puppy chewed my shoe. i was not happy about it.'],
+          answer: 'The puppy chewed my shoe. I was not happy about it.',
+          why: 'A run-on is fixed by splitting it into two separate sentences, each starting with a capital letter and ending with its own end mark &mdash; not by joining the thoughts with just a comma.' },
+        { prompt: 'Which is the correct way to fix this run-on sentence: “The concert ran late we missed the last train.”?',
+          options: ['The concert ran late. We missed the last train.', 'The concert ran late, we missed the last train.', 'The concert ran late we, missed the last train.', 'the concert ran late. we missed the last train.'],
+          answer: 'The concert ran late. We missed the last train.',
+          why: 'A run-on is fixed by splitting it into two separate sentences, each starting with a capital letter and ending with its own end mark &mdash; not by joining the thoughts with just a comma.' },
+        { prompt: 'Which is the correct way to fix this run-on sentence: “The garden was overgrown we spent all Saturday weeding it.”?',
+          options: ['The garden was overgrown. We spent all Saturday weeding it.', 'The garden was overgrown, we spent all Saturday weeding it.', 'The garden was overgrown we spent, all Saturday weeding it.', 'the garden was overgrown. we spent all Saturday weeding it.'],
+          answer: 'The garden was overgrown. We spent all Saturday weeding it.',
+          why: 'A run-on is fixed by splitting it into two separate sentences, each starting with a capital letter and ending with its own end mark &mdash; not by joining the thoughts with just a comma.' },
+        { prompt: 'Which is the correct way to fix this run-on sentence: “The test was difficult most students finished early anyway.”?',
+          options: ['The test was difficult. Most students finished early anyway.', 'The test was difficult, most students finished early anyway.', 'The test was difficult most, students finished early anyway.', 'the test was difficult. most students finished early anyway.'],
+          answer: 'The test was difficult. Most students finished early anyway.',
+          why: 'A run-on is fixed by splitting it into two separate sentences, each starting with a capital letter and ending with its own end mark &mdash; not by joining the thoughts with just a comma.' },
+        { prompt: 'Which is the correct way to fix this run-on sentence: “The waves grew rough the lifeguard called swimmers out of the water.”?',
+          options: ['The waves grew rough. The lifeguard called swimmers out of the water.', 'The waves grew rough, the lifeguard called swimmers out of the water.', 'The waves grew rough the lifeguard, called swimmers out of the water.', 'the waves grew rough. the lifeguard called swimmers out of the water.'],
+          answer: 'The waves grew rough. The lifeguard called swimmers out of the water.',
+          why: 'A run-on is fixed by splitting it into two separate sentences, each starting with a capital letter and ending with its own end mark &mdash; not by joining the thoughts with just a comma.' },
+        { prompt: 'Which is the correct way to fix this run-on sentence: “The printer jammed again we had to restart the whole project.”?',
+          options: ['The printer jammed again. We had to restart the whole project.', 'The printer jammed again, we had to restart the whole project.', 'The printer jammed again we had, to restart the whole project.', 'the printer jammed again. we had to restart the whole project.'],
+          answer: 'The printer jammed again. We had to restart the whole project.',
+          why: 'A run-on is fixed by splitting it into two separate sentences, each starting with a capital letter and ending with its own end mark &mdash; not by joining the thoughts with just a comma.' },
+        { prompt: 'Which group of words is a complete sentence?',
+          options: ['The tiny robot beeped and rolled forward.', 'Across the smooth tile floor.', 'Beeping and rolling forward.', 'A tiny, beeping robot.'],
+          answer: 'The tiny robot beeped and rolled forward.',
+          why: 'A sentence must name who or what (the robot) and tell what it does (beeped and rolled). The others are missing a subject or a predicate.' },
+        { prompt: 'Which group of words is a complete sentence?',
+          options: ['Sorted the recycling into three bins.', 'Every Friday after lunch.', 'Neatly and quickly.', 'The class sorted the recycling into three bins.'],
+          answer: 'The class sorted the recycling into three bins.',
+          why: 'This is the only choice with both a subject (the class) and a predicate (sorted).' },
+        { prompt: 'Which group of words is a complete sentence?',
+          options: ['The old lighthouse.', 'Guided ships safely to shore.', 'The old lighthouse guided ships safely to shore.', 'Safely to shore.'],
+          answer: 'The old lighthouse guided ships safely to shore.',
+          why: 'Only this option names a subject (the lighthouse) and a predicate (guided).' },
+        { prompt: 'Which group of words is a complete sentence?',
+          options: ['Wrote a letter to her pen pal.', 'In neat cursive handwriting.', 'To her pen pal overseas.', 'Amy wrote a letter to her pen pal.'],
+          answer: 'Amy wrote a letter to her pen pal.',
+          why: 'This choice tells who (Amy) and what she did (wrote), so it is complete.' },
+        { prompt: 'Which group of words is a complete sentence?',
+          options: ['The rusty old bicycle in the garage.', 'In the garage since last summer.', 'The rusty old bicycle needs new tires.', 'Needs new tires badly.'],
+          answer: 'The rusty old bicycle needs new tires.',
+          why: 'It names a subject (bicycle) and a predicate (needs), making it a full sentence.' },
+        { prompt: 'Which group of words is a complete sentence?',
+          options: ['Planted tomatoes and peppers in the garden.', 'Early in the spring.', 'Fresh tomatoes and peppers.', 'Mr. Lee planted tomatoes and peppers in the garden.'],
+          answer: 'Mr. Lee planted tomatoes and peppers in the garden.',
+          why: 'This choice has a subject (Mr. Lee) and a predicate (planted).' },
+        { prompt: 'Which group of words is a complete sentence?',
+          options: ['Splashing happily in the puddles.', 'The toddlers splashed happily in the puddles.', 'In every muddy puddle.', 'The happy, muddy toddlers.'],
+          answer: 'The toddlers splashed happily in the puddles.',
+          why: 'It tells who (the toddlers) and what they did (splashed), so the thought is complete.' },
+        { prompt: 'Which group of words is a complete sentence?',
+          options: ['Solved the riddle in under a minute.', 'In record time.', 'A tricky riddle about numbers.', 'The twins solved the riddle in under a minute.'],
+          answer: 'The twins solved the riddle in under a minute.',
+          why: 'Only this option names a subject (the twins) and a predicate (solved).' },
+        { prompt: 'Which end mark correctly completes this sentence: “The spelling bee starts at noon”?',
+          options: ['.', '?', '!', ','],
+          answer: '.',
+          why: 'A statement tells something and ends with a period.' },
+        { prompt: 'Which end mark correctly completes this sentence: “Can you help me carry these boxes”?',
+          options: ['.', '?', '!', ','],
+          answer: '?',
+          why: 'A question asks something and ends with a question mark.' },
+        { prompt: 'Which end mark correctly completes this sentence: “This is the best pizza I\'ve ever had”?',
+          options: ['.', '?', '!', ','],
+          answer: '!',
+          why: 'This sentence shows strong feeling, so it needs an exclamation point.' },
+        { prompt: 'Which end mark correctly completes this sentence: “Line up quietly at the door”?',
+          options: ['.', '?', '!', ','],
+          answer: '.',
+          why: 'This is a command telling someone to do something, so it ends with a period.' },
+        { prompt: 'Which end mark correctly completes this sentence: “Where did you find that old map”?',
+          options: ['.', '?', '!', ','],
+          answer: '?',
+          why: 'This is a question, so it ends with a question mark.' },
+        { prompt: 'Which end mark correctly completes this sentence: “Look out, the ball is coming right at you”?',
+          options: ['.', '?', '!', ','],
+          answer: '!',
+          why: 'This warning shows urgency, so it takes an exclamation point.' },
+        { prompt: 'Which end mark correctly completes this sentence: “The recipe calls for two cups of flour”?',
+          options: ['.', '?', '!', ','],
+          answer: '.',
+          why: 'This sentence states a fact, so it ends with a period.' },
+        { prompt: 'Which end mark correctly completes this sentence: “How does a rainbow form”?',
+          options: ['.', '?', '!', ','],
+          answer: '?',
+          why: 'This sentence asks something, so it needs a question mark.' },
+        { prompt: 'What kind of sentence is this: “The ferry departs from pier nine.”?',
+          options: ['Statement', 'Question', 'Command', 'Exclamation'],
+          answer: 'Statement',
+          why: 'This sentence is a statement — it simply tells something and ends with a period.' },
+        { prompt: 'What kind of sentence is this: “Would you like extra cheese on that?”?',
+          options: ['Statement', 'Question', 'Command', 'Exclamation'],
+          answer: 'Question',
+          why: 'This sentence is a question — it asks something and ends with a question mark.' },
+        { prompt: 'What kind of sentence is this: “Carry the tray with both hands.”?',
+          options: ['Statement', 'Question', 'Command', 'Exclamation'],
+          answer: 'Command',
+          why: 'This sentence is a command — it tells someone to do something and ends with a period.' },
+        { prompt: 'What kind of sentence is this: “What a magnificent castle that is!”?',
+          options: ['Statement', 'Question', 'Command', 'Exclamation'],
+          answer: 'Exclamation',
+          why: 'This sentence is a exclamation — it shows strong feeling and ends with an exclamation point.' },
+        { prompt: 'What kind of sentence is this: “The orchestra rehearses every Wednesday.”?',
+          options: ['Statement', 'Question', 'Command', 'Exclamation'],
+          answer: 'Statement',
+          why: 'This sentence is a statement — it simply tells something and ends with a period.' },
+        { prompt: 'What kind of sentence is this: “Has the mail arrived yet?”?',
+          options: ['Statement', 'Question', 'Command', 'Exclamation'],
+          answer: 'Question',
+          why: 'This sentence is a question — it asks something and ends with a question mark.' },
+        { prompt: 'What kind of sentence is this: “Please lower your voice in the library.”?',
+          options: ['Statement', 'Question', 'Command', 'Exclamation'],
+          answer: 'Command',
+          why: 'This sentence is a command — it tells someone to do something and ends with a period.' },
+        { prompt: 'What kind of sentence is this: “We actually won the spelling bee!”?',
+          options: ['Statement', 'Question', 'Command', 'Exclamation'],
+          answer: 'Exclamation',
+          why: 'This sentence is a exclamation — it shows strong feeling and ends with an exclamation point.' },
+        { prompt: 'What is the simple subject of this sentence: “The bright yellow school bus stopped at the corner.”?',
+          options: ['bus', 'corner', 'school', 'yellow'],
+          answer: 'bus',
+          why: 'The simple subject is the one main word that tells exactly who or what the sentence is about &mdash; here, that word is “bus.”' },
+        { prompt: 'What is the simple subject of this sentence: “The talented young violinist practiced for hours.”?',
+          options: ['violinist', 'hours', 'young', 'talented'],
+          answer: 'violinist',
+          why: 'The simple subject is the one main word that tells exactly who or what the sentence is about &mdash; here, that word is “violinist.”' },
+        { prompt: 'What is the simple subject of this sentence: “A heavy wooden crate blocked the doorway.”?',
+          options: ['crate', 'doorway', 'wooden', 'heavy'],
+          answer: 'crate',
+          why: 'The simple subject is the one main word that tells exactly who or what the sentence is about &mdash; here, that word is “crate.”' },
+        { prompt: 'What is the simple subject of this sentence: “The oldest tree in the park fell during the storm.”?',
+          options: ['tree', 'park', 'storm', 'oldest'],
+          answer: 'tree',
+          why: 'The simple subject is the one main word that tells exactly who or what the sentence is about &mdash; here, that word is “tree.”' },
+        { prompt: 'What is the simple subject of this sentence: “Several hungry seagulls circled the fishing boat.”?',
+          options: ['seagulls', 'boat', 'hungry', 'fishing'],
+          answer: 'seagulls',
+          why: 'The simple subject is the one main word that tells exactly who or what the sentence is about &mdash; here, that word is “seagulls.”' },
+        { prompt: 'What is the simple subject of this sentence: “My little brother\'s toy robot lit up in the dark.”?',
+          options: ['robot', 'brother', 'dark', 'toy'],
+          answer: 'robot',
+          why: 'The simple subject is the one main word that tells exactly who or what the sentence is about &mdash; here, that word is “robot.”' },
+        { prompt: 'What is the simple subject of this sentence: “The new gym teacher organized a relay race.”?',
+          options: ['teacher', 'race', 'gym', 'new'],
+          answer: 'teacher',
+          why: 'The simple subject is the one main word that tells exactly who or what the sentence is about &mdash; here, that word is “teacher.”' },
+        { prompt: 'What is the simple subject of this sentence: “A thick blanket of clouds hid the mountain peak.”?',
+          options: ['blanket', 'clouds', 'peak', 'thick'],
+          answer: 'blanket',
+          why: 'The simple subject is the one main word that tells exactly who or what the sentence is about &mdash; here, that word is “blanket.”' },
+        { prompt: 'What is the simple predicate of this sentence: “The clever fox slipped past the sleeping guard dog.”?',
+          options: ['fox', 'slipped', 'dog', 'sleeping'],
+          answer: 'slipped',
+          why: 'The simple predicate is the one main word that tells exactly what the subject does or is &mdash; here, that word is “slipped.”' },
+        { prompt: 'What is the simple predicate of this sentence: “Our new neighbors moved in last weekend.”?',
+          options: ['neighbors', 'moved', 'weekend', 'new'],
+          answer: 'moved',
+          why: 'The simple predicate is the one main word that tells exactly what the subject does or is &mdash; here, that word is “moved.”' },
+        { prompt: 'What is the simple predicate of this sentence: “The bright fireworks lit up the entire sky.”?',
+          options: ['fireworks', 'lit', 'sky', 'entire'],
+          answer: 'lit',
+          why: 'The simple predicate is the one main word that tells exactly what the subject does or is &mdash; here, that word is “lit.”' },
+        { prompt: 'What is the simple predicate of this sentence: “A swarm of bees buzzed around the flower bed.”?',
+          options: ['swarm', 'bees', 'buzzed', 'flower'],
+          answer: 'buzzed',
+          why: 'The simple predicate is the one main word that tells exactly what the subject does or is &mdash; here, that word is “buzzed.”' },
+        { prompt: 'What is the simple predicate of this sentence: “The coach blew the whistle loudly.”?',
+          options: ['coach', 'blew', 'whistle', 'loudly'],
+          answer: 'blew',
+          why: 'The simple predicate is the one main word that tells exactly what the subject does or is &mdash; here, that word is “blew.”' },
+        { prompt: 'What is the simple predicate of this sentence: “Three explorers mapped the hidden cave.”?',
+          options: ['explorers', 'mapped', 'cave', 'hidden'],
+          answer: 'mapped',
+          why: 'The simple predicate is the one main word that tells exactly what the subject does or is &mdash; here, that word is “mapped.”' },
+        { prompt: 'What is the simple predicate of this sentence: “The stray cat hid under the porch.”?',
+          options: ['cat', 'hid', 'porch', 'stray'],
+          answer: 'hid',
+          why: 'The simple predicate is the one main word that tells exactly what the subject does or is &mdash; here, that word is “hid.”' },
+        { prompt: 'What is the simple predicate of this sentence: “The whole audience applauded the young pianist.”?',
+          options: ['audience', 'applauded', 'pianist', 'young'],
+          answer: 'applauded',
+          why: 'The simple predicate is the one main word that tells exactly what the subject does or is &mdash; here, that word is “applauded.”' },
+        { prompt: 'Which words make up the complete predicate of this sentence: “The youngest campers roasted marshmallows over the fire.”?',
+          options: ['The youngest campers', 'roasted marshmallows over the fire', 'over the fire', 'youngest campers'],
+          answer: 'roasted marshmallows over the fire',
+          why: 'The complete predicate is every word that tells what the subject does or is; the rest of the sentence is the complete subject.' },
+        { prompt: 'Which words make up the complete predicate of this sentence: “A narrow trail wound through the dense forest.”?',
+          options: ['A narrow trail', 'wound through the dense forest', 'through the dense forest', 'narrow, dense trail'],
+          answer: 'wound through the dense forest',
+          why: 'The complete predicate is every word that tells what the subject does or is; the rest of the sentence is the complete subject.' },
+        { prompt: 'Which words make up the complete predicate of this sentence: “The retired teacher volunteers at the animal shelter.”?',
+          options: ['The retired teacher', 'volunteers at the animal shelter', 'at the animal shelter', 'retired teacher'],
+          answer: 'volunteers at the animal shelter',
+          why: 'The complete predicate is every word that tells what the subject does or is; the rest of the sentence is the complete subject.' },
+        { prompt: 'Which words make up the complete predicate of this sentence: “Bright orange leaves covered the entire sidewalk.”?',
+          options: ['Bright orange leaves', 'covered the entire sidewalk', 'the entire sidewalk', 'bright, orange leaves'],
+          answer: 'covered the entire sidewalk',
+          why: 'The complete predicate is every word that tells what the subject does or is; the rest of the sentence is the complete subject.' },
+        { prompt: 'Which words make up the complete predicate of this sentence: “The talented young chef invented a new dessert.”?',
+          options: ['The talented young chef', 'invented a new dessert', 'a new dessert', 'talented young chef'],
+          answer: 'invented a new dessert',
+          why: 'The complete predicate is every word that tells what the subject does or is; the rest of the sentence is the complete subject.' },
+        { prompt: 'Which words make up the complete predicate of this sentence: “Our neighborhood park recently added a splash pad.”?',
+          options: ['Our neighborhood park', 'recently added a splash pad', 'a splash pad', 'neighborhood splash pad'],
+          answer: 'recently added a splash pad',
+          why: 'The complete predicate is every word that tells what the subject does or is; the rest of the sentence is the complete subject.' },
+        { prompt: 'Which words make up the complete predicate of this sentence: “The curious puppy dug a hole under the fence.”?',
+          options: ['The curious puppy', 'dug a hole under the fence', 'under the fence', 'curious puppy'],
+          answer: 'dug a hole under the fence',
+          why: 'The complete predicate is every word that tells what the subject does or is; the rest of the sentence is the complete subject.' },
+        { prompt: 'Which words make up the complete predicate of this sentence: “Several eager volunteers painted the community mural.”?',
+          options: ['Several eager volunteers', 'painted the community mural', 'the community mural', 'eager volunteers'],
+          answer: 'painted the community mural',
+          why: 'The complete predicate is every word that tells what the subject does or is; the rest of the sentence is the complete subject.' },
+        { prompt: 'Is this sentence a run-on or is it correct: “The alarm went off everyone rushed outside.”?',
+          options: ['Run-on', 'Correct'],
+          answer: 'Run-on',
+          why: 'This sentence joins two complete thoughts with no punctuation between them, so it is a run-on.' },
+        { prompt: 'Is this sentence a run-on or is it correct: “We planted sunflowers along the fence.”?',
+          options: ['Run-on', 'Correct'],
+          answer: 'Correct',
+          why: 'This sentence expresses one complete thought with correct punctuation, so it is not a run-on.' },
+        { prompt: 'Is this sentence a run-on or is it correct: “The battery died the flashlight went dark.”?',
+          options: ['Run-on', 'Correct'],
+          answer: 'Run-on',
+          why: 'This sentence joins two complete thoughts with no punctuation between them, so it is a run-on.' },
+        { prompt: 'Is this sentence a run-on or is it correct: “She organized her books by color.”?',
+          options: ['Run-on', 'Correct'],
+          answer: 'Correct',
+          why: 'This sentence expresses one complete thought with correct punctuation, so it is not a run-on.' },
+        { prompt: 'Is this sentence a run-on or is it correct: “The crowd cheered the players waved back.”?',
+          options: ['Run-on', 'Correct'],
+          answer: 'Run-on',
+          why: 'This sentence joins two complete thoughts with no punctuation between them, so it is a run-on.' },
+        { prompt: 'Is this sentence a run-on or is it correct: “He fixed the leaky faucet in ten minutes.”?',
+          options: ['Run-on', 'Correct'],
+          answer: 'Correct',
+          why: 'This sentence expresses one complete thought with correct punctuation, so it is not a run-on.' },
+        { prompt: 'Is this sentence a run-on or is it correct: “The bridge was closed drivers took a detour.”?',
+          options: ['Run-on', 'Correct'],
+          answer: 'Run-on',
+          why: 'This sentence joins two complete thoughts with no punctuation between them, so it is a run-on.' },
+        { prompt: 'Which is the correct way to fix this run-on sentence: “The lights flickered we grabbed a flashlight.”?',
+          options: ['The lights flickered. We grabbed a flashlight.', 'The lights flickered, we grabbed a flashlight.', 'The lights flickered we grabbed, a flashlight.', 'the lights flickered. we grabbed a flashlight.'],
+          answer: 'The lights flickered. We grabbed a flashlight.',
+          why: 'A run-on is fixed by splitting it into two separate sentences, each starting with a capital letter and ending with its own end mark &mdash; not by joining the thoughts with just a comma.' },
+        { prompt: 'Which is the correct way to fix this run-on sentence: “The gym was noisy the coach blew her whistle.”?',
+          options: ['The gym was noisy. The coach blew her whistle.', 'The gym was noisy, the coach blew her whistle.', 'The gym was noisy the coach, blew her whistle.', 'the gym was noisy. the coach blew her whistle.'],
+          answer: 'The gym was noisy. The coach blew her whistle.',
+          why: 'A run-on is fixed by splitting it into two separate sentences, each starting with a capital letter and ending with its own end mark &mdash; not by joining the thoughts with just a comma.' },
+        { prompt: 'Which is the correct way to fix this run-on sentence: “The trail was steep we stopped twice to rest.”?',
+          options: ['The trail was steep. We stopped twice to rest.', 'The trail was steep, we stopped twice to rest.', 'The trail was steep we stopped, twice to rest.', 'the trail was steep. we stopped twice to rest.'],
+          answer: 'The trail was steep. We stopped twice to rest.',
+          why: 'A run-on is fixed by splitting it into two separate sentences, each starting with a capital letter and ending with its own end mark &mdash; not by joining the thoughts with just a comma.' },
+        { prompt: 'Which is the correct way to fix this run-on sentence: “The soup was too hot we let it cool first.”?',
+          options: ['The soup was too hot. We let it cool first.', 'The soup was too hot, we let it cool first.', 'The soup was too hot we let, it cool first.', 'the soup was too hot. we let it cool first.'],
+          answer: 'The soup was too hot. We let it cool first.',
+          why: 'A run-on is fixed by splitting it into two separate sentences, each starting with a capital letter and ending with its own end mark &mdash; not by joining the thoughts with just a comma.' },
+        { prompt: 'Which is the correct way to fix this run-on sentence: “The costume was itchy she wore it anyway.”?',
+          options: ['The costume was itchy. She wore it anyway.', 'The costume was itchy, she wore it anyway.', 'The costume was itchy she wore, it anyway.', 'the costume was itchy. she wore it anyway.'],
+          answer: 'The costume was itchy. She wore it anyway.',
+          why: 'A run-on is fixed by splitting it into two separate sentences, each starting with a capital letter and ending with its own end mark &mdash; not by joining the thoughts with just a comma.' },
+      ],
+    },
+    // __MORE_GRAMMAR_UNITS__
+  };
+
+  // =========================================================================
   // NAVIGATION
   // =========================================================================
   const subjects = [
     { id: "vocab", icon: "📖", name: "Vocabulary Workshop", status: "Units 1–18 ready", enabled: true },
     { id: "reading", icon: "📚", name: "Reading", status: "Story 1 ready", enabled: true },
-    { id: "math", icon: "🔢", name: "Math", status: "Coming soon", enabled: false },
-    { id: "grammar", icon: "✏️", name: "Grammar", status: "Coming soon", enabled: false },
+    { id: "math", icon: "🔢", name: "Math", status: "Chapter 1 ready", enabled: true },
+    { id: "grammar", icon: "✏️", name: "ENG Grammar", status: "Unit 1 ready", enabled: true },
     { id: "social", icon: "🌍", name: "Social Studies", status: "Coming soon", enabled: false },
     { id: "science", icon: "🔬", name: "Science", status: "Coming soon", enabled: false },
     { id: "chinese", icon: "中", name: "Chinese Characters", status: "Coming soon", enabled: false },
@@ -3056,6 +4234,23 @@
     id, icon: "📖", name: STORIES[id].name,
     status: STORIES[id].words.length + " words ready", enabled: true,
   }));
+
+  const chapters = Object.keys(MATH_CHAPTERS).map((id, i) => ({
+    id, icon: String(i + 1), name: MATH_CHAPTERS[id].name,
+    status: MATH_CHAPTERS[id].quizBank.length + " questions ready", enabled: true,
+  }));
+
+  let currentChapter = "chapter1";
+  function M() { return MATH_CHAPTERS[currentChapter]; }
+
+  const grammarUnits = Object.keys(GRAMMAR_UNITS).map((id, i) => ({
+    id, icon: String(i + 1), name: GRAMMAR_UNITS[id].name,
+    status: GRAMMAR_UNITS[id].quizBank.length ? GRAMMAR_UNITS[id].quizBank.length + " questions ready" : "Coming soon",
+    enabled: true,
+  }));
+
+  let currentGrammarUnit = "unit1";
+  function G() { return GRAMMAR_UNITS[currentGrammarUnit]; }
 
   let currentStory = "story1";
   function S() { return STORIES[currentStory]; }
@@ -3089,10 +4284,80 @@
       showScreen("screen-vocab", "Vocabulary Workshop");
     } else if (subj.id === "reading") {
       showScreen("screen-reading", "Reading");
+    } else if (subj.id === "math") {
+      showScreen("screen-math", "Math");
+    } else if (subj.id === "grammar") {
+      showScreen("screen-grammar", "ENG Grammar");
     } else {
       document.getElementById("placeholderSubject").textContent = subj.name;
       showScreen("screen-placeholder", subj.name);
     }
+  }
+
+  function openChapter(chapter) {
+    navStack.push({ id: "screen-math", title: "Math" });
+    if (chapter.enabled) {
+      currentChapter = chapter.id;
+      renderChapterQuiz();
+      showScreen("screen-chapter", "Math — " + chapter.name);
+    } else {
+      document.getElementById("placeholderSubject").textContent = chapter.name;
+      showScreen("screen-placeholder", chapter.name);
+    }
+  }
+
+  // How many questions to pull from the chapter's quiz bank per attempt.
+  const CHAPTER_QUIZ_SIZE = 30;
+
+  function renderChapterQuiz() {
+    document.getElementById("chapterQuizTitle").textContent = M().name + " — Quiz";
+    renderMCQ("chapterQuizQs", "chapterQuiz", shuffle(M().quizBank).slice(0, CHAPTER_QUIZ_SIZE));
+  }
+
+  function openGrammarUnit(unit) {
+    navStack.push({ id: "screen-grammar", title: "ENG Grammar" });
+    if (unit.enabled) {
+      currentGrammarUnit = unit.id;
+      renderGrammarLesson();
+      showGrammarTab("lesson");
+      showScreen("screen-grammarunit", "ENG Grammar — " + unit.name);
+    } else {
+      document.getElementById("placeholderSubject").textContent = unit.name;
+      showScreen("screen-placeholder", unit.name);
+    }
+  }
+
+  function showGrammarTab(tab) {
+    document.querySelectorAll("[data-grammar-tab]").forEach(b => b.classList.toggle("active", b.dataset.grammarTab === tab));
+    document.querySelectorAll(".grammarunit-tab").forEach(el => el.style.display = "none");
+    document.getElementById("grammarunit-" + tab).style.display = "block";
+    if (tab === "quiz") renderGrammarUnitQuiz(); // fresh random set from the question bank every time
+  }
+
+  function renderGrammarLesson() {
+    const lessons = G().lessons || [];
+    document.getElementById("grammarLessonCards").innerHTML = lessons.map(l => `
+      <div class="lesson-card">
+        <h4>${l.title}</h4>
+        <p>${l.rule}</p>
+        ${l.tip ? `<p class="trick">💡 <strong>Tip:</strong> ${l.tip}</p>` : ""}
+        ${l.examples.map(ex => `<p><span class="syn">${ex.label}:</span> ${ex.text}</p>`).join("")}
+      </div>
+    `).join("") || `<div class="placeholder-box"><p><strong>${G().name}</strong> lesson hasn't been added yet.</p></div>`;
+  }
+
+  // How many questions to pull from the grammar unit's quiz bank per attempt.
+  const GRAMMAR_QUIZ_SIZE = 30;
+
+  function renderGrammarUnitQuiz() {
+    document.getElementById("grammarUnitQuizTitle").textContent = G().name + " — Quiz";
+    const qs = document.getElementById("grammarUnitQuizQs");
+    if (!G().quizBank.length) {
+      document.getElementById("grammarUnitQuiz-score").textContent = "";
+      qs.innerHTML = `<div class="placeholder-box"><p><strong>${G().name}</strong> quiz hasn't been added yet.</p><p>Drop the material into this project folder and this unit's quiz can be built out next.</p></div>`;
+      return;
+    }
+    renderMCQ("grammarUnitQuizQs", "grammarUnitQuiz", shuffle(G().quizBank).slice(0, GRAMMAR_QUIZ_SIZE));
   }
 
   function openUnit(unit) {
@@ -3122,8 +4387,20 @@
   }
 
   function openPrintScreen() {
-    navStack.push({ id: "screen-home", title: "Grade 4 Learning Hub" });
+    const cur = document.querySelector(".screen.active");
+    navStack.push({ id: cur ? cur.id : "screen-home", title: document.getElementById("header-title").textContent });
+    updatePrintFields();
     showScreen("screen-print", "Print Worksheets");
+  }
+
+  function updatePrintFields() {
+    const sec = document.getElementById("printSection").value;
+    document.getElementById("printUnitField").style.display = sec === "vocab" ? "flex" : "none";
+    document.getElementById("printStoryField").style.display = sec === "reading" ? "flex" : "none";
+    document.getElementById("printChapterField").style.display = sec === "math" ? "flex" : "none";
+    document.getElementById("printGrammarUnitField").style.display = sec === "grammar" ? "flex" : "none";
+    document.getElementById("printVocabTypesField").style.display = sec === "vocab" ? "flex" : "none";
+    document.getElementById("printCountField").style.display = sec === "vocab" ? "none" : "flex";
   }
 
   function renderGrid(elId, items, onClick) {
@@ -3315,20 +4592,29 @@
   function renderMCQ(qsId, setId, questions) {
     const rendered = shuffle(questions).map(q => {
       const opts = shuffle(q.options);
-      return { prompt: q.prompt, answer: q.answer, why: q.why, opts, correctIdx: opts.indexOf(q.answer) };
+      return { prompt: q.prompt, answer: q.answer, why: q.why, barModel: q.barModel, opts, correctIdx: opts.indexOf(q.answer) };
     });
     currentSets[setId] = rendered;
     scores[setId] = { answered: 0, correct: 0, total: rendered.length };
     updateScore(setId);
     document.getElementById(qsId).innerHTML = rendered.map((q, i) => {
       const key = qsId + "-" + i;
-      mcqInfo[key] = setId === "storyQuiz"
-        ? { letter: LETTERS[q.correctIdx], answer: q.answer, why: q.why, set: setId, prompt: q.prompt, unitName: S().name, section: "Reading" }
-        : { letter: LETTERS[q.correctIdx], answer: q.answer, why: q.why, set: setId, prompt: q.prompt, unitName: U().name };
+      let sectionInfo;
+      if (setId === "storyQuiz") sectionInfo = { unitName: S().name, section: "Reading" };
+      else if (setId === "chapterQuiz") sectionInfo = { unitName: M().name, section: "Math" };
+      else if (setId === "grammarUnitQuiz") sectionInfo = { unitName: G().name, section: "ENG Grammar" };
+      else sectionInfo = { unitName: U().name };
+      mcqInfo[key] = Object.assign(
+        { letter: LETTERS[q.correctIdx], answer: q.answer, why: q.why, set: setId, prompt: q.prompt },
+        sectionInfo
+      );
       const btns = q.opts.map((o, j) =>
         `<button class="opt-btn" data-correct="${o === q.answer ? 1 : 0}" data-opt="${o}" onclick="pickAnswer(this, '${key}', ${o === q.answer})"><span class="letter">${LETTERS[j]}</span>${o}</button>`
       ).join("");
-      return `<div class="q-item">${i+1}. ${q.prompt}<div class="opt-row">${btns}</div><div class="feedback" id="${key}-fb"></div></div>`;
+      const barModelHtml = q.barModel
+        ? `<p class="bar-model-hint">✏️ Sketch a bar model to solve, then fill in the blanks:</p>${q.barModel}`
+        : "";
+      return `<div class="q-item">${i+1}. ${q.prompt}${barModelHtml}<div class="opt-row">${btns}</div><div class="feedback" id="${key}-fb"></div></div>`;
     }).join("");
   }
 
@@ -3477,43 +4763,90 @@
   // PRINT
   // =========================================================================
   function printWorksheets() {
-    const unitId = document.getElementById("printUnit").value;
-    const picked = [
-      ["pt-fill", "Fill in the Blank", buildFillBank],
-      ["pt-syn", "Synonyms", buildSynBank],
-      ["pt-ant", "Antonyms", buildAntBank],
-    ].filter(t => document.getElementById(t[0]).checked);
-    if (!picked.length) { alert("Check at least one question type to print."); return; }
+    const section = document.getElementById("printSection").value;
     const withKey = document.getElementById("pt-key").checked;
-    const sectionName = "Vocabulary Workshop";
-    const unitName = UNITS[unitId].name;
 
-    const keyParts = [];
-    const qParts = picked.map(([id, title, builder], ti) => {
-      const set = shuffle(builder(unitId)).map(q => {
-        const opts = shuffle(q.options);
-        return { ...q, opts, correctIdx: opts.indexOf(q.answer) };
-      });
-      keyParts.push(`<h3>${title}</h3><p style="line-height:1.8">` +
-        set.map((q, i) => `${i+1}. ${LETTERS[q.correctIdx]} — ${q.answer}`).join("<br>") + `</p>`);
-      const qs = set.map((q, i) => {
-        const opts = q.opts.map((o, j) => `${LETTERS[j]}. ${o}`).join("&nbsp;&nbsp;&nbsp;&nbsp;");
-        return `<div class="pq">${i+1}. ${q.prompt}<br>${opts}</div>`;
+    if (section === "vocab") {
+      const unitId = document.getElementById("printUnit").value;
+      const picked = [
+        ["pt-fill", "Fill in the Blank", buildFillBank],
+        ["pt-syn", "Synonyms", buildSynBank],
+        ["pt-ant", "Antonyms", buildAntBank],
+      ].filter(t => document.getElementById(t[0]).checked);
+      if (!picked.length) { alert("Check at least one question type to print."); return; }
+      const sectionName = "Vocabulary Workshop";
+      const unitName = UNITS[unitId].name;
+
+      const keyParts = [];
+      const qParts = picked.map(([id, title, builder], ti) => {
+        const set = shuffle(builder(unitId)).map(q => {
+          const opts = shuffle(q.options);
+          return { ...q, opts, correctIdx: opts.indexOf(q.answer) };
+        });
+        keyParts.push(`<h3>${title}</h3><p style="line-height:1.8">` +
+          set.map((q, i) => `${i+1}. ${LETTERS[q.correctIdx]} — ${q.answer}`).join("<br>") + `</p>`);
+        const qs = set.map((q, i) => {
+          const opts = q.opts.map((o, j) => `${LETTERS[j]}. ${o}`).join("&nbsp;&nbsp;&nbsp;&nbsp;");
+          return `<div class="pq">${i+1}. ${q.prompt}<br>${opts}</div>`;
+        }).join("");
+        return `<div${ti > 0 ? ' class="key-page"' : ''}><h2>${sectionName} ${unitName} — ${title}</h2>${qs}</div>`;
       }).join("");
-      return `<div${ti > 0 ? ' class="key-page"' : ''}><h2>${sectionName} ${unitName} — ${title}</h2>${qs}</div>`;
+
+      document.getElementById("printArea").innerHTML =
+        `<p>Name: ________________________ &nbsp;&nbsp; Date: ________________</p>
+         ${qParts}
+         ${withKey ? `<div class="key-page"><h2>Answer Key — ${sectionName} ${unitName}</h2>${keyParts.join("")}</div>` : ""}`;
+      window.print();
+      return;
+    }
+
+    // Reading, Math, or Grammar: sample from the section's quiz bank
+    let sectionName, groupName, bank;
+    if (section === "reading") {
+      const storyId = document.getElementById("printStory").value;
+      sectionName = "Reading";
+      groupName = STORIES[storyId].name;
+      bank = STORIES[storyId].quizBank;
+    } else if (section === "math") {
+      const chapterId = document.getElementById("printChapter").value;
+      sectionName = "Math";
+      groupName = MATH_CHAPTERS[chapterId].name;
+      bank = MATH_CHAPTERS[chapterId].quizBank;
+    } else {
+      const grammarUnitId = document.getElementById("printGrammarUnit").value;
+      sectionName = "ENG Grammar";
+      groupName = GRAMMAR_UNITS[grammarUnitId].name;
+      bank = GRAMMAR_UNITS[grammarUnitId].quizBank;
+    }
+    if (!bank.length) { alert("This unit doesn't have any quiz questions to print yet."); return; }
+    const countVal = document.getElementById("printCount").value;
+    const count = countVal === "all" ? bank.length : Math.min(parseInt(countVal, 10), bank.length);
+    const set = shuffle(bank).slice(0, count).map(q => {
+      const opts = shuffle(q.options);
+      return { ...q, opts, correctIdx: opts.indexOf(q.answer) };
+    });
+
+    const qs = set.map((q, i) => {
+      const opts = q.opts.map((o, j) => `${LETTERS[j]}. ${o}`).join("&nbsp;&nbsp;&nbsp;&nbsp;");
+      const barModelHtml = q.barModel
+        ? `<p style="margin:6px 0 4px;font-style:italic">Sketch a bar model to solve, then fill in the blanks:</p>${q.barModel}`
+        : "";
+      return `<div class="pq">${i+1}. ${q.prompt}${barModelHtml}<br>${opts}</div>`;
     }).join("");
+    const keyHtml = `<h3>Answers</h3><p style="line-height:1.8">` +
+      set.map((q, i) => `${i+1}. ${LETTERS[q.correctIdx]} — ${q.answer}`).join("<br>") + `</p>`;
 
     document.getElementById("printArea").innerHTML =
       `<p>Name: ________________________ &nbsp;&nbsp; Date: ________________</p>
-       ${qParts}
-       ${withKey ? `<div class="key-page"><h2>Answer Key — ${sectionName} ${unitName}</h2>${keyParts.join("")}</div>` : ""}`;
+       <div><h2>${sectionName} — ${groupName}</h2>${qs}</div>
+       ${withKey ? `<div class="key-page"><h2>Answer Key — ${sectionName} ${groupName}</h2>${keyHtml}</div>` : ""}`;
     window.print();
   }
 
   // =========================================================================
   // ATTEMPT LOG + EXCEL EXPORT
   // =========================================================================
-  const SET_NAMES = { fill: "Fill in the Blank", syn: "Synonyms", ant: "Antonyms", storyQuiz: "Vocabulary Quiz" };
+  const SET_NAMES = { fill: "Fill in the Blank", syn: "Synonyms", ant: "Antonyms", storyQuiz: "Vocabulary Quiz", chapterQuiz: "Chapter Quiz" };
   let attemptLog = [];
   try { attemptLog = JSON.parse(localStorage.getItem("g4hub-log")) || []; } catch (e) {}
 
@@ -3582,8 +4915,16 @@
   renderGrid("subjectGrid", subjects, openSubject);
   renderGrid("unitGrid", units, openUnit);
   renderGrid("storyGrid", stories, openStory);
+  renderGrid("chapterGrid", chapters, openChapter);
+  renderGrid("grammarUnitGrid", grammarUnits, openGrammarUnit);
   document.getElementById("printUnit").innerHTML =
     Object.keys(UNITS).map(id => `<option value="${id}">${UNITS[id].name}</option>`).join("");
+  document.getElementById("printStory").innerHTML =
+    Object.keys(STORIES).map(id => `<option value="${id}">${STORIES[id].name}</option>`).join("");
+  document.getElementById("printChapter").innerHTML =
+    Object.keys(MATH_CHAPTERS).map(id => `<option value="${id}">${MATH_CHAPTERS[id].name}</option>`).join("");
+  document.getElementById("printGrammarUnit").innerHTML =
+    Object.keys(GRAMMAR_UNITS).map(id => `<option value="${id}">${GRAMMAR_UNITS[id].name}</option>`).join("");
   renderUnitContent();
   updateGlobalScore();
 </script>
