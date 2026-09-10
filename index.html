@@ -58,6 +58,12 @@
     background: rgba(255,255,255,0.15); border: none; color: white;
     padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 0.9rem;
   }
+  .home-btn {
+    background: rgba(255,255,255,0.25); border: none; color: white;
+    padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 0.9rem;
+    font-weight: 600;
+  }
+  .home-btn:hover { background: rgba(255,255,255,0.35); }
   .export-btn:hover { background: rgba(255,255,255,0.28); }
   main { max-width: 940px; margin: 0 auto; padding: 24px; }
 
@@ -224,6 +230,7 @@
 <header>
   <h1 id="header-title">Grade 4 Learning Hub</h1>
   <div style="display:flex; align-items:center; gap:12px">
+    <button class="home-btn" onclick="goHome()" title="Return to the home screen">🏠 Home</button>
     <span class="score-badge" id="globalScore"></span>
     <button class="export-btn" onclick="openPrintScreen()" title="Download and print practice questions for any section">🖨 Print</button>
     <button class="export-btn" onclick="exportLog()" title="Download an Excel log of all attempted questions">⬇ Export</button>
@@ -5829,6 +5836,11 @@
     const prev = navStack.pop();
     if (prev) showScreen(prev.id, prev.title);
     document.getElementById("backBtn").classList.toggle("show", navStack.length > 0);
+  }
+
+  function goHome() {
+    navStack = [];
+    showScreen("screen-home", "Grade 4 Learning Hub");
   }
 
   function openSubject(subj) {
