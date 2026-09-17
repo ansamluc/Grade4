@@ -215,6 +215,16 @@
   .placeholder-box {
     background: var(--card); border: 1px dashed var(--border); border-radius: 12px; padding: 30px; text-align: center; color: var(--muted);
   }
+  .worksheet-embed {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 16px 18px; margin-bottom: 18px;
+  }
+  .worksheet-embed h4 { margin: 0 0 4px 0; color: var(--primary-dark); font-size: 1.1rem; }
+  .worksheet-embed iframe {
+    width: 100%; height: 640px; border: 1px solid var(--border); border-radius: 8px;
+    background: #fff; margin-top: 10px;
+  }
+  .worksheet-embed .worksheet-link { display: inline-block; margin-top: 10px; font-size: 0.9rem; }
 
   #printArea { display: none; }
   @media print {
@@ -479,6 +489,35 @@
       <div class="practice-block">
         <h3 id="grammarUnitQuizTitle">Unit Quiz</h3>
         <div id="grammarUnitQuizQs"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 國語 (MANDARIN): UNIT LIST -->
+  <section class="screen" id="screen-guoyu">
+    <p class="intro">Choose a lesson.</p>
+    <div class="subject-grid" id="guoyuUnitGrid"></div>
+  </section>
+
+  <!-- 國語 (MANDARIN): UNIT SCREEN (shared by all lessons) -->
+  <section class="screen" id="screen-guoyuunit">
+    <div class="tabs">
+      <button class="tab-btn active" data-guoyu-tab="lesson" onclick="showGuoyuTab('lesson')">Lesson</button>
+      <button class="tab-btn" data-guoyu-tab="quiz" onclick="showGuoyuTab('quiz')">Quiz</button>
+    </div>
+
+    <div id="guoyuunit-lesson" class="guoyuunit-tab">
+      <p class="intro">Read each card, then look at the example. Try covering the card and explaining it in your own words.</p>
+      <div id="guoyuLessonCards"></div>
+    </div>
+
+    <div id="guoyuunit-quiz" class="guoyuunit-tab" style="display:none">
+      <div class="set-controls">
+        <span class="score-pill" id="guoyuUnitQuiz-score"></span>
+      </div>
+      <div class="practice-block">
+        <h3 id="guoyuUnitQuizTitle">Unit Quiz</h3>
+        <div id="guoyuUnitQuizQs"></div>
       </div>
     </div>
   </section>
@@ -3217,6 +3256,332 @@
           why: "<strong>Inadvertently</strong> means accidentally, without meaning to." },
       ],
     },
+    story2: {
+      name: "Story 2: The Science Behind Sigh",
+      words: [
+        { word: "luminous", pos: "adj.",
+          def: "when something gives off light; glowing brightly",
+          example: "The lantern in the attic was surprisingly <strong>luminous</strong>, making it easy to read the old letters." },
+        { word: "transparent", pos: "adj.",
+          def: "clear enough to see through",
+          example: "The old lady chose a <strong>transparent</strong> umbrella so she could see the streets while walking in the rain." },
+        { word: "illuminate", pos: "v.",
+          def: "to give off light and make the area around it brighter",
+          example: "The streetlamp <strong>illuminates</strong> the sidewalk, helping pedestrians see where they are walking." },
+        { word: "reflect", pos: "v.",
+          def: "when light bounces off a surface without passing through it",
+          example: "The calm pond <strong>reflects</strong> the colorful autumn leaves perfectly, like a mirror." },
+        { word: "judge", pos: "v.",
+          def: "to form an opinion about someone or something",
+          example: "It is important not to <strong>judge</strong> someone based only on how they look." },
+        { word: "perception", pos: "n.",
+          def: "your perception of something is how you notice or experience it using your senses",
+          example: "The young lady's <strong>perception</strong> of the painting changed when she learned about the artist's story behind it." },
+        { word: "aroma", pos: "n.",
+          def: "a strong, pleasant smell",
+          example: "The <strong>aroma</strong> of roasted coffee drifted through the coffee shop, attracting many customers." },
+        { word: "distinguish", pos: "v.",
+          def: "to notice how things are different so you can tell them apart",
+          example: "It was easy to <strong>distinguish</strong> the twins because of the small scar on one of their hands." },
+        { word: "relish", pos: "v.",
+          def: "to enjoy something very much",
+          example: "The old man <strong>relished</strong> every bite of the chocolate cake, savoring its rich flavor." },
+        { word: "enhance", pos: "v.",
+          def: "to make something better or improve it",
+          example: "The teacher suggested using colorful markers to <strong>enhance</strong> the visual appeal of the poster." },
+      ],
+      quizBank: [
+        { prompt: "The full moon looked especially <strong>______</strong> against the clear night sky.",
+          options: ["luminous", "transparent", "distinguish", "enhance"], answer: "luminous",
+          why: "<strong>Luminous</strong> means giving off light, or glowing. A full moon glowing brightly against the sky fits perfectly. <em>Transparent</em> means see-through, and <em>distinguish</em> means to tell apart &mdash; neither describes something glowing." },
+        { prompt: "Fireflies flickered with a <strong>______</strong> glow in the summer evening.",
+          options: ["luminous", "relish", "aroma", "judge"], answer: "luminous",
+          why: "<strong>Luminous</strong> means giving off light &mdash; fireflies flickering with light fits exactly. <em>Relish</em> means to enjoy greatly, and <em>aroma</em> is a pleasant smell &mdash; neither relates to light." },
+        { prompt: "Which of these would most likely be described as <strong>luminous</strong>?",
+          options: ["A glowing jellyfish in a dark aquarium", "A muddy puddle", "A cardboard box", "A pile of dry leaves"], answer: "A glowing jellyfish in a dark aquarium",
+          why: "<strong>Luminous</strong> means giving off light, and a glowing jellyfish fits perfectly. The other choices don't give off light." },
+
+        { prompt: "The scientist used a <strong>______</strong> container so she could watch the chemical reaction happen inside.",
+          options: ["transparent", "luminous", "enhance", "relish"], answer: "transparent",
+          why: "<strong>Transparent</strong> means clear enough to see through &mdash; perfect for watching a reaction inside a container. <em>Luminous</em> means glowing, and <em>enhance</em> means to improve something." },
+        { prompt: "Through the <strong>______</strong> glass door, we could see everyone waiting in the lobby.",
+          options: ["transparent", "aroma", "judge", "distinguish"], answer: "transparent",
+          why: "<strong>Transparent</strong> means see-through, which is why we could see through the glass door. <em>Aroma</em> is a smell, and <em>judge</em> means to form an opinion." },
+        { prompt: "Which of these objects is usually <strong>transparent</strong>?",
+          options: ["A clean glass window", "A brick wall", "A wooden table", "A cardboard box"], answer: "A clean glass window",
+          why: "<strong>Transparent</strong> means clear enough to see through, and a clean glass window fits that perfectly. The others cannot be seen through." },
+
+        { prompt: "Hundreds of candles <strong>______</strong> the ballroom during the birthday celebration.",
+          options: ["illuminated", "transparent", "relished", "judged"], answer: "illuminated",
+          why: "<strong>Illuminate</strong> means to light up or brighten an area &mdash; candles lighting up a ballroom fits perfectly. <em>Transparent</em> describes something see-through, not something that gives light." },
+        { prompt: "A single flashlight can <strong>______</strong> an entire dark room if you point it at the ceiling.",
+          options: ["illuminate", "distinguish", "enhance", "aroma"], answer: "illuminate",
+          why: "<strong>Illuminate</strong> means to brighten an area with light, which is exactly what a flashlight does. <em>Distinguish</em> means to tell things apart, and <em>enhance</em> means to improve something." },
+        { prompt: "Which of these would most likely <strong>illuminate</strong> a dark room?",
+          options: ["A lit lamp", "A block of ice", "A closed book", "A wool blanket"], answer: "A lit lamp",
+          why: "<strong>Illuminate</strong> means to give off light and brighten an area, which is exactly what a lit lamp does." },
+
+        { prompt: "The store's front window <strong>______</strong> the bright colors of the sunset perfectly.",
+          options: ["reflected", "enhanced", "judged", "relished"], answer: "reflected",
+          why: "<strong>Reflect</strong> means light bounces back off a surface without passing through it, like a window mirroring the sunset. <em>Enhance</em> means to improve something, and <em>judge</em> means to form an opinion." },
+        { prompt: "A polished spoon can <strong>______</strong> your face in a funny, curved way.",
+          options: ["reflect", "distinguish", "illuminate", "aroma"], answer: "reflect",
+          why: "<strong>Reflect</strong> describes how light bounces off a shiny surface, like a polished spoon showing your face. <em>Distinguish</em> means to tell things apart, and <em>illuminate</em> means to give off light." },
+        { prompt: "Which of these best shows something that can <strong>reflect</strong> light?",
+          options: ["A still, calm lake", "A pile of soil", "A wool sweater", "A cardboard box"], answer: "A still, calm lake",
+          why: "A still lake acts like a mirror, reflecting light without letting it pass through. The other choices absorb light instead." },
+
+        { prompt: "The teacher reminded the class not to <strong>______</strong> a book by its cover.",
+          options: ["judge", "reflect", "enhance", "aroma"], answer: "judge",
+          why: "<strong>Judge</strong> means to form an opinion about something, and this saying warns against forming quick opinions based on appearance." },
+        { prompt: "It is unfair to <strong>______</strong> someone before you get to know them.",
+          options: ["judge", "transparent", "luminous", "relish"], answer: "judge",
+          why: "<strong>Judge</strong> means to form an opinion about someone, and forming an opinion before knowing someone is exactly what this warns against." },
+        { prompt: "Which situation best shows someone <strong>judging</strong> another person unfairly?",
+          options: ["Assuming someone is unfriendly just because of their clothing", "Asking someone about their day", "Complimenting a classmate's project", "Helping a new student find their locker"], answer: "Assuming someone is unfriendly just because of their clothing",
+          why: "<strong>Judge</strong> means forming an opinion about someone, often based on limited information &mdash; assuming something about a person from their clothing is a classic example." },
+
+        { prompt: "Her <strong>______</strong> of the movie changed completely after she watched the ending a second time.",
+          options: ["perception", "aroma", "distinguish", "enhance"], answer: "perception",
+          why: "<strong>Perception</strong> means how you notice or experience something through your senses, and watching the ending again changed how she experienced the movie. <em>Aroma</em> is a smell, and <em>distinguish</em> means to tell things apart &mdash; neither fits." },
+        { prompt: "Trying foods from around the world can change your <strong>______</strong> of what a delicious meal looks like.",
+          options: ["perception", "relish", "judge", "transparent"], answer: "perception",
+          why: "<strong>Perception</strong> means how you notice or experience something using your senses, and tasting new foods can change how you experience a meal. <em>Relish</em> means to enjoy greatly, and <em>judge</em> means to form an opinion &mdash; close, but not the same as perception." },
+        { prompt: "Which best describes someone's <strong>perception</strong> of a loud concert?",
+          options: ["How they personally experience the sounds, lights, and energy of the show", "The ticket price of the concert", "The name of the band performing", "The date the concert takes place"], answer: "How they personally experience the sounds, lights, and energy of the show",
+          why: "<strong>Perception</strong> means how you notice or experience something using your senses &mdash; at a concert, that includes the sounds, lights, and energy someone takes in." },
+
+        { prompt: "The <strong>______</strong> of fresh bread baking filled the entire kitchen.",
+          options: ["aroma", "judge", "enhance", "distinguish"], answer: "aroma",
+          why: "<strong>Aroma</strong> means a strong, pleasant smell &mdash; fresh bread baking creates a wonderful smell that fills a room." },
+        { prompt: "As soon as she opened the door, the <strong>______</strong> of cinnamon and sugar greeted her.",
+          options: ["aroma", "reflect", "luminous", "relish"], answer: "aroma",
+          why: "<strong>Aroma</strong> is a strong, pleasant smell, like the scent of cinnamon and sugar." },
+        { prompt: "Which word is closest in meaning to <strong>aroma</strong>?",
+          options: ["Scent", "Sound", "Sight", "Texture"], answer: "Scent",
+          why: "<strong>Aroma</strong> means a pleasant smell, so scent is the closest match." },
+
+        { prompt: "It can be hard to <strong>______</strong> real diamonds from fake ones without a special tool.",
+          options: ["distinguish", "enhance", "judge", "illuminate"], answer: "distinguish",
+          why: "<strong>Distinguish</strong> means to notice differences and tell things apart, exactly what's needed to tell real diamonds from fake ones." },
+        { prompt: "Colorblind people sometimes find it difficult to <strong>______</strong> red from green.",
+          options: ["distinguish", "relish", "aroma", "transparent"], answer: "distinguish",
+          why: "<strong>Distinguish</strong> means to tell things apart by noticing differences, like telling two colors apart." },
+        { prompt: "Which word is closest in meaning to <strong>distinguish</strong>?",
+          options: ["Tell apart", "Ignore", "Combine", "Forget"], answer: "Tell apart",
+          why: "<strong>Distinguish</strong> means to notice differences and tell things apart." },
+
+        { prompt: "She <strong>______</strong> the last few days of summer vacation before school started again.",
+          options: ["relished", "judged", "distinguished", "illuminated"], answer: "relished",
+          why: "<strong>Relish</strong> means to enjoy something very much, and enjoying the last days of vacation fits perfectly." },
+        { prompt: "He <strong>______</strong> a good mystery novel more than any other kind of book.",
+          options: ["relishes", "aroma", "transparent", "enhance"], answer: "relishes",
+          why: "<strong>Relish</strong> means to enjoy something greatly, like really enjoying a good mystery novel." },
+        { prompt: "If you <strong>relish</strong> something, how do you feel about it?",
+          options: ["You enjoy it very much", "You are bored by it", "You are afraid of it", "You forget about it"], answer: "You enjoy it very much",
+          why: "<strong>Relish</strong> means to enjoy something very much." },
+
+        { prompt: "Adding a pinch of salt can <strong>______</strong> the flavor of a dish.",
+          options: ["enhance", "judge", "distinguish", "reflect"], answer: "enhance",
+          why: "<strong>Enhance</strong> means to make something better or improve it, and salt can improve the flavor of food." },
+        { prompt: "The new sound system will <strong>______</strong> the audience's experience at the concert.",
+          options: ["enhance", "relish", "aroma", "luminous"], answer: "enhance",
+          why: "<strong>Enhance</strong> means to improve something, and a better sound system would improve the concert experience." },
+        { prompt: "Which word is closest in meaning to <strong>enhance</strong>?",
+          options: ["Improve", "Ruin", "Ignore", "Copy"], answer: "Improve",
+          why: "<strong>Enhance</strong> means to make something better, so improve is the closest match." },
+
+        { prompt: "The jellyfish's body looked <strong>______</strong> as it drifted through the dark water.",
+          options: ["luminous", "transparent", "judge", "enhance"], answer: "luminous",
+          why: "<strong>Luminous</strong> means giving off light or glowing, like a jellyfish that glows in dark water. <em>Transparent</em> means see-through, and <em>judge</em> means to form an opinion." },
+        { prompt: "At night, the watch's hands glowed with a <strong>______</strong> green light.",
+          options: ["luminous", "aroma", "relish", "distinguish"], answer: "luminous",
+          why: "<strong>Luminous</strong> describes something that gives off light, like glow-in-the-dark watch hands. <em>Aroma</em> is a smell, and <em>relish</em> means to enjoy greatly." },
+        { prompt: "Which sentence uses <strong>luminous</strong> correctly?",
+          options: ["The luminous stars twinkled brightly across the night sky.", "The luminous rock felt heavy in her hand.", "He wore a luminous jacket that smelled like rain.", "The luminous soup tasted salty."], answer: "The luminous stars twinkled brightly across the night sky.",
+          why: "<strong>Luminous</strong> means giving off light, so it fits stars that shine brightly. The other sentences describe weight, smell, or taste &mdash; not light." },
+        { prompt: "Which word is closest in meaning to <strong>luminous</strong>?",
+          options: ["Glowing", "Heavy", "Silent", "Bitter"], answer: "Glowing",
+          why: "<strong>Luminous</strong> means giving off light, so glowing is the closest match." },
+        { prompt: "The children waved <strong>______</strong> sticks at the fair after dark.",
+          options: ["luminous", "transparent", "enhance", "judge"], answer: "luminous",
+          why: "<strong>Luminous</strong> describes something that gives off light, like glow sticks at a nighttime fair." },
+        { prompt: "If a sign is <strong>luminous</strong>, what happens to it at night?",
+          options: ["It glows and can be seen in the dark", "It disappears completely", "It becomes see-through", "It makes a loud sound"], answer: "It glows and can be seen in the dark",
+          why: "<strong>Luminous</strong> means giving off light, so a luminous sign glows and stays visible even in the dark." },
+
+        { prompt: "The recipe called for a <strong>______</strong> glass bowl so she could watch the sugar dissolve.",
+          options: ["transparent", "luminous", "judge", "relish"], answer: "transparent",
+          why: "<strong>Transparent</strong> means clear enough to see through, letting her watch the sugar dissolve inside. <em>Luminous</em> means glowing, and <em>judge</em> means to form an opinion." },
+        { prompt: "Fish darted beneath the <strong>______</strong> surface of the shallow stream.",
+          options: ["transparent", "aroma", "enhance", "distinguish"], answer: "transparent",
+          why: "<strong>Transparent</strong> means clear enough to see through, like a clear stream showing fish below. <em>Aroma</em> is a smell, and <em>enhance</em> means to improve something." },
+        { prompt: "Which sentence uses <strong>transparent</strong> correctly?",
+          options: ["The transparent plastic wrap let us see the sandwich inside.", "The transparent song played softly in the background.", "She wore a transparent scarf that smelled like flowers.", "His transparent joke made everyone laugh."], answer: "The transparent plastic wrap let us see the sandwich inside.",
+          why: "<strong>Transparent</strong> means see-through, fitting plastic wrap you can see through. The others describe sound, smell, or humor." },
+        { prompt: "Which word is closest in meaning to <strong>transparent</strong>?",
+          options: ["Clear", "Loud", "Heavy", "Sweet"], answer: "Clear",
+          why: "<strong>Transparent</strong> means clear enough to see through." },
+        { prompt: "The museum displayed a <strong>______</strong> case so visitors could examine the ancient coin from every angle.",
+          options: ["transparent", "luminous", "relish", "judge"], answer: "transparent",
+          why: "<strong>Transparent</strong> means see-through, letting visitors view the coin from every side." },
+        { prompt: "If a window is <strong>transparent</strong>, what can you do?",
+          options: ["See clearly through it", "Hear echoes through it", "Smell through it", "Taste through it"], answer: "See clearly through it",
+          why: "<strong>Transparent</strong> means clear enough to see through." },
+
+        { prompt: "Strings of fairy lights <strong>______</strong> the backyard for the evening party.",
+          options: ["illuminated", "transparent", "relished", "judged"], answer: "illuminated",
+          why: "<strong>Illuminate</strong> means to brighten an area with light, like fairy lights lighting up a backyard party." },
+        { prompt: "The lighthouse beam <strong>______</strong> the rocky coastline for passing ships.",
+          options: ["illuminates", "distinguish", "enhance", "aroma"], answer: "illuminates",
+          why: "<strong>Illuminate</strong> means to give off light and brighten an area, exactly what a lighthouse beam does for ships at sea." },
+        { prompt: "Which sentence uses <strong>illuminate</strong> correctly?",
+          options: ["The lamp will illuminate the dark hallway.", "The lamp will illuminate the loud music.", "The lamp will illuminate the salty soup.", "The lamp will illuminate the heavy box."], answer: "The lamp will illuminate the dark hallway.",
+          why: "<strong>Illuminate</strong> means to brighten with light, so it fits a dark hallway. The other choices pair it with sound, taste, or weight." },
+        { prompt: "Which word is closest in meaning to <strong>illuminate</strong>?",
+          options: ["Light up", "Darken", "Silence", "Flatten"], answer: "Light up",
+          why: "<strong>Illuminate</strong> means to give off light and brighten something, so light up is the closest match." },
+        { prompt: "Torches lined the path to <strong>______</strong> the way for hikers returning after sunset.",
+          options: ["illuminate", "reflect", "judge", "aroma"], answer: "illuminate",
+          why: "<strong>Illuminate</strong> means to brighten an area with light, exactly what torches do for a path after dark." },
+        { prompt: "If a hallway is <strong>illuminated</strong>, what does that tell you?",
+          options: ["It is lit up and easy to see in", "It is completely dark", "It smells pleasant", "It is very quiet"], answer: "It is lit up and easy to see in",
+          why: "<strong>Illuminate</strong> means to give off light, so an illuminated hallway is bright and easy to see in." },
+
+        { prompt: "The shiny surface of the trophy <strong>______</strong> the bright stadium lights.",
+          options: ["reflected", "enhanced", "judged", "relished"], answer: "reflected",
+          why: "<strong>Reflect</strong> means light bounces back off a surface, like a shiny trophy catching the stadium lights." },
+        { prompt: "Sunglasses often <strong>______</strong> light so your eyes don't have to squint.",
+          options: ["reflect", "distinguish", "illuminate", "aroma"], answer: "reflect",
+          why: "<strong>Reflect</strong> means light bounces off a surface, which is how sunglasses reduce glare." },
+        { prompt: "Which sentence uses <strong>reflect</strong> correctly?",
+          options: ["The mirror will reflect your image perfectly.", "The mirror will reflect a sweet smell.", "The mirror will reflect a loud noise.", "The mirror will reflect a heavy weight."], answer: "The mirror will reflect your image perfectly.",
+          why: "<strong>Reflect</strong> describes light bouncing off a surface, like a mirror showing your image. The other choices pair it with smell, sound, or weight." },
+        { prompt: "Which word is closest in meaning to <strong>reflect</strong> (as light does)?",
+          options: ["Bounce back", "Absorb", "Melt", "Disappear"], answer: "Bounce back",
+          why: "<strong>Reflect</strong> means light bounces back off a surface instead of passing through or being absorbed." },
+        { prompt: "The glassy skyscraper windows <strong>______</strong> the orange colors of the sunset.",
+          options: ["reflect", "enhance", "judge", "relish"], answer: "reflect",
+          why: "<strong>Reflect</strong> means light bounces off a surface, like glass windows mirroring a sunset." },
+        { prompt: "Which surface would most likely <strong>reflect</strong> light the best?",
+          options: ["A polished mirror", "A wool sweater", "A pile of dirt", "A cardboard box"], answer: "A polished mirror",
+          why: "<strong>Reflect</strong> means light bounces off a surface without passing through it, and a polished mirror does this better than soft or dull surfaces." },
+
+        { prompt: "The coach asked the players not to <strong>______</strong> their teammates after a single mistake.",
+          options: ["judge", "reflect", "enhance", "aroma"], answer: "judge",
+          why: "<strong>Judge</strong> means to form an opinion about someone, and the coach is warning against forming quick opinions from one mistake." },
+        { prompt: "It's easy to <strong>______</strong> a new restaurant before even tasting the food.",
+          options: ["judge", "distinguish", "illuminate", "relish"], answer: "judge",
+          why: "<strong>Judge</strong> means to form an opinion, and forming one before tasting the food is exactly what this describes." },
+        { prompt: "Which sentence uses <strong>judge</strong> correctly?",
+          options: ["Try not to judge people before you know their story.", "Try not to judge the cake before you bake it.", "Try not to judge the weather before it rains.", "Try not to judge the music before it plays."], answer: "Try not to judge people before you know their story.",
+          why: "<strong>Judge</strong> means to form an opinion about someone, which fits forming opinions about people. The other choices don't involve opinions about people." },
+        { prompt: "Which word is closest in meaning to <strong>judge</strong>?",
+          options: ["Evaluate", "Ignore", "Forget", "Celebrate"], answer: "Evaluate",
+          why: "<strong>Judge</strong> means to form an opinion or evaluation about someone or something." },
+        { prompt: "The panel will <strong>______</strong> each science project based on creativity and effort.",
+          options: ["judge", "enhance", "distinguish", "aroma"], answer: "judge",
+          why: "<strong>Judge</strong> means to form an opinion or evaluation, exactly what a panel does when scoring projects." },
+        { prompt: "Which situation best shows someone being <strong>judged</strong> fairly?",
+          options: ["Being evaluated on the actual quality of your work", "Being ignored completely", "Being judged only by your appearance", "Being judged by a stranger's guess"], answer: "Being evaluated on the actual quality of your work",
+          why: "<strong>Judge</strong> means to form an opinion, and a fair judgment is based on the actual quality of the work, not appearance or guesses." },
+
+        { prompt: "A splash of cold water instantly changed his <strong>______</strong> of how tired he felt.",
+          options: ["perception", "aroma", "distinguish", "enhance"], answer: "perception",
+          why: "<strong>Perception</strong> means how you notice or experience something through your senses, and cold water changed how tired he felt." },
+        { prompt: "Wearing tinted glasses can alter your <strong>______</strong> of colors around you.",
+          options: ["perception", "relish", "judge", "transparent"], answer: "perception",
+          why: "<strong>Perception</strong> means how you experience something through your senses, and tinted glasses change how colors appear to you." },
+        { prompt: "Which sentence uses <strong>perception</strong> correctly?",
+          options: ["Her perception of the city changed after she explored its quiet neighborhoods.", "Her perception of the city smelled like flowers.", "Her perception of the city was ten miles wide.", "Her perception of the city cost twenty dollars."], answer: "Her perception of the city changed after she explored its quiet neighborhoods.",
+          why: "<strong>Perception</strong> means how you notice or experience something, fitting a change in how she experienced the city. The other choices confuse it with smell, size, or cost." },
+        { prompt: "Which phrase is closest in meaning to <strong>perception</strong>?",
+          options: ["The way you experience something", "The price of something", "The size of something", "The weight of something"], answer: "The way you experience something",
+          why: "<strong>Perception</strong> means how you notice or experience something using your senses." },
+        { prompt: "Background music in a store can shape a shopper's <strong>______</strong> of how long they've been browsing.",
+          options: ["perception", "aroma", "illuminate", "judge"], answer: "perception",
+          why: "<strong>Perception</strong> means how you experience something through your senses, and music can affect how long time feels while shopping." },
+        { prompt: "If two people have different <strong>perceptions</strong> of the same event, what does that mean?",
+          options: ["They noticed or experienced it in different ways", "They saw completely different events", "One of them is lying", "They both forgot the event"], answer: "They noticed or experienced it in different ways",
+          why: "<strong>Perception</strong> means how you notice or experience something using your senses, so two people can perceive the same event differently." },
+
+        { prompt: "The <strong>______</strong> of pine trees filled the cabin during the holidays.",
+          options: ["aroma", "judge", "enhance", "distinguish"], answer: "aroma",
+          why: "<strong>Aroma</strong> means a strong, pleasant smell, like the scent of pine trees in a cabin." },
+        { prompt: "Walking past the bakery, we caught the <strong>______</strong> of warm cinnamon rolls.",
+          options: ["aroma", "reflect", "luminous", "relish"], answer: "aroma",
+          why: "<strong>Aroma</strong> is a pleasant smell, like the scent of fresh cinnamon rolls." },
+        { prompt: "Which sentence uses <strong>aroma</strong> correctly?",
+          options: ["The aroma of fresh popcorn filled the movie theater.", "The aroma of the movie was two hours long.", "The aroma of the popcorn was very loud.", "The aroma of the theater seats felt soft."], answer: "The aroma of fresh popcorn filled the movie theater.",
+          why: "<strong>Aroma</strong> means a pleasant smell, fitting the scent of popcorn. The other choices confuse it with length, sound, or texture." },
+        { prompt: "Which of these senses is most connected to <strong>aroma</strong>?",
+          options: ["Smell", "Sight", "Hearing", "Touch"], answer: "Smell",
+          why: "<strong>Aroma</strong> refers to a pleasant smell, so it connects most closely to the sense of smell." },
+        { prompt: "A rich <strong>______</strong> of garlic and herbs rose from the simmering pot.",
+          options: ["aroma", "transparent", "judge", "enhance"], answer: "aroma",
+          why: "<strong>Aroma</strong> means a strong, pleasant smell, like the scent rising from a simmering pot." },
+        { prompt: "Which of these would most likely produce a pleasant <strong>aroma</strong>?",
+          options: ["Freshly baked bread", "A pile of wet laundry left too long", "A stack of old newspapers", "A block of ice"], answer: "Freshly baked bread",
+          why: "<strong>Aroma</strong> means a strong, pleasant smell, and freshly baked bread is a classic example." },
+
+        { prompt: "Bird watchers learn to <strong>______</strong> different species by their calls.",
+          options: ["distinguish", "enhance", "judge", "illuminate"], answer: "distinguish",
+          why: "<strong>Distinguish</strong> means to notice differences and tell things apart, like telling bird species apart by sound." },
+        { prompt: "It can be tricky to <strong>______</strong> identical twins when they dress alike.",
+          options: ["distinguish", "relish", "aroma", "transparent"], answer: "distinguish",
+          why: "<strong>Distinguish</strong> means to tell things apart, which is hard when twins look and dress the same." },
+        { prompt: "Which sentence uses <strong>distinguish</strong> correctly?",
+          options: ["She could easily distinguish the two similar paint colors.", "She could easily distinguish a delicious meal.", "She could easily distinguish the loud music.", "She could easily distinguish a heavy backpack."], answer: "She could easily distinguish the two similar paint colors.",
+          why: "<strong>Distinguish</strong> means to tell things apart, fitting the comparison of two similar colors. The other choices don't involve telling things apart." },
+        { prompt: "Which situation best shows someone <strong>distinguishing</strong> between two things?",
+          options: ["Telling apart a real diamond from a fake one", "Eating a sandwich", "Singing a song", "Running a race"], answer: "Telling apart a real diamond from a fake one",
+          why: "<strong>Distinguish</strong> means to notice differences and tell things apart, exactly what's needed to tell a real diamond from a fake." },
+        { prompt: "A trained chef can <strong>______</strong> fresh herbs from dried ones just by smell.",
+          options: ["distinguish", "enhance", "judge", "aroma"], answer: "distinguish",
+          why: "<strong>Distinguish</strong> means to tell things apart, and a chef can tell fresh herbs from dried ones by smell." },
+        { prompt: "Which word is closest in meaning to <strong>distinguish</strong>?",
+          options: ["Differentiate", "Combine", "Ignore", "Forget"], answer: "Differentiate",
+          why: "<strong>Distinguish</strong> means to notice differences and tell things apart, so differentiate is the closest match." },
+
+        { prompt: "The campers <strong>______</strong> every marshmallow they roasted over the fire.",
+          options: ["relished", "judged", "distinguished", "illuminated"], answer: "relished",
+          why: "<strong>Relish</strong> means to enjoy something very much, like enjoying roasted marshmallows around a fire." },
+        { prompt: "Grandma always <strong>______</strong> her Sunday morning cup of tea on the porch.",
+          options: ["relishes", "aroma", "transparent", "enhance"], answer: "relishes",
+          why: "<strong>Relish</strong> means to enjoy something greatly, like savoring a quiet cup of tea." },
+        { prompt: "Which sentence uses <strong>relish</strong> correctly?",
+          options: ["He relished the last slice of pizza after a long day.", "He relished the loud thunderstorm outside.", "He relished the heavy suitcase he carried.", "He relished the long line at the store."], answer: "He relished the last slice of pizza after a long day.",
+          why: "<strong>Relish</strong> means to enjoy something very much, fitting enjoying a slice of pizza. The other choices describe things people usually don't enjoy." },
+        { prompt: "Which word is closest in meaning to <strong>relish</strong>?",
+          options: ["Savor", "Dislike", "Ignore", "Fear"], answer: "Savor",
+          why: "<strong>Relish</strong> means to enjoy something very much, so savor is the closest match." },
+        { prompt: "The dog clearly <strong>______</strong> its walk in the park every afternoon.",
+          options: ["relished", "judged", "distinguished", "illuminated"], answer: "relished",
+          why: "<strong>Relish</strong> means to enjoy something very much, like a dog loving its daily walk." },
+        { prompt: "If you <strong>relish</strong> a meal, how do you likely feel afterward?",
+          options: ["Satisfied and happy", "Annoyed", "Bored", "Confused"], answer: "Satisfied and happy",
+          why: "<strong>Relish</strong> means to enjoy something very much, so relishing a meal usually leaves you feeling satisfied and happy." },
+
+        { prompt: "A few bright throw pillows can <strong>______</strong> the look of a plain couch.",
+          options: ["enhance", "judge", "distinguish", "reflect"], answer: "enhance",
+          why: "<strong>Enhance</strong> means to make something better or improve it, like pillows improving a plain couch's look." },
+        { prompt: "Practicing every day will <strong>______</strong> your skills on the piano.",
+          options: ["enhance", "relish", "aroma", "luminous"], answer: "enhance",
+          why: "<strong>Enhance</strong> means to improve something, and daily practice improves piano skills." },
+        { prompt: "Which sentence uses <strong>enhance</strong> correctly?",
+          options: ["New lighting can enhance the mood of a room.", "New lighting can enhance the smell of a room.", "New lighting can enhance the weight of a room.", "New lighting can enhance the sound of silence."], answer: "New lighting can enhance the mood of a room.",
+          why: "<strong>Enhance</strong> means to improve something, and lighting can improve the mood of a room. The other choices pair it with things lighting doesn't affect." },
+        { prompt: "Which word is closest in meaning to <strong>enhance</strong>?",
+          options: ["Boost", "Reduce", "Erase", "Hide"], answer: "Boost",
+          why: "<strong>Enhance</strong> means to make something better, so boost is the closest match." },
+        { prompt: "Adding fresh herbs can <strong>______</strong> the taste of a simple soup.",
+          options: ["enhance", "judge", "distinguish", "aroma"], answer: "enhance",
+          why: "<strong>Enhance</strong> means to improve something, and fresh herbs can improve a soup's flavor." },
+        { prompt: "If a movie's sound effects <strong>enhance</strong> the experience, what does that mean?",
+          options: ["They make the experience better", "They make the experience worse", "They have no effect at all", "They confuse the viewer"], answer: "They make the experience better",
+          why: "<strong>Enhance</strong> means to improve something, so enhancing an experience makes it better." },
+      ],
+    },
     // __MORE_STORIES__
   };
 
@@ -5804,7 +6169,7 @@
     { id: "grammar", icon: "✏️", name: "ENG Grammar", status: "Unit 1 ready", enabled: true },
     { id: "social", icon: "🌍", name: "Social Studies", status: "Chapter 1 ready", enabled: true },
     { id: "science", icon: "🔬", name: "Science", status: "Topic 1 ready", enabled: true },
-    { id: "chinese", icon: "中", name: "Chinese Characters", status: "Coming soon", enabled: false },
+    { id: "guoyu", icon: "國", name: "國語", status: "Lesson 1 added", enabled: true },
   ];
 
   const units = Object.keys(UNITS).map((id, i) => ({
@@ -5833,6 +6198,25 @@
 
   let currentGrammarUnit = "unit1";
   function G() { return GRAMMAR_UNITS[currentGrammarUnit]; }
+
+  const GUOYU_UNITS = {
+    unit1: {
+      name: "第一課：美麗島",
+      worksheet: "G4-1 國語第一課生字 WS.pdf",
+      worksheetLabel: "生字聽寫練習卷 (New Character Dictation Worksheet)",
+      lessons: [],
+      quizBank: [],
+    },
+  };
+
+  const guoyuUnits = Object.keys(GUOYU_UNITS).map((id, i) => ({
+    id, icon: String(i + 1), name: GUOYU_UNITS[id].name,
+    status: GUOYU_UNITS[id].quizBank.length ? GUOYU_UNITS[id].quizBank.length + " questions ready" : "Coming soon",
+    enabled: true,
+  }));
+
+  let currentGuoyuUnit = "unit1";
+  function GY() { return GUOYU_UNITS[currentGuoyuUnit]; }
 
   const socialChapters = Object.keys(SOCIAL_CHAPTERS).map((id, i) => ({
     id, icon: String(i + 1), name: SOCIAL_CHAPTERS[id].name,
@@ -6348,6 +6732,8 @@
       showScreen("screen-social", "Social Studies");
     } else if (subj.id === "science") {
       showScreen("screen-science", "Science");
+    } else if (subj.id === "guoyu") {
+      showScreen("screen-guoyu", "國語");
     } else {
       document.getElementById("placeholderSubject").textContent = subj.name;
       showScreen("screen-placeholder", subj.name);
@@ -6464,6 +6850,62 @@
       return;
     }
     renderMCQ("grammarUnitQuizQs", "grammarUnitQuiz", shuffle(G().quizBank).slice(0, GRAMMAR_QUIZ_SIZE));
+  }
+
+  function openGuoyuUnit(unit) {
+    navStack.push({ id: "screen-guoyu", title: "國語" });
+    if (unit.enabled) {
+      currentGuoyuUnit = unit.id;
+      renderGuoyuLesson();
+      showGuoyuTab("lesson");
+      showScreen("screen-guoyuunit", "國語 — " + unit.name);
+    } else {
+      document.getElementById("placeholderSubject").textContent = unit.name;
+      showScreen("screen-placeholder", unit.name);
+    }
+  }
+
+  function showGuoyuTab(tab) {
+    document.querySelectorAll("[data-guoyu-tab]").forEach(b => b.classList.toggle("active", b.dataset.guoyuTab === tab));
+    document.querySelectorAll(".guoyuunit-tab").forEach(el => el.style.display = "none");
+    document.getElementById("guoyuunit-" + tab).style.display = "block";
+    if (tab === "quiz") renderGuoyuUnitQuiz(); // fresh random set from the question bank every time
+  }
+
+  function renderGuoyuLesson() {
+    const lessons = GY().lessons || [];
+    document.getElementById("guoyuLessonCards").innerHTML = lessons.map(l => `
+      <div class="lesson-card">
+        <h4>${l.title}</h4>
+        <p>${l.rule}</p>
+        ${l.tip ? `<p class="trick">💡 <strong>Tip:</strong> ${l.tip}</p>` : ""}
+        ${l.examples.map(ex => `<p><span class="syn">${ex.label}:</span> ${ex.text}</p>`).join("")}
+      </div>
+    `).join("") || `<div class="placeholder-box"><p><strong>${GY().name}</strong> lesson hasn't been added yet.</p><p>Drop the material into this project folder and this lesson can be built out next.</p></div>`;
+  }
+
+  // How many questions to pull from the 國語 unit's quiz bank per attempt.
+  const GUOYU_QUIZ_SIZE = 30;
+
+  function renderGuoyuUnitQuiz() {
+    document.getElementById("guoyuUnitQuizTitle").textContent = GY().name + " — Quiz";
+    const qs = document.getElementById("guoyuUnitQuizQs");
+    const worksheetUrl = GY().worksheet ? encodeURI(GY().worksheet) : null;
+    const worksheetHtml = worksheetUrl ? `
+      <div class="worksheet-embed">
+        <h4>📄 ${GY().worksheetLabel || "Worksheet"}</h4>
+        <p class="intro">Practice writing the new characters (生字) for this lesson based on the zhuyin (注音) shown below.</p>
+        <iframe src="${worksheetUrl}" title="${GY().worksheetLabel || "Worksheet"}"></iframe>
+        <br><a class="worksheet-link" href="${worksheetUrl}" target="_blank" rel="noopener">🖨 Open in a new tab to print</a>
+      </div>
+    ` : "";
+    if (!GY().quizBank.length) {
+      document.getElementById("guoyuUnitQuiz-score").textContent = "";
+      qs.innerHTML = worksheetHtml || `<div class="placeholder-box"><p><strong>${GY().name}</strong> quiz hasn't been added yet.</p><p>Drop the material into this project folder and this lesson's quiz can be built out next.</p></div>`;
+      return;
+    }
+    renderMCQ("guoyuUnitQuizQs", "guoyuUnitQuiz", shuffle(GY().quizBank).slice(0, GUOYU_QUIZ_SIZE));
+    qs.innerHTML = worksheetHtml + qs.innerHTML;
   }
 
   function openSocialChapter(chapter) {
@@ -6788,6 +7230,7 @@
       else if (setId === "grammarUnitQuiz") sectionInfo = { unitName: G().name, section: "ENG Grammar" };
       else if (setId === "socialLessonQuiz") sectionInfo = { unitName: SS().name + " — " + SL().name, section: "Social Studies" };
       else if (setId === "scienceTopicQuiz") sectionInfo = { unitName: SCI().name, section: "Science" };
+      else if (setId === "guoyuUnitQuiz") sectionInfo = { unitName: GY().name, section: "國語" };
       else sectionInfo = { unitName: U().name };
       mcqInfo[key] = Object.assign(
         { letter: LETTERS[q.correctIdx], answer: q.answer, why: q.why, set: setId, prompt: q.prompt },
@@ -7115,6 +7558,7 @@
   renderGrid("grammarUnitGrid", grammarUnits, openGrammarUnit);
   renderGrid("socialChapterGrid", socialChapters, openSocialChapter);
   renderGrid("scienceTopicGrid", scienceTopics, openScienceTopic);
+  renderGrid("guoyuUnitGrid", guoyuUnits, openGuoyuUnit);
   document.getElementById("printUnit").innerHTML =
     Object.keys(UNITS).map(id => `<option value="${id}">${UNITS[id].name}</option>`).join("");
   document.getElementById("printStory").innerHTML =
