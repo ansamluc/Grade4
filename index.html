@@ -6169,7 +6169,7 @@
     { id: "grammar", icon: "✏️", name: "ENG Grammar", status: "Unit 1 ready", enabled: true },
     { id: "social", icon: "🌍", name: "Social Studies", status: "Chapter 1 ready", enabled: true },
     { id: "science", icon: "🔬", name: "Science", status: "Topic 1 ready", enabled: true },
-    { id: "guoyu", icon: "國", name: "國語", status: "Lessons 1–3 added", enabled: true },
+    { id: "guoyu", icon: "國", name: "國語", status: "Lessons 1–3 ready", enabled: true },
   ];
 
   const units = Object.keys(UNITS).map((id, i) => ({
@@ -6203,21 +6203,21 @@
     unit1: {
       name: "第一課：美麗島",
       worksheet: "G4-1 國單1.pdf",
-      worksheetLabel: "生字聽寫練習卷 (New Character Dictation Worksheet)",
+      worksheetLabel: "聽寫小考卷 (Dictation Quiz Sheet)",
       lessons: [],
       quizBank: [],
     },
     unit2: {
-      name: "第二課：請到我的家鄉來",
+      name: "第二課",
       worksheet: "G4-1 國單2.pdf",
-      worksheetLabel: "生字聽寫練習卷 (New Character Dictation Worksheet)",
+      worksheetLabel: "聽寫小考卷 (Dictation Quiz Sheet)",
       lessons: [],
       quizBank: [],
     },
     unit3: {
-      name: "第三課：鏡頭下的家鄉",
+      name: "第三課",
       worksheet: "G4-1 國單3.pdf",
-      worksheetLabel: "生字聽寫練習卷 (New Character Dictation Worksheet)",
+      worksheetLabel: "聽寫小考卷 (Dictation Quiz Sheet)",
       lessons: [],
       quizBank: [],
     },
@@ -6225,7 +6225,7 @@
 
   const guoyuUnits = Object.keys(GUOYU_UNITS).map((id, i) => ({
     id, icon: String(i + 1), name: GUOYU_UNITS[id].name,
-    status: GUOYU_UNITS[id].quizBank.length ? GUOYU_UNITS[id].quizBank.length + " questions ready" : "Coming soon",
+    status: GUOYU_UNITS[id].quizBank.length ? GUOYU_UNITS[id].quizBank.length + " questions ready" : (GUOYU_UNITS[id].worksheet ? "Worksheet ready" : "Coming soon"),
     enabled: true,
   }));
 
