@@ -282,27 +282,27 @@
       </div>
       <div class="print-field" id="printStoryField" style="display:none">
         <span>Story:</span>
-        <select id="printStory"></select>
+        <select id="printStory" onchange="updatePrintCount()"></select>
       </div>
       <div class="print-field" id="printChapterField" style="display:none">
         <span>Chapter:</span>
-        <select id="printChapter"></select>
+        <select id="printChapter" onchange="updatePrintCount()"></select>
       </div>
       <div class="print-field" id="printGrammarUnitField" style="display:none">
         <span>Unit:</span>
-        <select id="printGrammarUnit"></select>
+        <select id="printGrammarUnit" onchange="updatePrintCount()"></select>
       </div>
       <div class="print-field" id="printSocialChapterField" style="display:none">
         <span>Chapter:</span>
-        <select id="printSocialChapter" onchange="updatePrintSocialLessons()"></select>
+        <select id="printSocialChapter" onchange="updatePrintSocialLessons(); updatePrintCount()"></select>
       </div>
       <div class="print-field" id="printSocialLessonField" style="display:none">
         <span>Lesson:</span>
-        <select id="printSocialLesson"></select>
+        <select id="printSocialLesson" onchange="updatePrintCount()"></select>
       </div>
       <div class="print-field" id="printScienceTopicField" style="display:none">
         <span>Topic:</span>
-        <select id="printScienceTopic"></select>
+        <select id="printScienceTopic" onchange="updatePrintCount()"></select>
       </div>
       <div class="print-field" id="printVocabTypesField">
         <span>Question types:</span>
@@ -317,7 +317,7 @@
           <option value="20">20</option>
           <option value="30" selected>30</option>
           <option value="60">60</option>
-          <option value="all">All</option>
+          <option value="all" id="printCountAll">All</option>
         </select>
       </div>
       <div class="print-field">
@@ -3582,6 +3582,223 @@
           why: "<strong>Enhance</strong> means to improve something, so enhancing an experience makes it better." },
       ],
     },
+    story3: {
+      name: "Story 3: Catch Me If You Can",
+      words: [
+        { word: "adoringly", pos: "adv.",
+          def: "you act with a lot of love and admiration",
+          example: "The little boy and girl looked <strong>adoringly</strong> at their grandmother as she told another story from her childhood." },
+        { word: "capable", pos: "adj.",
+          def: "a person who is capable has the skill or ability to do something",
+          example: "Everyone in the group believed he was <strong>capable</strong> of solving the puzzle on his own." },
+        { word: "spectator", pos: "n.",
+          def: "people who watch an event, such as a sports competition",
+          example: "The runners sprinted past the many cheering <strong>spectators</strong> along the track." },
+        { word: "disbelief", pos: "n.",
+          def: "when you do not believe that something is true",
+          example: "She stared at the broken vase in complete <strong>disbelief</strong>, unable to understand how it happened." },
+        { word: "burst", pos: "v.",
+          def: "if something is about to burst, it is about to break open",
+          example: "The thin trash bag was <strong>bursting</strong> open because it was too full." },
+        { word: "opportunity", pos: "n.",
+          def: "if you have opportunities, you have chances to make something good happen",
+          example: "Joining the art club gave the children many new <strong>opportunities</strong> to grow their creativity." },
+        { word: "immigration", pos: "n.",
+          def: "the process of coming to live in a new country",
+          example: "His family's story of <strong>immigration</strong> helped the class understand why people move to new countries." },
+        { word: "refugee", pos: "n.",
+          def: "people who must leave where they live because of war or other serious problems",
+          example: "Groups of <strong>refugees</strong> arrived seeking safety after the storm destroyed their villages." },
+        { word: "endurance", pos: "n.",
+          def: "you can do something for a long time; you don't give up easily",
+          example: "Swimming across the lake required strong <strong>endurance</strong> and careful pacing." },
+        { word: "confront", pos: "v.",
+          def: "when you confront a problem, you deal with that problem",
+          example: "The girl decided to <strong>confront</strong> her fear of heights by climbing the tall rock wall." },
+      ],
+      quizBank: [
+        { prompt: "The puppy gazed <strong>______</strong> at its owner, wagging its tail happily.",
+          options: ["adoringly", "capable", "disbelief", "endurance"], answer: "adoringly",
+          why: "<strong>Adoringly</strong> means acting with a lot of love and admiration, just like a happy puppy looking at its owner. <em>Capable</em> describes having a skill, and <em>disbelief</em> means not believing something." },
+        { prompt: "The little boy and girl looked <strong>______</strong> at their grandmother as she told another story from her childhood.",
+          options: ["adoringly", "confront", "refugee", "burst"], answer: "adoringly",
+          why: "<strong>Adoringly</strong> means with a lot of love and admiration. The children love their grandmother and her stories. <em>Confront</em> and <em>burst</em> are verbs, and <em>refugee</em> is a noun." },
+        { prompt: "Which sentence uses <strong>adoringly</strong> correctly?",
+          options: ["The fans smiled adoringly at their favorite singer.", "The angry dog growled adoringly at the stranger.", "The trash bag broke adoringly on the floor.", "She adoringly forgot her homework at home."], answer: "The fans smiled adoringly at their favorite singer.",
+          why: "<strong>Adoringly</strong> means with love and admiration, which fits fans smiling at a singer they admire. An angry growl, a broken bag, and forgotten homework have nothing to do with love." },
+        { prompt: "Which word is closest in meaning to <strong>adoringly</strong>?",
+          options: ["Lovingly", "Angrily", "Carelessly", "Sleepily"], answer: "Lovingly",
+          why: "<strong>Adoringly</strong> means with a lot of love and admiration, so <em>lovingly</em> is the closest match." },
+        { prompt: "Which situation shows someone looking at something <strong>adoringly</strong>?",
+          options: ["A mother smiling at her newborn baby", "A student frowning at a hard test", "A driver honking at slow traffic", "A boy yawning during a long movie"], answer: "A mother smiling at her newborn baby",
+          why: "<strong>Adoringly</strong> means with love and admiration. A mother smiling at her new baby is full of love. Frowning, honking, and yawning are not." },
+        { prompt: "If a grandfather watches his grandchildren <strong>adoringly</strong>, how does he feel about them?",
+          options: ["He loves and admires them", "He is annoyed with them", "He does not know them", "He is afraid of them"], answer: "He loves and admires them",
+          why: "<strong>Adoringly</strong> means acting with a lot of love and admiration, so the grandfather loves and admires his grandchildren." },
+        { prompt: "After weeks of practice, Mia was <strong>______</strong> of riding her bike without training wheels.",
+          options: ["capable", "adoringly", "disbelief", "spectator"], answer: "capable",
+          why: "<strong>Capable</strong> means having the skill or ability to do something. After practicing, Mia has the skill to ride on her own. <em>Adoringly</em> is an adverb, and <em>disbelief</em> and <em>spectator</em> are nouns." },
+        { prompt: "Everyone in the group believed he was <strong>______</strong> of solving the puzzle on his own.",
+          options: ["capable", "endurance", "immigration", "burst"], answer: "capable",
+          why: "<strong>Capable</strong> means having the skill or ability to do something. The group believed he had the ability to solve the puzzle. The other words don't fit after &ldquo;he was ___ of.&rdquo;" },
+        { prompt: "Which sentence uses <strong>capable</strong> correctly?",
+          options: ["Our class is capable of raising money for the animal shelter.", "The capable fell off the table and broke.", "She capable the ball across the field.", "The spectators capable loudly during the game."], answer: "Our class is capable of raising money for the animal shelter.",
+          why: "<strong>Capable</strong> is an adjective that means having the ability to do something. The class has the ability to raise money. In the other sentences, <em>capable</em> is wrongly used as a noun or a verb." },
+        { prompt: "Which word is closest in meaning to <strong>capable</strong>?",
+          options: ["Able", "Unable", "Hungry", "Nervous"], answer: "Able",
+          why: "<strong>Capable</strong> means having the skill or ability to do something, so <em>able</em> is the closest match." },
+        { prompt: "Which word means the OPPOSITE of <strong>capable</strong>?",
+          options: ["Unable", "Skillful", "Talented", "Able"], answer: "Unable",
+          why: "<strong>Capable</strong> means having the ability to do something. <em>Unable</em> means NOT having the ability, so it is the opposite. <em>Skillful</em>, <em>talented</em>, and <em>able</em> are all similar in meaning." },
+        { prompt: "Which person is most <strong>capable</strong> of fixing a broken car?",
+          options: ["A trained mechanic", "A newborn baby", "A sleepy kitten", "Someone who has never seen a car"], answer: "A trained mechanic",
+          why: "<strong>Capable</strong> means having the skill to do something. A trained mechanic has learned the skills needed to fix cars." },
+        { prompt: "Thousands of <strong>______</strong> filled the stadium to watch the final soccer match.",
+          options: ["spectators", "refugees", "opportunities", "endurance"], answer: "spectators",
+          why: "<strong>Spectators</strong> are people who watch an event, such as a sports competition. People filling a stadium to watch a match are spectators." },
+        { prompt: "The runners sprinted past the many cheering <strong>______</strong> along the track.",
+          options: ["spectators", "refugees", "immigration", "disbelief"], answer: "spectators",
+          why: "<strong>Spectators</strong> are people who watch an event. The people cheering along the track are watching the race." },
+        { prompt: "At a basketball game, who is a <strong>spectator</strong>?",
+          options: ["A fan watching from the stands", "A player shooting the ball", "A player dribbling down the court", "A player guarding the basket"], answer: "A fan watching from the stands",
+          why: "A <strong>spectator</strong> watches an event instead of taking part in it. The fan in the stands is watching, while the players are playing." },
+        { prompt: "Which sentence uses <strong>spectator</strong> correctly?",
+          options: ["The spectators clapped loudly when the performer finished her song.", "The spectator was bursting open because it was too full.", "She spectator the race from her seat.", "He was spectator of solving the puzzle."], answer: "The spectators clapped loudly when the performer finished her song.",
+          why: "<strong>Spectators</strong> are people who watch an event, so they can clap after a performance. In the other sentences, the word is used as a thing, a verb, or an adjective." },
+        { prompt: "Which word is closest in meaning to <strong>spectator</strong>?",
+          options: ["Viewer", "Player", "Coach", "Builder"], answer: "Viewer",
+          why: "A <strong>spectator</strong> is a person who watches an event, so <em>viewer</em> is the closest match." },
+        { prompt: "Why do <strong>spectators</strong> cheer at a race?",
+          options: ["To show support for the runners they are watching", "Because they are running in the race", "Because they want to go home", "Because they are building the track"], answer: "To show support for the runners they are watching",
+          why: "<strong>Spectators</strong> are the people watching an event. They cheer to support the runners they are watching." },
+        { prompt: "Tom stared at his test score in <strong>______</strong>. He couldn't believe he got a perfect 100!",
+          options: ["disbelief", "endurance", "opportunity", "spectator"], answer: "disbelief",
+          why: "<strong>Disbelief</strong> is when you do not believe that something is true. Tom couldn't believe his perfect score." },
+        { prompt: "She stared at the broken vase in complete <strong>______</strong>, unable to understand how it happened.",
+          options: ["disbelief", "capable", "adoringly", "immigration"], answer: "disbelief",
+          why: "<strong>Disbelief</strong> means not believing that something is true. She couldn't believe or understand how the vase broke. <em>Capable</em> is an adjective and <em>adoringly</em> is an adverb." },
+        { prompt: "Which situation would most likely cause <strong>disbelief</strong>?",
+          options: ["Seeing snow fall on a hot summer day", "Eating breakfast in the morning", "Brushing your teeth before bed", "Walking to school on a sunny day"], answer: "Seeing snow fall on a hot summer day",
+          why: "<strong>Disbelief</strong> happens when something seems too surprising to be true. Snow on a hot summer day would be hard to believe. The other choices are everyday events." },
+        { prompt: "Which sentence uses <strong>disbelief</strong> correctly?",
+          options: ["The crowd gasped in disbelief when the magician made the elephant disappear.", "She disbelief the answer on the board.", "The disbelief dog ran across the yard.", "He ate a bowl of disbelief for lunch."], answer: "The crowd gasped in disbelief when the magician made the elephant disappear.",
+          why: "<strong>Disbelief</strong> is a noun that means not believing something is true. The crowd couldn't believe the magic trick." },
+        { prompt: "Which word is closest in meaning to <strong>disbelief</strong>?",
+          options: ["Doubt", "Trust", "Joy", "Hunger"], answer: "Doubt",
+          why: "<strong>Disbelief</strong> means not believing that something is true, so <em>doubt</em> is the closest match. <em>Trust</em> is almost the opposite." },
+        { prompt: "If someone shakes their head in <strong>disbelief</strong>, what are they probably thinking?",
+          options: ["&ldquo;I can't believe this is true!&rdquo;", "&ldquo;This is exactly what I expected.&rdquo;", "&ldquo;I am very sleepy.&rdquo;", "&ldquo;I want to eat lunch now.&rdquo;"], answer: "&ldquo;I can't believe this is true!&rdquo;",
+          why: "<strong>Disbelief</strong> is when you do not believe that something is true, so the person is thinking, &ldquo;I can't believe it!&rdquo;" },
+        { prompt: "The balloon <strong>______</strong> with a loud pop when it touched the cactus.",
+          options: ["burst", "confronted", "adoringly", "capable"], answer: "burst",
+          why: "<strong>Burst</strong> means to break open suddenly. A balloon touching a sharp cactus breaks open with a pop. The past tense of <em>burst</em> is also <em>burst</em>." },
+        { prompt: "The thin trash bag was <strong>______</strong> open because it was too full.",
+          options: ["bursting", "confronting", "capable", "spectator"], answer: "bursting",
+          why: "<strong>Burst</strong> means to break open. A trash bag that is too full is about to break open, so it is <em>bursting</em>." },
+        { prompt: "Which of these is most likely to <strong>burst</strong>?",
+          options: ["A balloon filled with too much air", "A wooden table", "A metal spoon", "A heavy rock"], answer: "A balloon filled with too much air",
+          why: "<strong>Burst</strong> means to break open. A balloon with too much air inside is about to break open." },
+        { prompt: "Which sentence uses <strong>burst</strong> correctly?",
+          options: ["The water balloon burst when it hit the ground.", "He burst his homework on time.", "The burst of the lake was very deep.", "She was burst of solving the puzzle."], answer: "The water balloon burst when it hit the ground.",
+          why: "<strong>Burst</strong> is a verb that means to break open. A water balloon breaks open when it hits the ground." },
+        { prompt: "Which phrase is closest in meaning to <strong>burst</strong>?",
+          options: ["Break open", "Fix carefully", "Close tightly", "Fill slowly"], answer: "Break open",
+          why: "<strong>Burst</strong> means to break open, often suddenly." },
+        { prompt: "If a bag of popcorn is about to <strong>burst</strong>, what is about to happen?",
+          options: ["It is about to break open", "It is about to be closed", "It is about to get smaller", "It is about to disappear"], answer: "It is about to break open",
+          why: "If something is about to <strong>burst</strong>, it is about to break open." },
+        { prompt: "The school trip was a great <strong>______</strong> to learn about sea animals up close.",
+          options: ["opportunity", "disbelief", "refugee", "endurance"], answer: "opportunity",
+          why: "An <strong>opportunity</strong> is a chance to make something good happen. The trip is a chance to learn about sea animals." },
+        { prompt: "Joining the art club gave the children many new <strong>______</strong> to grow their creativity.",
+          options: ["opportunities", "spectators", "refugees", "immigrations"], answer: "opportunities",
+          why: "<strong>Opportunities</strong> are chances to make something good happen. The art club gives the children chances to grow their creativity." },
+        { prompt: "Which of these is an example of an <strong>opportunity</strong>?",
+          options: ["Being invited to try out for the school band", "Losing your pencil", "Missing the school bus", "Getting a flat tire on your bike"], answer: "Being invited to try out for the school band",
+          why: "An <strong>opportunity</strong> is a chance to make something good happen. Trying out for the band is a good chance. The other choices are problems." },
+        { prompt: "Which sentence uses <strong>opportunity</strong> correctly?",
+          options: ["Volunteering at the library is an opportunity to help others.", "She opportunity her dog in the park.", "The opportunity burst open on the floor.", "He looked opportunity at the stars."], answer: "Volunteering at the library is an opportunity to help others.",
+          why: "An <strong>opportunity</strong> is a chance to make something good happen. Volunteering is a chance to help others." },
+        { prompt: "Which word is closest in meaning to <strong>opportunity</strong>?",
+          options: ["Chance", "Problem", "Mistake", "Punishment"], answer: "Chance",
+          why: "An <strong>opportunity</strong> is a chance to make something good happen, so <em>chance</em> is the closest match." },
+        { prompt: "Why is it smart to take an <strong>opportunity</strong> when you get one?",
+          options: ["It is a chance to make something good happen", "It will always cause problems", "It means you have to give up", "It is a kind of danger"], answer: "It is a chance to make something good happen",
+          why: "An <strong>opportunity</strong> is a chance to make something good happen, so taking it can help you grow or succeed." },
+        { prompt: "The history of <strong>______</strong> tells how people from other countries came to live in America.",
+          options: ["immigration", "endurance", "disbelief", "spectator"], answer: "immigration",
+          why: "<strong>Immigration</strong> is the process of coming to live in a new country. This history is about people coming to live in America." },
+        { prompt: "His family's story of <strong>______</strong> helped the class understand why people move to new countries.",
+          options: ["immigration", "spectator", "capable", "adoringly"], answer: "immigration",
+          why: "<strong>Immigration</strong> is the process of coming to live in a new country. The story explains why people move to new countries." },
+        { prompt: "Which situation is an example of <strong>immigration</strong>?",
+          options: ["A family moving from Japan to live in Canada", "A family moving to a new house on the same street", "A student walking to the library", "A tourist visiting Paris for one week"], answer: "A family moving from Japan to live in Canada",
+          why: "<strong>Immigration</strong> means coming to <em>live</em> in a new country. A tourist only visits for a short time, and moving on the same street is not a new country." },
+        { prompt: "Which sentence uses <strong>immigration</strong> correctly?",
+          options: ["Immigration brought many new cultures and foods to the city.", "She immigration the ball to her friend.", "The immigration of the balloon was very loud.", "He was immigration of solving the puzzle."], answer: "Immigration brought many new cultures and foods to the city.",
+          why: "<strong>Immigration</strong> is a noun for the process of people coming to live in a new country. New people can bring new cultures and foods." },
+        { prompt: "<strong>Immigration</strong> is the process of...",
+          options: ["Coming to live in a new country", "Watching a sports event", "Breaking something open", "Giving up easily"], answer: "Coming to live in a new country",
+          why: "<strong>Immigration</strong> is the process of coming to live in a new country." },
+        { prompt: "Why might a family choose <strong>immigration</strong> to a new country?",
+          options: ["To find new opportunities for a better life", "To watch a soccer game", "To pop a balloon", "To practice swimming"], answer: "To find new opportunities for a better life",
+          why: "Families often choose <strong>immigration</strong>, moving to live in a new country, to find new <em>opportunities</em> such as better jobs or schools." },
+        { prompt: "The <strong>______</strong> had to leave their homes when war broke out in their country.",
+          options: ["refugees", "spectators", "opportunities", "endurance"], answer: "refugees",
+          why: "<strong>Refugees</strong> are people who must leave where they live because of war or other serious problems." },
+        { prompt: "Groups of <strong>______</strong> arrived seeking safety after the storm destroyed their villages.",
+          options: ["refugees", "spectators", "opportunities", "immigration"], answer: "refugees",
+          why: "<strong>Refugees</strong> are people who must leave their homes because of war or other serious problems, like a storm destroying their villages. They need a safe place." },
+        { prompt: "Why do <strong>refugees</strong> leave their homes?",
+          options: ["Because of war or other serious problems", "Because they want to go on vacation", "Because they want to watch a sports game", "Because they are bored"], answer: "Because of war or other serious problems",
+          why: "<strong>Refugees</strong> <em>must</em> leave where they live because of war or other serious problems. It is not a choice made for fun." },
+        { prompt: "Which sentence uses <strong>refugee</strong> correctly?",
+          options: ["The refugees were given food and a safe place to stay.", "The refugee burst when it was too full.", "She refugee her fear of heights.", "He looked refugee at the painting."], answer: "The refugees were given food and a safe place to stay.",
+          why: "<strong>Refugees</strong> are people who had to leave their homes, so they often need food and a safe place to stay." },
+        { prompt: "Which person is a <strong>refugee</strong>?",
+          options: ["A girl whose family escaped a war in their country", "A boy going on a trip to the beach", "A fan cheering at a baseball game", "A student moving to a new classroom"], answer: "A girl whose family escaped a war in their country",
+          why: "A <strong>refugee</strong> must leave home because of war or other serious problems. The girl's family had to escape a war." },
+        { prompt: "How is a <strong>refugee</strong> different from someone who moves through <strong>immigration</strong>?",
+          options: ["A refugee MUST leave because of danger; immigration can be a choice", "A refugee never travels anywhere", "There is no difference at all", "Immigration only happens after storms"], answer: "A refugee MUST leave because of danger; immigration can be a choice",
+          why: "<strong>Refugees</strong> must leave because of war or other serious problems. <strong>Immigration</strong> is coming to live in a new country, and people often choose it to find new opportunities." },
+        { prompt: "Running a marathon takes a lot of <strong>______</strong>.",
+          options: ["endurance", "disbelief", "immigration", "spectators"], answer: "endurance",
+          why: "<strong>Endurance</strong> means you can do something for a long time and don't give up easily. A marathon is a very long race." },
+        { prompt: "Swimming across the lake required strong <strong>______</strong> and careful pacing.",
+          options: ["endurance", "disbelief", "immigration", "opportunity"], answer: "endurance",
+          why: "<strong>Endurance</strong> means being able to keep going for a long time. Swimming across a whole lake takes a long time." },
+        { prompt: "Which activity needs the most <strong>endurance</strong>?",
+          options: ["Hiking up a tall mountain all day", "Blinking your eyes", "Picking up a pencil", "Saying hello to a friend"], answer: "Hiking up a tall mountain all day",
+          why: "<strong>Endurance</strong> means you can keep doing something for a long time without giving up. Hiking all day takes much more of it than quick, easy actions." },
+        { prompt: "Which sentence uses <strong>endurance</strong> correctly?",
+          options: ["With great endurance, the cyclist kept pedaling for five hours.", "She endurance the balloon with a pin.", "The endurance looked adoringly at the baby.", "He ate endurance for breakfast."], answer: "With great endurance, the cyclist kept pedaling for five hours.",
+          why: "<strong>Endurance</strong> means you can do something for a long time and don't give up easily, like pedaling for five hours." },
+        { prompt: "A person with <strong>endurance</strong>...",
+          options: ["Can keep going for a long time and doesn't give up easily", "Gives up right away", "Only watches others do the work", "Can't believe what they see"], answer: "Can keep going for a long time and doesn't give up easily",
+          why: "<strong>Endurance</strong> means you can do something for a long time and you don't give up easily." },
+        { prompt: "Which phrase is closest in meaning to <strong>endurance</strong>?",
+          options: ["Staying power", "Laziness", "Weakness", "Surprise"], answer: "Staying power",
+          why: "<strong>Endurance</strong> is the ability to keep going for a long time, so <em>staying power</em> is the closest match." },
+        { prompt: "Instead of ignoring the argument, Leo decided to <strong>______</strong> the problem and talk to his friend.",
+          options: ["confront", "burst", "capable", "adoringly"], answer: "confront",
+          why: "When you <strong>confront</strong> a problem, you deal with it. Leo chooses to deal with the argument by talking to his friend." },
+        { prompt: "The girl decided to <strong>______</strong> her fear of heights by climbing the tall rock wall.",
+          options: ["confront", "burst", "adoringly", "disbelief"], answer: "confront",
+          why: "When you <strong>confront</strong> a problem, you deal with it. Climbing the wall is how she deals with her fear of heights." },
+        { prompt: "Which is the best example of <strong>confronting</strong> a problem?",
+          options: ["Talking with your friend to fix an argument", "Pretending the problem isn't there", "Running away from it", "Hiding under your blanket"], answer: "Talking with your friend to fix an argument",
+          why: "To <strong>confront</strong> a problem means to deal with it. Talking to fix the argument deals with the problem. The other choices avoid it." },
+        { prompt: "Which sentence uses <strong>confront</strong> correctly?",
+          options: ["It takes courage to confront your fears.", "The balloon confronted with a loud pop.", "She was confront of solving the puzzle.", "He ate a confront for lunch."], answer: "It takes courage to confront your fears.",
+          why: "To <strong>confront</strong> something means to deal with it, and dealing with your fears takes courage." },
+        { prompt: "Which word means the OPPOSITE of <strong>confront</strong>?",
+          options: ["Avoid", "Face", "Tackle", "Handle"], answer: "Avoid",
+          why: "To <strong>confront</strong> a problem means to deal with it. To <em>avoid</em> it means to stay away from it, which is the opposite. <em>Face</em>, <em>tackle</em>, and <em>handle</em> all mean something similar to confront." },
+        { prompt: "If you <strong>confront</strong> a problem, you...",
+          options: ["Deal with it", "Ignore it", "Forget about it", "Make it bigger"], answer: "Deal with it",
+          why: "When you <strong>confront</strong> a problem, you deal with that problem." },
+      ],
+    },
     // __MORE_STORIES__
   };
 
@@ -6164,7 +6381,7 @@
   // =========================================================================
   const subjects = [
     { id: "vocab", icon: "📖", name: "Vocabulary Workshop", status: "Units 1–18 ready", enabled: true },
-    { id: "reading", icon: "📚", name: "Reading", status: "Story 1 ready", enabled: true },
+    { id: "reading", icon: "📚", name: "Reading", status: "Stories 1–3 ready", enabled: true },
     { id: "math", icon: "🔢", name: "Math", status: "Chapter 1 ready", enabled: true },
     { id: "grammar", icon: "✏️", name: "ENG Grammar", status: "Unit 1 ready", enabled: true },
     { id: "social", icon: "🌍", name: "Social Studies", status: "Chapter 1 ready", enabled: true },
@@ -7425,6 +7642,32 @@
     document.getElementById("printScienceTopicField").style.display = sec === "science" ? "flex" : "none";
     document.getElementById("printVocabTypesField").style.display = sec === "vocab" ? "flex" : "none";
     document.getElementById("printCountField").style.display = sec === "vocab" ? "none" : "flex";
+    updatePrintCount();
+  }
+
+  // Which quiz bank the Print screen currently points at (non-vocab sections).
+  function currentPrintBank() {
+    const sec = document.getElementById("printSection").value;
+    const val = id => document.getElementById(id).value;
+    try {
+      if (sec === "reading") return STORIES[val("printStory")].quizBank;
+      if (sec === "math") return MATH_CHAPTERS[val("printChapter")].quizBank;
+      if (sec === "grammar") return GRAMMAR_UNITS[val("printGrammarUnit")].quizBank;
+      if (sec === "social") return SOCIAL_CHAPTERS[val("printSocialChapter")].lessons[val("printSocialLesson")].quizBank;
+      if (sec === "science") return SCIENCE_TOPICS[val("printScienceTopic")].quizBank;
+    } catch (e) {}
+    return null;
+  }
+
+  // Show the real size of the selected question bank on the "All" option,
+  // and grey out counts bigger than the bank.
+  function updatePrintCount() {
+    const bank = currentPrintBank();
+    const sel = document.getElementById("printCount");
+    if (!bank || !sel) return;
+    document.getElementById("printCountAll").textContent = "All (" + bank.length + " questions)";
+    [...sel.options].forEach(o => { if (o.value !== "all") o.disabled = parseInt(o.value, 10) > bank.length; });
+    if (sel.selectedOptions[0] && sel.selectedOptions[0].disabled) sel.value = "all";
   }
 
   function updatePrintSocialLessons() {
