@@ -271,6 +271,7 @@
           <option value="grammar">ENG Grammar</option>
           <option value="social">Social Studies</option>
           <option value="science">Science</option>
+          <option value="novel">Core Novel</option>
         </select>
       </div>
       <div class="print-field" id="printUnitField">
@@ -303,6 +304,10 @@
       <div class="print-field" id="printScienceTopicField" style="display:none">
         <span>Topic:</span>
         <select id="printScienceTopic" onchange="updatePrintCount()"></select>
+      </div>
+      <div class="print-field" id="printNovelField" style="display:none">
+        <span>Novel:</span>
+        <select id="printNovel" onchange="updatePrintCount()"></select>
       </div>
       <div class="print-field" id="printVocabTypesField">
         <span>Question types:</span>
@@ -582,6 +587,41 @@
       <div class="practice-block">
         <h3 id="scienceTopicQuizTitle">Topic Quiz</h3>
         <div id="scienceTopicQuizQs"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CORE NOVEL: BOOK LIST -->
+  <section class="screen" id="screen-novel">
+    <p class="intro">Choose a novel.</p>
+    <div class="subject-grid" id="novelGrid"></div>
+  </section>
+
+  <!-- CORE NOVEL: BOOK SCREEN -->
+  <section class="screen" id="screen-noveltopic">
+    <div class="tabs">
+      <button class="tab-btn active" data-novel-tab="summary" onclick="showNovelTab('summary')">Story Summary</button>
+      <button class="tab-btn" data-novel-tab="characters" onclick="showNovelTab('characters')">Characters</button>
+      <button class="tab-btn" data-novel-tab="quiz" onclick="showNovelTab('quiz')">Quiz</button>
+    </div>
+
+    <div id="novel-summary" class="novel-tab">
+      <p class="intro">Read the story in order, from beginning to end. After each card, try retelling that part in your own words.</p>
+      <div id="novelSummaryCards"></div>
+    </div>
+
+    <div id="novel-characters" class="novel-tab" style="display:none">
+      <p class="intro">Meet the characters. Think about how each one acts and what words describe them.</p>
+      <div id="novelCharacterCards"></div>
+    </div>
+
+    <div id="novel-quiz" class="novel-tab" style="display:none">
+      <div class="set-controls">
+        <span class="score-pill" id="novelQuiz-score"></span>
+      </div>
+      <div class="practice-block">
+        <h3 id="novelQuizTitle">Novel Quiz</h3>
+        <div id="novelQuizQs"></div>
       </div>
     </div>
   </section>
@@ -6851,6 +6891,7 @@
     { id: "social", icon: "🌍", name: "Social Studies", status: "Chapter 1 ready", enabled: true },
     { id: "science", icon: "🔬", name: "Science", status: "Topic 1 ready", enabled: true },
     { id: "guoyu", icon: "國", name: "國語", status: "Lessons 1–3 ready", enabled: true },
+    { id: "novel", icon: "🍑", name: "Core Novel", status: "James and the Giant Peach", enabled: true },
   ];
 
   const units = Object.keys(UNITS).map((id, i) => ({
@@ -7821,6 +7862,8 @@
       showScreen("screen-science", "Science");
     } else if (subj.id === "guoyu") {
       showScreen("screen-guoyu", "國語");
+    } else if (subj.id === "novel") {
+      showScreen("screen-novel", "Core Novel");
     } else {
       document.getElementById("placeholderSubject").textContent = subj.name;
       showScreen("screen-placeholder", subj.name);
@@ -8062,6 +8105,133 @@
     renderMCQ("socialLessonQuizQs", "socialLessonQuiz", shuffle(SL().quizBank).slice(0, SOCIAL_QUIZ_SIZE));
   }
 
+  // =========================================================================
+  // CORE NOVEL
+  // =========================================================================
+  const NOVELS = {
+    novel1: {
+      name: "James and the Giant Peach",
+      author: "Roald Dahl",
+      summary: [
+        { title: "1. 😢 A Sad Beginning", rule: "<strong>James Henry Trotter</strong> lives happily with his mother and father in a house by the sea. When James is four, his parents are eaten up by an <strong>angry rhinoceros</strong> that escaped from the London Zoo. James is sent to live with his two aunts, <strong>Aunt Sponge</strong> and <strong>Aunt Spiker</strong>, in a strange house on top of a high hill in the south of England.", tip: "The first chapters set up the <strong>problem</strong>: James is lonely, mistreated, and trapped.", examples: [{ label: "🔍 Notice", text: "The aunts never call James by his name. They call him things like &ldquo;you disgusting little beast&rdquo; and make him work all day." }] },
+        { title: "2. 🏚️ Life with the Aunts", rule: "For three years James is not allowed to leave the garden or play with other children. He has no toys and no friends. Aunt Sponge (short and fat) and Aunt Spiker (tall and bony) are <strong>selfish, lazy, and cruel</strong>. They boast about their own beauty while James chops wood and does all the chores.", tip: "Roald Dahl uses <strong>exaggeration</strong> to make the villains funny and easy to dislike.", examples: [{ label: "💬 Example", text: "The aunts sit in deck chairs and order James around while they admire themselves." }] },
+        { title: "3. ✨ The Magic Crystals", rule: "One day, crying behind the laurel bushes, James meets a <strong>strange old man</strong> who gives him a small bag of tiny, glowing <strong>green crystals</strong>. The old man says they are powerfully magic and will make marvelous things happen. On his way back, James trips and spills them near the roots of an <strong>old peach tree</strong>. The crystals wriggle into the ground and are gone.", tip: "This is the <strong>turning point</strong> &mdash; the magic changes everything.", examples: [{ label: "⚠️ Warning", text: "The old man warns that if the crystals escape, their magic will work on whatever they find first instead of on James." }] },
+        { title: "4. 🍑 The Giant Peach", rule: "The old peach tree, which had never grown fruit, suddenly grows a peach that keeps getting bigger and bigger until it is <strong>as big as a house</strong>. The greedy aunts sell tickets so crowds can come and look at it. That night, James is sent outside to clean up. He finds a <strong>hole</strong> in the peach and crawls through a tunnel to the <strong>peach stone</strong> in the middle.", tip: "Look for how the aunts' <strong>greed</strong> shows their character.", examples: [{ label: "💰 Greed", text: "Instead of being amazed, the aunts think only about how much money they can make." }] },
+        { title: "5. 🐛 New Friends Inside the Stone", rule: "Inside the stone, James finds a group of <strong>giant, talking creatures</strong>: the Old-Green-Grasshopper, the Ladybird, the Centipede, the Earthworm, Miss Spider, the Glow-worm, and the Silkworm. They were changed by the magic too. Instead of eating James, they welcome him as a friend.", tip: "For the first time, James has a <strong>family</strong> that cares about him.", examples: [{ label: "👢 Funny moment", text: "The Centipede asks James to help pull off his many boots before bed." }] },
+        { title: "6. 🎢 The Peach Rolls Away", rule: "In the morning the Centipede bites through the <strong>stem</strong>. The giant peach breaks free and rolls down the hill &mdash; right over Aunt Sponge and Aunt Spiker, flattening them! It crashes through fences and fields, rolls through the countryside, and splashes into the <strong>sea</strong>.", tip: "The villains are defeated by the peach their own greed showed off.", examples: [{ label: "📌 Key event", text: "James is finally free from his cruel aunts." }] },
+        { title: "7. 🦈 Sharks and Seagulls", rule: "The peach floats in the ocean, and <strong>sharks</strong> begin biting it. James comes up with a clever plan: use the <strong>Earthworm as bait</strong> to attract seagulls, then tie the gulls to the stem with silk strings made by <strong>Miss Spider and the Silkworm</strong>. Hundreds of seagulls lift the peach out of the water and into the sky!", tip: "James solves the problem with <strong>creative thinking and teamwork</strong>.", examples: [{ label: "🧠 Problem → Solution", text: "Problem: sharks are eating the peach. Solution: seagulls pull it up into the air." }] },
+        { title: "8. ☁️ The Cloud-Men", rule: "Flying high above the clouds, the travelers see the <strong>Cloud-Men</strong>, who make hail, snow, and rainbows. The rude Centipede shouts insults at them, so the Cloud-Men throw <strong>hailstones</strong> and paint at the peach. The Centipede gets covered in sticky rainbow paint, and the peach barely escapes.", tip: "The Centipede's rudeness creates a new <strong>conflict</strong>.", examples: [{ label: "🌈 Fantasy", text: "This adventure shows the book is a <strong>fantasy</strong> &mdash; things happen that could never happen in real life." }] },
+        { title: "9. 🗽 Arriving in New York", rule: "The peach reaches <strong>New York City</strong>. People think it is a giant bomb and panic! An airplane accidentally cuts the seagull strings, and the peach drops and lands on the spire of the <strong>Empire State Building</strong>. James explains who they are, and the travelers are welcomed as <strong>heroes</strong> with a big parade.", tip: "The <strong>climax</strong> is the peach falling onto the city.", examples: [{ label: "🎉 Celebration", text: "Children from all over the city help eat up the giant peach." }] },
+        { title: "10. 🏡 A Happy Ending", rule: "Each creature finds a new life in America. The <strong>peach stone</strong> is placed in <strong>Central Park</strong>, and James lives in it. Children visit him every day, so he is never lonely again. James even writes down his story &mdash; the book we just read!", tip: "<strong>Theme:</strong> friendship, courage, and kindness can change a sad life into a happy one.", examples: [{ label: "🔄 Change", text: "At the start James was lonely and sad; at the end he has many friends and a home." }] },
+      ],
+      characters: [
+        { title: "👦 James Henry Trotter", rule: "The main character (protagonist). A kind, lonely boy who becomes <strong>brave, clever, and a leader</strong> during the journey.", tip: "James comes up with the seagull plan that saves everyone.", examples: [{ label: "Traits", text: "kind, brave, clever, hopeful" }] },
+        { title: "😠 Aunt Sponge", rule: "James's aunt. Short, very fat, lazy, and selfish. She thinks she is beautiful.", tip: "She is flattened by the rolling peach.", examples: [{ label: "Traits", text: "lazy, greedy, vain, cruel" }] },
+        { title: "😠 Aunt Spiker", rule: "James's other aunt. Tall, thin, and bony, with a screeching voice. She is just as mean as Aunt Sponge.", tip: "She is flattened by the peach too.", examples: [{ label: "Traits", text: "mean, bossy, vain, greedy" }] },
+        { title: "🧙 The Old Man", rule: "A mysterious old man who gives James the bag of magic green crystals.", tip: "He starts the magic that changes James's life.", examples: [{ label: "Role", text: "starts the adventure" }] },
+        { title: "🦗 Old-Green-Grasshopper", rule: "The wise, polite, and gentle elder of the group. He is a musician who makes music by rubbing his leg against his wing.", tip: "He often calms the others down.", examples: [{ label: "Traits", text: "wise, kind, musical" }] },
+        { title: "🐞 Ladybird", rule: "A kind, motherly, and gentle creature who is always friendly and caring toward James.", tip: "She is proud of her spots.", examples: [{ label: "Traits", text: "kind, gentle, caring" }] },
+        { title: "🐛 Centipede", rule: "A loud, boastful, and funny troublemaker who loves to brag, sing, and tease. He bites through the stem to set the peach free.", tip: "His rudeness gets them into trouble with the Cloud-Men.", examples: [{ label: "Traits", text: "boastful, cheeky, funny, rude" }] },
+        { title: "🪱 Earthworm", rule: "A gloomy worrier who is blind and always expects the worst. He argues a lot with the Centipede.", tip: "He bravely acts as bait to attract the seagulls.", examples: [{ label: "Traits", text: "worried, gloomy, brave in the end" }] },
+        { title: "🕷️ Miss Spider", rule: "A kind and helpful spider who spins silk thread.", tip: "She helps make the strings that tie the seagulls to the peach.", examples: [{ label: "Traits", text: "kind, helpful, hardworking" }] },
+        { title: "✨ Glow-worm", rule: "A quiet creature who glows and gives light to the inside of the peach.", tip: "She lights the room so the friends can see.", examples: [{ label: "Traits", text: "quiet, sleepy, useful" }] },
+        { title: "🐛 Silkworm", rule: "A sleepy creature who spins silk thread.", tip: "She works with Miss Spider to make strings for the seagulls.", examples: [{ label: "Traits", text: "sleepy, helpful" }] },
+      ],
+      quizBank: [
+        { prompt: "Who is the author of <em>James and the Giant Peach</em>?", options: ["Roald Dahl", "E. B. White", "Beverly Cleary", "Dr. Seuss"], answer: "Roald Dahl", why: "Roald Dahl wrote <em>James and the Giant Peach</em>." },
+        { prompt: "What is James's full name?", options: ["James Henry Trotter", "James Peter Potter", "James Henry Spiker", "James Edward Trotter"], answer: "James Henry Trotter", why: "The main character is James Henry Trotter." },
+        { prompt: "What happened to James's parents?", options: ["They were eaten by an angry rhinoceros", "They moved to New York", "They got lost at sea", "They went to work in a factory"], answer: "They were eaten by an angry rhinoceros", why: "An angry rhinoceros escaped from the London Zoo and ate them." },
+        { prompt: "Where did the rhinoceros escape from?", options: ["The London Zoo", "A circus", "A farm", "A ship"], answer: "The London Zoo", why: "The rhinoceros escaped from the London Zoo." },
+        { prompt: "Who does James go to live with after his parents are gone?", options: ["Aunt Sponge and Aunt Spiker", "His grandparents", "The old man", "A family in New York"], answer: "Aunt Sponge and Aunt Spiker", why: "James is sent to live with his two aunts." },
+        { prompt: "Which word best describes how the aunts treat James?", options: ["cruelly", "kindly", "fairly", "gently"], answer: "cruelly", why: "The aunts are mean, make him work, and never let him play." },
+        { prompt: "Which aunt is short and fat?", options: ["Aunt Sponge", "Aunt Spiker", "Both aunts", "Neither aunt"], answer: "Aunt Sponge", why: "Aunt Sponge is short and fat; Aunt Spiker is tall and bony." },
+        { prompt: "Which aunt is tall, thin, and bony?", options: ["Aunt Spiker", "Aunt Sponge", "Miss Spider", "The Ladybird"], answer: "Aunt Spiker", why: "Aunt Spiker is tall, thin, and bony." },
+        { prompt: "Where do the aunts' house and garden sit?", options: ["On top of a high hill", "Beside a big river", "In the middle of a city", "On an island"], answer: "On top of a high hill", why: "The house is on a hill — which is why the peach can roll down it." },
+        { prompt: "What does the old man give James?", options: ["A bag of magic green crystals", "A peach seed", "A golden key", "A map"], answer: "A bag of magic green crystals", why: "He gives James a small bag of tiny, glowing green crystals." },
+        { prompt: "What happens to the magic crystals?", options: ["James trips and spills them near the peach tree", "James drinks them", "The aunts steal them", "James gives them to the Centipede"], answer: "James trips and spills them near the peach tree", why: "They spill and wriggle into the soil under the old peach tree." },
+        { prompt: "What grows on the old peach tree after the crystals sink into the ground?", options: ["A giant peach", "Hundreds of tiny peaches", "Golden apples", "A huge flower"], answer: "A giant peach", why: "One peach grows as big as a house." },
+        { prompt: "How do the aunts use the giant peach?", options: ["They sell tickets for people to see it", "They eat it", "They give it to James", "They cut it down"], answer: "They sell tickets for people to see it", why: "The greedy aunts charge crowds money to look at it." },
+        { prompt: "How does James get inside the peach?", options: ["He crawls through a hole and a tunnel", "He climbs in through a window", "He is pushed in by the aunts", "He digs under it"], answer: "He crawls through a hole and a tunnel", why: "He finds a hole and crawls through a tunnel to the stone." },
+        { prompt: "Where does James meet the giant creatures?", options: ["Inside the peach stone", "In the garden shed", "In the ocean", "On a cloud"], answer: "Inside the peach stone", why: "The creatures are in a room inside the peach stone (pit)." },
+        { prompt: "Which creature is NOT one of James's friends in the peach?", options: ["Butterfly", "Centipede", "Earthworm", "Ladybird"], answer: "Butterfly", why: "His friends are the Grasshopper, Ladybird, Centipede, Earthworm, Miss Spider, Glow-worm, and Silkworm." },
+        { prompt: "Which creature asks James to help take off his many boots?", options: ["The Centipede", "The Earthworm", "The Grasshopper", "Miss Spider"], answer: "The Centipede", why: "The Centipede has lots of legs and lots of boots!" },
+        { prompt: "Which creature is boastful, noisy, and likes to tease the others?", options: ["The Centipede", "The Ladybird", "The Glow-worm", "The Silkworm"], answer: "The Centipede", why: "The Centipede loves to brag and tease, especially the Earthworm." },
+        { prompt: "Which creature is gloomy, blind, and always worried?", options: ["The Earthworm", "The Centipede", "The Grasshopper", "The Ladybird"], answer: "The Earthworm", why: "The Earthworm is blind and always expects the worst." },
+        { prompt: "Which creature is the wise, gentle elder and a musician?", options: ["The Old-Green-Grasshopper", "The Centipede", "The Earthworm", "The Silkworm"], answer: "The Old-Green-Grasshopper", why: "The Old-Green-Grasshopper is wise and plays music." },
+        { prompt: "Which creature gives light inside the peach?", options: ["The Glow-worm", "The Ladybird", "Miss Spider", "The Centipede"], answer: "The Glow-worm", why: "The Glow-worm glows and lights up the room." },
+        { prompt: "How does the peach break free from the tree?", options: ["The Centipede bites through the stem", "A storm blows it off", "The aunts cut it down", "James pulls it off"], answer: "The Centipede bites through the stem", why: "The Centipede chews through the stem so the peach can roll away." },
+        { prompt: "What happens to Aunt Sponge and Aunt Spiker?", options: ["They are flattened by the rolling peach", "They fly away with the seagulls", "They move to New York", "They become kind"], answer: "They are flattened by the rolling peach", why: "The peach rolls right over them." },
+        { prompt: "Where does the peach land after rolling down the hill?", options: ["In the sea", "In a lake", "In a forest", "In a city"], answer: "In the sea", why: "It rolls across the countryside and splashes into the sea." },
+        { prompt: "What dangerous animals attack the peach in the ocean?", options: ["Sharks", "Whales", "Octopuses", "Crocodiles"], answer: "Sharks", why: "Sharks start biting chunks out of the peach." },
+        { prompt: "What is James's plan to escape the sharks?", options: ["Tie seagulls to the peach so they lift it into the air", "Build a boat", "Swim to shore", "Scare the sharks with loud music"], answer: "Tie seagulls to the peach so they lift it into the air", why: "Hundreds of seagulls lift the peach out of the water." },
+        { prompt: "Which creature is used as bait to attract the seagulls?", options: ["The Earthworm", "The Centipede", "The Ladybird", "The Grasshopper"], answer: "The Earthworm", why: "Seagulls love worms, so the Earthworm lies on top of the peach as bait." },
+        { prompt: "Which two creatures make the strings to tie the seagulls?", options: ["Miss Spider and the Silkworm", "The Centipede and the Earthworm", "The Ladybird and the Glow-worm", "The Grasshopper and the Ladybird"], answer: "Miss Spider and the Silkworm", why: "Both can spin silk thread." },
+        { prompt: "Who do the travelers meet in the sky?", options: ["The Cloud-Men", "Giant birds", "Pilots", "Angels"], answer: "The Cloud-Men", why: "The Cloud-Men make hail, snow, and rainbows." },
+        { prompt: "Why do the Cloud-Men attack the peach?", options: ["The Centipede insults them", "James steals their rainbow", "The seagulls fly into them", "The peach blocks the sun"], answer: "The Centipede insults them", why: "The rude Centipede shouts at them, so they throw hailstones." },
+        { prompt: "What city does the peach finally reach?", options: ["New York City", "London", "Paris", "Los Angeles"], answer: "New York City", why: "The peach flies across the ocean to New York City." },
+        { prompt: "What do people in New York first think the peach is?", options: ["A giant bomb", "A spaceship", "A hot-air balloon", "A big ball"], answer: "A giant bomb", why: "They panic because they think it is a bomb." },
+        { prompt: "Where does the peach land in New York?", options: ["On top of the Empire State Building", "In the river", "In Central Park", "On the Statue of Liberty"], answer: "On top of the Empire State Building", why: "It falls and gets stuck on the building's spire." },
+        { prompt: "Why does the peach fall from the sky in New York?", options: ["An airplane cuts the seagull strings", "The seagulls get tired", "The Centipede bites the strings", "A storm knocks it down"], answer: "An airplane cuts the seagull strings", why: "A passing plane slices through the strings." },
+        { prompt: "How are James and his friends treated in New York?", options: ["As heroes with a big parade", "As criminals", "They are ignored", "They are sent back home"], answer: "As heroes with a big parade", why: "The city celebrates them with a parade." },
+        { prompt: "What happens to the giant peach in New York?", options: ["Children eat it", "It is put in a museum", "It floats away", "It is sold"], answer: "Children eat it", why: "Children from all over help eat the giant peach." },
+        { prompt: "Where does James live at the end of the story?", options: ["Inside the peach stone in Central Park", "Back with his aunts", "In a tall apartment", "On a ship"], answer: "Inside the peach stone in Central Park", why: "The stone is placed in Central Park as his home." },
+        { prompt: "How has James changed by the end of the book?", options: ["He goes from lonely and sad to happy with many friends", "He becomes mean like his aunts", "He becomes lonely", "He stays exactly the same"], answer: "He goes from lonely and sad to happy with many friends", why: "James gains friends, courage, and a happy home." },
+        { prompt: "Who is the main character (protagonist) of the story?", options: ["James", "Aunt Sponge", "The Centipede", "The old man"], answer: "James", why: "The story follows James from beginning to end." },
+        { prompt: "Who are the villains (antagonists) at the start of the story?", options: ["Aunt Sponge and Aunt Spiker", "The Cloud-Men", "The seagulls", "The creatures in the peach"], answer: "Aunt Sponge and Aunt Spiker", why: "The aunts are the cruel characters who make James's life miserable." },
+        { prompt: "What genre is <em>James and the Giant Peach</em>?", options: ["Fantasy", "Biography", "Nonfiction", "Realistic fiction"], answer: "Fantasy", why: "Talking insects and a flying peach could never happen in real life, so it is a fantasy." },
+        { prompt: "Which is the best theme (big message) of the story?", options: ["Friendship and courage can change your life", "Money is the most important thing", "Always stay at home", "Never trust insects"], answer: "Friendship and courage can change your life", why: "James's life changes because of his brave choices and new friends." },
+        { prompt: "What is the main setting at the beginning of the story?", options: ["The aunts' house on a hill in England", "New York City", "A ship at sea", "A school"], answer: "The aunts' house on a hill in England", why: "The story starts at the aunts' house in the south of England." },
+        { prompt: "James thinks of the seagull plan. What trait does this show?", options: ["He is clever", "He is lazy", "He is selfish", "He is rude"], answer: "He is clever", why: "Solving the shark problem shows that James is clever and creative." },
+        { prompt: "Which word best describes the aunts when they sell tickets to see the peach?", options: ["greedy", "generous", "shy", "brave"], answer: "greedy", why: "They only care about making money from the peach." },
+      ],
+    },
+  };
+
+  const novels = Object.keys(NOVELS).map(id => ({
+    id, icon: "🍑", name: NOVELS[id].name,
+    status: NOVELS[id].quizBank.length + " questions ready", enabled: true,
+  }));
+
+  let currentNovel = "novel1";
+  function NV() { return NOVELS[currentNovel]; }
+
+  function openNovel(novel) {
+    navStack.push({ id: "screen-novel", title: "Core Novel" });
+    currentNovel = novel.id;
+    renderNovelContent();
+    showNovelTab("summary");
+    showScreen("screen-noveltopic", "Core Novel — " + novel.name);
+  }
+
+  function showNovelTab(tab) {
+    document.querySelectorAll("[data-novel-tab]").forEach(b => b.classList.toggle("active", b.dataset.novelTab === tab));
+    document.querySelectorAll(".novel-tab").forEach(el => el.style.display = "none");
+    document.getElementById("novel-" + tab).style.display = "block";
+    if (tab === "quiz") renderNovelQuiz();
+  }
+
+  function novelCardsHtml(cards) {
+    return cards.map(c => `
+      <div class="lesson-card">
+        <h4>${c.title}</h4>
+        <p>${c.rule}</p>
+        ${c.tip ? `<p class="trick">💡 <strong>Tip:</strong> ${c.tip}</p>` : ""}
+        ${c.examples.map(ex => `<p><span class="syn">${ex.label}:</span> ${ex.text}</p>`).join("")}
+      </div>`).join("");
+  }
+
+  function renderNovelContent() {
+    document.getElementById("novelSummaryCards").innerHTML = novelCardsHtml(NV().summary);
+    document.getElementById("novelCharacterCards").innerHTML = novelCardsHtml(NV().characters);
+  }
+
+  const NOVEL_QUIZ_SIZE = 30;
+
+  function renderNovelQuiz() {
+    document.getElementById("novelQuizTitle").textContent = NV().name + " — Quiz";
+    renderMCQ("novelQuizQs", "novelQuiz", shuffle(NV().quizBank).slice(0, NOVEL_QUIZ_SIZE));
+  }
+
   function openUnit(unit) {
     navStack.push({ id: "screen-vocab", title: "Vocabulary Workshop" });
     if (unit.enabled) {
@@ -8104,6 +8274,7 @@
     document.getElementById("printSocialChapterField").style.display = sec === "social" ? "flex" : "none";
     document.getElementById("printSocialLessonField").style.display = sec === "social" ? "flex" : "none";
     document.getElementById("printScienceTopicField").style.display = sec === "science" ? "flex" : "none";
+    document.getElementById("printNovelField").style.display = sec === "novel" ? "flex" : "none";
     document.getElementById("printVocabTypesField").style.display = sec === "vocab" ? "flex" : "none";
     document.getElementById("printCountField").style.display = sec === "vocab" ? "none" : "flex";
     updatePrintCount();
@@ -8119,6 +8290,7 @@
       if (sec === "grammar") return GRAMMAR_UNITS[val("printGrammarUnit")].quizBank;
       if (sec === "social") return SOCIAL_CHAPTERS[val("printSocialChapter")].lessons[val("printSocialLesson")].quizBank;
       if (sec === "science") return SCIENCE_TOPICS[val("printScienceTopic")].quizBank;
+      if (sec === "novel") return NOVELS[val("printNovel")].quizBank;
     } catch (e) {}
     return null;
   }
@@ -8344,6 +8516,7 @@
       else if (setId === "socialLessonQuiz") sectionInfo = { unitName: SS().name + " — " + SL().name, section: "Social Studies" };
       else if (setId === "scienceTopicQuiz") sectionInfo = { unitName: SCI().name, section: "Science" };
       else if (setId === "guoyuUnitQuiz") sectionInfo = { unitName: GY().name, section: "國語" };
+      else if (setId === "novelQuiz") sectionInfo = { unitName: NV().name, section: "Core Novel" };
       else sectionInfo = { unitName: U().name };
       mcqInfo[key] = Object.assign(
         { letter: LETTERS[q.correctIdx], answer: q.answer, why: q.why, set: setId, prompt: q.prompt },
@@ -8564,6 +8737,11 @@
       sectionName = "Social Studies";
       groupName = SOCIAL_CHAPTERS[socialChapterId].name + " — " + SOCIAL_CHAPTERS[socialChapterId].lessons[socialLessonId].name;
       bank = SOCIAL_CHAPTERS[socialChapterId].lessons[socialLessonId].quizBank;
+    } else if (section === "novel") {
+      const novelId = document.getElementById("printNovel").value;
+      sectionName = "Core Novel";
+      groupName = NOVELS[novelId].name;
+      bank = NOVELS[novelId].quizBank;
     } else {
       const scienceTopicId = document.getElementById("printScienceTopic").value;
       sectionName = "Science";
@@ -8598,7 +8776,7 @@
   // =========================================================================
   // ATTEMPT LOG + EXCEL EXPORT
   // =========================================================================
-  const SET_NAMES = { fill: "Fill in the Blank", syn: "Synonyms", ant: "Antonyms", storyQuiz: "Vocabulary Quiz", chapterQuiz: "Chapter Quiz" };
+  const SET_NAMES = { fill: "Fill in the Blank", syn: "Synonyms", ant: "Antonyms", storyQuiz: "Vocabulary Quiz", chapterQuiz: "Chapter Quiz", novelQuiz: "Novel Quiz" };
   let attemptLog = [];
   try { attemptLog = JSON.parse(localStorage.getItem("g4hub-log")) || []; } catch (e) {}
 
@@ -8672,6 +8850,9 @@
   renderGrid("socialChapterGrid", socialChapters, openSocialChapter);
   renderGrid("scienceTopicGrid", scienceTopics, openScienceTopic);
   renderGrid("guoyuUnitGrid", guoyuUnits, openGuoyuUnit);
+  renderGrid("novelGrid", novels, openNovel);
+  document.getElementById("printNovel").innerHTML =
+    Object.keys(NOVELS).map(id => `<option value="${id}">${NOVELS[id].name}</option>`).join("");
   document.getElementById("printUnit").innerHTML =
     Object.keys(UNITS).map(id => `<option value="${id}">${UNITS[id].name}</option>`).join("");
   document.getElementById("printStory").innerHTML =
