@@ -303,7 +303,11 @@
       </div>
       <div class="print-field" id="printScienceTopicField" style="display:none">
         <span>Topic:</span>
-        <select id="printScienceTopic" onchange="updatePrintCount()"></select>
+        <select id="printScienceTopic" onchange="updatePrintScienceLessons(); updatePrintCount()"></select>
+      </div>
+      <div class="print-field" id="printScienceLessonField" style="display:none">
+        <span>Lesson:</span>
+        <select id="printScienceLesson" onchange="updatePrintCount()"></select>
       </div>
       <div class="print-field" id="printNovelField" style="display:none">
         <span>Novel:</span>
@@ -566,6 +570,12 @@
   <section class="screen" id="screen-science">
     <p class="intro">Choose a topic.</p>
     <div class="subject-grid" id="scienceTopicGrid"></div>
+  </section>
+
+  <!-- SCIENCE: LESSON LIST (for topics split into lessons) -->
+  <section class="screen" id="screen-sciencelessons">
+    <p class="intro">Choose a lesson.</p>
+    <div class="subject-grid" id="scienceLessonGrid"></div>
   </section>
 
   <!-- SCIENCE: TOPIC SCREEN (shared by all topics) -->
@@ -6889,7 +6899,7 @@
     { id: "math", icon: "🔢", name: "Math", status: "Chapters 1–2 ready", enabled: true },
     { id: "grammar", icon: "✏️", name: "ENG Grammar", status: "Unit 1 ready", enabled: true },
     { id: "social", icon: "🌍", name: "Social Studies", status: "Chapter 1 ready", enabled: true },
-    { id: "science", icon: "🔬", name: "Science", status: "Topic 1 ready", enabled: true },
+    { id: "science", icon: "🔬", name: "Science", status: "Topics 1–2 ready", enabled: true },
     { id: "guoyu", icon: "國", name: "國語", status: "Lessons 1–3 ready", enabled: true },
     { id: "novel", icon: "🍑", name: "Core Novel", status: "James and the Giant Peach", enabled: true },
   ];
@@ -7801,16 +7811,1273 @@
           why: "In a parallel circuit, the current splits, but each branch gets the full source voltage." },
       ],
     },
+    topic2: {
+      name: "Topic 2: Human Uses of Energy",
+      lessons: {
+        lesson1: {
+          name: "Lesson 1: Energy Conversions",
+          cards: [
+            {
+              title: "1. 🏠 We Need Energy Every Day",
+              rule: "From waking up to playing video games, humans use <strong>energy</strong> all day long. We use it to meet our needs like food, water, shelter, warmth, and a way to get around. We get that energy from <strong>natural resources</strong> &mdash; things found in nature, like coal, oil, wind, and sunlight &mdash; and we <strong>convert</strong> (change) it into forms we can use. <strong>Electronic devices</strong> are devices that need electricity to work &mdash; they are &ldquo;hungry&rdquo; for electricity!",
+              tip: "Big Question: How do we convert energy to meet our needs? Almost every answer starts with a natural resource and ends with energy we can use!",
+              examples: [
+                { label: "📺 Electronic devices", text: "Playing video games on a TV, drying your hair with a hair dryer, and keeping food cold in a refrigerator all need electricity." },
+                { label: "🚗 Getting around", text: "A car burns fuel (chemical energy) to make motion (kinetic energy)." },
+              ],
+            },
+            {
+              title: "2. ⛽ What Is Fuel?",
+              rule: "<strong>Fuels</strong> are materials that give us energy when they are <strong>burned</strong>. Almost all of this energy originally comes from <strong>the sun</strong> &mdash; the sun is the <strong>ultimate energy source</strong> for most fuels! Fuels come in three states of matter: <strong>solid fuels</strong> (wood, coal), <strong>liquid fuels</strong> (gasoline, oil), and <strong>gas fuels</strong> (natural gas).",
+              tip: "Solid, liquid, gas &mdash; fuels come in all three states of matter, but they all give energy when burned.",
+              examples: [
+                { label: "🪵 Solid fuel", text: "Wood and coal &rarr; a campfire." },
+                { label: "⛽ Liquid fuel", text: "Gasoline &rarr; a car." },
+                { label: "🔥 Gas fuel", text: "Natural gas &rarr; a kitchen stove." },
+              ],
+            },
+            {
+              title: "3. 🔐 The Secret Inside: Chemical Energy",
+              rule: "Before we burn them, fuels are just sitting there &mdash; but they are hiding a secret called <strong>chemical energy</strong>. Chemical energy is the energy <strong>stored inside fuel</strong>. Think of it like a locked <strong>treasure chest</strong>. How do we unlock the energy treasure chest? We have to <strong>burn the fuel</strong>! When fuels burn, the stored energy comes out as <strong>heat and light</strong>.",
+              tip: "Fuel = a locked treasure chest of chemical energy. Burning is the key!",
+              examples: [
+                { label: "⬛ Coal", text: "A lump of coal holds chemical energy until it is burned." },
+                { label: "🛢️ Oil", text: "A drop of oil holds chemical energy until it is burned." },
+              ],
+            },
+            {
+              title: "4. 🔥 The Magic Recipe: Combustion",
+              rule: "<strong>Combustion</strong> is a fancy science word for <strong>burning</strong>. It is a <strong>chemical change</strong> where high-energy molecules break apart. To make a fire, you need <strong>three ingredients</strong>: <strong>oxygen + fuel + heat = combustion</strong>. During combustion, carbon-rich fuel reacts with oxygen to form <strong>carbon dioxide</strong>, which has very low chemical energy. The new substances have <strong>less</strong> chemical energy than the fuel &mdash; the &ldquo;lost&rdquo; energy is released as <strong>heat and light</strong> (and sometimes sound).",
+              tip: "Combustion unlocks the chemical energy and turns it into heat and light! Remember the 3 ingredients: Oxygen + Fuel + Heat.",
+              examples: [
+                { label: "🕯️ Candle", text: "The wax (fuel) combines with oxygen after a match gives it heat, and it gives off heat and light." },
+                { label: "🔥 Campfire", text: "Wood burns, releasing heat, light, and sound (crackling)." },
+              ],
+            },
+            {
+              title: "5. 🚗 Job #1: Making Things Move",
+              rule: "How does a heavy car drive down the street? It uses a <strong>combustion engine</strong>! In a car engine, <strong>gasoline and air mix</strong>. Combustion changes the chemical energy in the mixture into <strong>heat</strong>. The <strong>hot gases expand</strong> and push against the engine parts. The <strong>pushing parts turn the wheels</strong> and move the car.",
+              tip: "If you touch a car's hood after a drive, it's warm! That's the heat from combustion.",
+              examples: [
+                { label: "🔄 Conversion", text: "Chemical energy (gasoline) &rarr; heat (hot gases) &rarr; motion energy (moving car)." },
+              ],
+            },
+            {
+              title: "6. ⚙️ Inside the Engine: 1-2-3-4!",
+              rule: "A car engine repeats four steps over and over. <strong>1. Drink up!</strong> Fuel and air go into the cylinder. <strong>2. Squeeze!</strong> The piston moves up and squeezes the fuel and air. <strong>3. BOOM!</strong> The fuel burns (combustion), and the hot gases push the piston <strong>down</strong>. <strong>4. Breathe out!</strong> The used gases are pushed out. Then it starts again &mdash; it's a <strong>cycle</strong>!",
+              tip: "Drink up → Squeeze → BOOM → Breathe out. The pushing parts turn the wheels: Chemical Energy → Motion Energy!",
+              examples: [
+                { label: "💥 Step 3", text: "The BOOM step is where chemical energy becomes heat and the push that moves the car." },
+              ],
+            },
+            {
+              title: "7. 🏭 Job #2: Making Electricity",
+              rule: "Most of the electricity in our homes comes from a <strong>thermal power plant</strong>. <strong>Thermal</strong> means <strong>heat</strong>! A thermal power plant is basically a <strong>giant steam engine connected to an electric generator</strong> (a &ldquo;magic magnet machine&rdquo;). Burning fuel changes <strong>chemical energy into heat</strong>, which boils water into <strong>steam</strong>. The main difference between types of thermal power plants is <strong>where the heat that boils the water comes from</strong> (coal, oil, gas, nuclear, biomass, or the Earth).",
+              tip: "Almost every power plant does the same thing: heat → boil water → steam → spin a turbine → turn a generator → electricity!",
+              examples: [
+                { label: "⚡ Energy chain", text: "Chemical energy → heat energy → energy of motion → electrical energy." },
+              ],
+            },
+            {
+              title: "8. 🔁 The Power Plant Journey",
+              rule: "<strong>1. The Boiler:</strong> heat boils water into super-hot, high-pressure <strong>steam</strong>. <strong>2. The Turbine:</strong> the rushing steam pushes a <strong>turbine</strong> &mdash; a device that <strong>spins</strong> super fast, like a giant pinwheel powered by steam. <em>Transformation: heat energy → energy of motion.</em> <strong>3. The Generator:</strong> the spinning turbine turns a <strong>generator</strong>, which makes <strong>electricity</strong>. <em>Transformation: motion energy → electrical energy.</em> <strong>4. The Cooling Tower:</strong> the steam cools, becomes <strong>liquid water</strong> again, and goes <strong>back to the boiler</strong> to start the loop again.",
+              tip: "Boil → Spin → Generate → Cool, and then the water loops back to the boiler!",
+              examples: [
+                { label: "🌀 Turbine", text: "Heat energy → energy of motion." },
+                { label: "⚡ Generator", text: "Motion energy → electrical energy." },
+                { label: "💧 Cooling tower", text: "Steam turns back into water and returns to the boiler." },
+              ],
+            },
+            {
+              title: "9. 🧲 How Does a Generator Work?",
+              rule: "Moving magnets are magic! A <strong>generator</strong> changes <strong>motion into electrical energy</strong>. Inside the generator is a <strong>spinning magnet</strong> surrounded by a <strong>coil of copper wire</strong>. When the magnet turns inside the wire coil, it <strong>pushes electric current through the wire</strong>. The electricity then travels along <strong>power lines</strong> (on power poles) all the way to your home &mdash; and your TV turns ON!",
+              tip: "Generator = magnet + copper wire coil + motion. No motion, no electricity!",
+              examples: [
+                { label: "🔌 Path", text: "Spinning magnet → copper wire coil → power pole → your TV." },
+              ],
+            },
+            {
+              title: "10. 🗺️ The Big Energy Map",
+              rule: "Everything is connected! The <strong>sun</strong> gives energy to <strong>fuels</strong> (wood, coal, oil). <strong>Combustion</strong> turns the fuel's energy into <strong>heat</strong>. Then the heat can go two ways: <strong>Path 1:</strong> a <strong>car engine</strong> → <strong>motion</strong>. <strong>Path 2:</strong> a <strong>boiler</strong> → <strong>steam</strong> → <strong>turbine</strong> → <strong>generator</strong> → <strong>electricity</strong> (a light bulb lights up!).",
+              tip: "Start at the sun and follow the energy all the way to your wheels or your light bulb!",
+              examples: [
+                { label: "🚗 Path 1", text: "Sun → fuel → combustion (heat) → car engine → motion." },
+                { label: "💡 Path 2", text: "Sun → fuel → combustion (heat) → boiler → steam → turbine → generator → electricity." },
+              ],
+            },
+            {
+              title: "11. 📖 Explorer's Dictionary",
+              rule: "<strong>Fuel:</strong> material we burn for energy. <strong>Chemical energy:</strong> the secret energy stored inside fuel. <strong>Combustion:</strong> a chemical change (burning) using fuel + oxygen + heat. <strong>Generator:</strong> a machine with magnets that turns motion into electricity. <strong>Turbine:</strong> a device that spins when steam pushes it, changing heat energy into energy of motion. <strong>Thermal:</strong> heat.",
+              tip: "Quick Quiz: What are the 3 magic ingredients for combustion? How does a car use fuel to move its wheels? What does the spinning turbine do inside a power plant?",
+              examples: [
+                { label: "📝 Homework", text: "Don't forget to complete your Lesson 1 Vocabulary Worksheet!" },
+              ],
+            },
+            {
+              title: "12. 🔌 Textbook: Devices & Where Electricity Comes From",
+              rule: "People use a lot of energy to heat and light buildings and to power tools, cars, and other electric devices. A <strong>device</strong> is <strong>something made for a particular purpose</strong>. All devices that plug into wall outlets need <strong>electrical energy</strong>. Electrical energy is produced by <strong>changing some other form of energy</strong>. Common fuels include <strong>coal, natural gas, petroleum, and wood</strong>. The <strong>primary</strong>, or <strong>original</strong>, source of energy of almost all fuels is <strong>the sun</strong>: plants change the energy of sunlight into plant materials that store energy, such as wood. Coal, oil, and natural gas formed when living things (plants or animals) died and changed underground over a very long time.",
+              tip: "Vocabulary: fuel, combustion, turbine, generator, battery. Academic words: <strong>device</strong> (made for a purpose) and <strong>primary</strong> (original, first).",
+              examples: [
+                { label: "☀️ Why the sun is primary", text: "Even though solar cells make only a small part of our electricity, the energy in coal, oil, gas, and wood first came from sunlight &mdash; so the sun is the primary source of most of our electricity." },
+                { label: "🌱 All fuels", text: "All fuels originally come from plants that used sunlight, or from animals that ate the plants." },
+              ],
+            },
+            {
+              title: "13. 🏭 Textbook Diagram: A Coal Power Plant",
+              rule: "<strong>Boiler:</strong> in a coal power plant, the primary source of energy is the <strong>coal</strong>. When coal is burned, <strong>chemical energy changes to heat</strong> that turns water into steam. Because the water vapor is so hot, it has a lot of energy. <strong>Turbine:</strong> the hot steam flows through the turbine; it spins and changes the heat energy of the steam into <strong>energy of motion</strong>. <strong>Generator:</strong> as the turbine spins, it turns a <strong>shaft</strong> that causes motion in the generator. Inside, a <strong>magnet</strong> is surrounded by a <strong>coil of copper wire</strong>; as the magnet turns, an electric current is made. <strong>Cooling tower:</strong> the steam <strong>still has a lot of heat energy</strong>. It flows through pipes in the cooling tower, cools, and becomes liquid water again.",
+              tip: "Label each part with its energy change: Boiler = chemical → heat. Turbine = heat → motion. Generator = motion → electrical.",
+              examples: [
+                { label: "🔗 The shaft", text: "The turbine and generator are connected by a shaft, so when the turbine spins, the generator spins too." },
+                { label: "⚡ Power lines", text: "The electricity from the generator travels through power lines to homes and schools." },
+              ],
+            },
+            {
+              title: "14. 🔋 Storing Chemical Energy: Batteries",
+              rule: "Combustion is not the only way we use chemical energy. Devices you can carry around &mdash; a <strong>phone, a flashlight, or a computer</strong> &mdash; use electrical energy, but you do not want to burn something to make them work! A <strong>battery</strong> <strong>stores chemical energy and can convert that energy into electrical energy</strong>. When you use a battery, <strong>chemical changes inside the battery</strong> produce an electric current.",
+              tip: "Battery = chemical energy → electrical energy, with no burning!",
+              examples: [
+                { label: "🥔 Potato lab", text: "In the lab, a copper strip and a zinc strip pushed into a potato, connected with wires, can light an LED bulb. Chemical energy becomes electrical energy, and the light proves a change in energy happened." },
+                { label: "🔦 Everyday", text: "A flashlight uses batteries to change chemical energy into electrical energy, then into light." },
+              ],
+            },
+            {
+              title: "15. 🚘 Cars: Gasoline, Hybrid, Electric, and Solar",
+              rule: "The world has <strong>more than a billion cars</strong>, and almost all use a <strong>gasoline engine</strong>. <strong>Hybrid cars</strong> use <strong>both gasoline and electricity</strong>. <strong>Electric cars</strong> use only electricity: they have electric motors connected to large batteries that get <strong>recharged</strong> instead of filled with gas. Electric cars are <strong>much more efficient</strong> &mdash; they use less total energy. Some engineers have built experimental <strong>solar cars</strong>: solar panels charge the batteries whenever there is enough light, so they don't need to be plugged in.",
+              tip: "A solar car might have trouble traveling at night because there is no sunlight to charge its batteries. One solution: store extra energy in the batteries during the day.",
+              examples: [
+                { label: "⛽ Gasoline car", text: "Uses only a gasoline engine." },
+                { label: "🔌 Electric car", text: "Uses only electricity from recharged batteries." },
+                { label: "☀️ Solar car", text: "Solar panels charge the batteries using sunlight." },
+              ],
+            },
+          ],
+          quizBank: [
+            { prompt: "What are fuels?",
+              options: ["Substances that provide energy after they are burned", "Machines that make electricity", "Gases that trap heat", "Rocks that hold water"],
+              answer: "Substances that provide energy after they are burned",
+              why: "Fuels are substances that provide energy after they are burned." },
+            { prompt: "What type of energy is stored in fuels?",
+              options: ["Chemical energy", "Sound energy", "Kinetic energy", "Electrical energy"],
+              answer: "Chemical energy",
+              why: "Fuels store chemical energy, which is released as heat and light when they burn." },
+            { prompt: "What is the primary source of energy for almost all fuels?",
+              options: ["The sun", "The moon", "The ocean", "Electricity"],
+              answer: "The sun",
+              why: "The primary source of energy of almost all fuels is the sun." },
+            { prompt: "Combustion is another word for...",
+              options: ["Burning", "Freezing", "Melting", "Spinning"],
+              answer: "Burning",
+              why: "Combustion is another word for “burn.”" },
+            { prompt: "During combustion, a fuel combines with which gas?",
+              options: ["Oxygen", "Helium", "Hydrogen", "Nitrogen"],
+              answer: "Oxygen",
+              why: "During combustion, the fuel combines with oxygen and a chemical change releases energy." },
+            { prompt: "When fuels burn, they produce energy mainly as...",
+              options: ["Heat and light", "Water and ice", "Wind and rain", "Magnets and metal"],
+              answer: "Heat and light",
+              why: "Fuels burn and produce energy as heat and light." },
+            { prompt: "Combustion is what kind of change?",
+              options: ["A chemical change", "A change of state only", "A change in color only", "No change at all"],
+              answer: "A chemical change",
+              why: "Combustion is a chemical change in which substances in the fuel combine with oxygen to form new substances." },
+            { prompt: "Carbon-rich fuels react with oxygen during combustion to form which gas?",
+              options: ["Carbon dioxide", "Oxygen", "Helium", "Natural gas"],
+              answer: "Carbon dioxide",
+              why: "Carbon-rich substances react with oxygen to form carbon dioxide, which has very low chemical energy." },
+            { prompt: "After combustion, do the new substances have more or less chemical energy than the original fuel?",
+              options: ["Less chemical energy", "More chemical energy", "The exact same amount", "Twice as much"],
+              answer: "Less chemical energy",
+              why: "The new substances do not have as much chemical energy as the original fuel. The lost energy becomes heat, light, or sound." },
+            { prompt: "In a car engine, what pushes against the engine parts to make the car move?",
+              options: ["Hot gases that expand", "Cold water", "Magnets", "Sunlight"],
+              answer: "Hot gases that expand",
+              why: "Combustion makes hot gases that expand and push against engine parts, causing the car's motion." },
+            { prompt: "Which energy conversion happens in a car engine?",
+              options: ["Chemical → thermal → kinetic", "Kinetic → chemical → light", "Electrical → sound → chemical", "Light → chemical → nuclear"],
+              answer: "Chemical → thermal → kinetic",
+              why: "Gasoline's chemical energy becomes heat (thermal), and the hot gases make the car move (kinetic)." },
+            { prompt: "How can you tell that burning gasoline releases heat?",
+              options: ["The car hood feels hot after the car has been running", "The car gets lighter", "The tires change color", "The radio gets louder"],
+              answer: "The car hood feels hot after the car has been running",
+              why: "You can tell combustion releases heat by touching the hood of a car after it has been running a long time." },
+            { prompt: "Where is most of the electricity we use made?",
+              options: ["At a thermal power plant", "Inside batteries", "At a car factory", "In the clouds"],
+              answer: "At a thermal power plant",
+              why: "Most of the electricity we use is made at a thermal power plant." },
+            { prompt: "A thermal power plant is basically a steam engine connected to...",
+              options: ["An electric generator", "A car engine", "A solar panel", "A water pump"],
+              answer: "An electric generator",
+              why: "A thermal power plant is basically just a steam engine connected to an electric generator." },
+            { prompt: "What is the first step in a thermal power plant?",
+              options: ["Boil water into steam in a boiler", "Spin the generator", "Cool the steam", "Send electricity to homes"],
+              answer: "Boil water into steam in a boiler",
+              why: "Step 1: Boil water into steam in a boiler." },
+            { prompt: "What is a turbine?",
+              options: ["A device that spins as gas flows and changes heat energy into energy of motion", "A device that stores electricity", "A tower that cools steam", "A pipe that carries oil"],
+              answer: "A device that spins as gas flows and changes heat energy into energy of motion",
+              why: "A turbine spins as the gas flows and changes the heat energy of the steam into energy of motion." },
+            { prompt: "What is a generator?",
+              options: ["A device that changes energy of motion into electrical energy", "A device that boils water", "A fuel made from plants", "A gas that traps heat"],
+              answer: "A device that changes energy of motion into electrical energy",
+              why: "A generator changes energy of motion into electrical energy." },
+            { prompt: "What is inside a generator that makes electric current?",
+              options: ["A magnet surrounded by a coil of copper wire", "A pile of coal", "A pool of water", "A solar panel"],
+              answer: "A magnet surrounded by a coil of copper wire",
+              why: "Inside the generator, a magnet turns inside a coil of copper wire, generating an electric current." },
+            { prompt: "What is the job of the cooling tower?",
+              options: ["To cool the steam so it becomes liquid water again", "To burn more fuel", "To spin the turbine", "To store electricity"],
+              answer: "To cool the steam so it becomes liquid water again",
+              why: "The cooling tower cools the steam. As it cools, it becomes liquid water again." },
+            { prompt: "Put these in order: generator, boiler, turbine. Which order is correct?",
+              options: ["Boiler → turbine → generator", "Generator → turbine → boiler", "Turbine → boiler → generator", "Boiler → generator → turbine"],
+              answer: "Boiler → turbine → generator",
+              why: "Water is boiled into steam, the steam turns the turbine, and the turbine turns the generator." },
+            { prompt: "What is the main difference between types of thermal power plants?",
+              options: ["Where the heat that boils the water comes from", "The color of the building", "Whether they use water", "Whether they have a generator"],
+              answer: "Where the heat that boils the water comes from",
+              why: "The major difference between thermal power plants is where the thermal energy that boils the water comes from." },
+            { prompt: "True or False: The turbine turns the electric generator.",
+              options: ["True", "False"],
+              answer: "True",
+              why: "The high-pressure steam turns the turbine, and the turbine turns the electric generator." },
+            { prompt: "What are the three ingredients needed for combustion?",
+              options: ["Oxygen, fuel, and heat", "Water, fuel, and light", "Oxygen, water, and wind", "Fuel, ice, and sound"],
+              answer: "Oxygen, fuel, and heat",
+              why: "To make a fire you need three ingredients: oxygen + fuel + heat = combustion." },
+            { prompt: "Combustion unlocks chemical energy and turns it into...",
+              options: ["Heat and light", "Water and ice", "Magnets", "Wind"],
+              answer: "Heat and light",
+              why: "Combustion unlocks the chemical energy and turns it into heat and light." },
+            { prompt: "Which of these is a GAS fuel?",
+              options: ["Natural gas", "Wood", "Coal", "Gasoline"],
+              answer: "Natural gas",
+              why: "Natural gas is a gas fuel. Wood and coal are solid fuels, and gasoline is a liquid fuel." },
+            { prompt: "Which TWO are examples of solid fuels?",
+              options: ["Wood and coal", "Gasoline and oil", "Natural gas and steam", "Water and air"],
+              answer: "Wood and coal",
+              why: "Wood and coal are solid fuels, like the ones burned in a campfire." },
+            { prompt: "Gasoline that goes into a car is which kind of fuel?",
+              options: ["Liquid fuel", "Solid fuel", "Gas fuel", "Not a fuel"],
+              answer: "Liquid fuel",
+              why: "Gasoline is a liquid fuel used to power cars." },
+            { prompt: "The secret energy stored inside fuel, like a locked treasure chest, is called...",
+              options: ["Chemical energy", "Sound energy", "Motion energy", "Electrical energy"],
+              answer: "Chemical energy",
+              why: "Chemical energy is the secret energy stored inside fuel. Burning the fuel unlocks it." },
+            { prompt: "How do we “unlock” the chemical energy stored in fuel?",
+              options: ["By burning the fuel", "By freezing the fuel", "By painting the fuel", "By shaking the fuel"],
+              answer: "By burning the fuel",
+              why: "To unlock the energy treasure chest, we have to burn the fuel." },
+            { prompt: "What are the four steps inside a car engine, in order?",
+              options: ["Drink up → Squeeze → BOOM → Breathe out", "BOOM → Drink up → Breathe out → Squeeze", "Squeeze → Breathe out → Drink up → BOOM", "Breathe out → BOOM → Squeeze → Drink up"],
+              answer: "Drink up → Squeeze → BOOM → Breathe out",
+              why: "Fuel and air go in (drink up), get squeezed, burn (BOOM), and the used gases go out (breathe out). Then the cycle repeats." },
+            { prompt: "In the engine's “BOOM!” step, what happens?",
+              options: ["The fuel burns and the hot gases push the piston down", "Fuel and air come into the engine", "The used gases are pushed out", "The car's tires are filled with air"],
+              answer: "The fuel burns and the hot gases push the piston down",
+              why: "In step 3, combustion happens and the hot gases push the piston down. The pushing parts turn the wheels." },
+            { prompt: "A car engine's pushing parts turn the wheels. Which energy change is this?",
+              options: ["Chemical energy → motion energy", "Motion energy → chemical energy", "Light energy → sound energy", "Electrical energy → chemical energy"],
+              answer: "Chemical energy → motion energy",
+              why: "The pushing parts turn the wheels: chemical energy → motion energy!" },
+            { prompt: "What does the word “thermal” mean?",
+              options: ["Heat", "Water", "Light", "Motion"],
+              answer: "Heat",
+              why: "Thermal means heat! A thermal power plant uses heat to make electricity." },
+            { prompt: "What energy transformation happens at the turbine?",
+              options: ["Heat energy → energy of motion", "Electrical energy → heat energy", "Motion energy → chemical energy", "Light energy → electrical energy"],
+              answer: "Heat energy → energy of motion",
+              why: "The rushing steam (heat energy) pushes the turbine and makes it spin (energy of motion)." },
+            { prompt: "What energy transformation happens at the generator?",
+              options: ["Motion energy → electrical energy", "Electrical energy → motion energy", "Heat energy → chemical energy", "Chemical energy → light energy"],
+              answer: "Motion energy → electrical energy",
+              why: "The spinning turbine turns the generator, which changes motion energy into electrical energy." },
+            { prompt: "After the steam cools in the cooling tower, where does the water go?",
+              options: ["Back to the boiler to start the loop again", "Into the gas tank of a car", "Up into the clouds forever", "Into the generator to make magnets"],
+              answer: "Back to the boiler to start the loop again",
+              why: "The steam becomes liquid water again and goes back to the boiler. It's a loop!" },
+            { prompt: "The spinning turbine is like a giant ___ powered by steam.",
+              options: ["Pinwheel", "Battery", "Light bulb", "Magnet"],
+              answer: "Pinwheel",
+              why: "The turbine spins super fast when steam pushes it, like a giant pinwheel." },
+            { prompt: "In a generator, what pushes electric current through the wire?",
+              options: ["A magnet turning inside the copper wire coil", "Water flowing through the wire", "Fire burning on the wire", "Sunlight shining on the wire"],
+              answer: "A magnet turning inside the copper wire coil",
+              why: "When the magnet turns inside the wire coil, it pushes electric current through the wire." },
+            { prompt: "On the Big Energy Map, which path makes electricity?",
+              options: ["Fuel → combustion → boiler → steam → turbine → generator", "Fuel → combustion → car engine → wheels", "Sun → wind → rain → river", "Generator → turbine → steam → fuel"],
+              answer: "Fuel → combustion → boiler → steam → turbine → generator",
+              why: "Heat from combustion boils water in the boiler. The steam spins the turbine, and the turbine turns the generator to make electricity." },
+            { prompt: "On the Big Energy Map, where does the energy in fuels like wood, coal, and oil first come from?",
+              options: ["The sun", "The generator", "The car engine", "The cooling tower"],
+              answer: "The sun",
+              why: "The sun is the ultimate energy source for most fuels." },
+            { prompt: "What is a device?",
+              options: ["Something made for a particular purpose", "A material that burns", "A type of fossil fuel", "A gas that traps heat"],
+              answer: "Something made for a particular purpose",
+              why: "A device is something made for a particular purpose, like a phone, a lamp, or a hair dryer." },
+            { prompt: "In science, the word “primary” means...",
+              options: ["Original or first", "Last", "Smallest", "Hottest"],
+              answer: "Original or first",
+              why: "The primary, or original, source of energy of almost all fuels is the sun." },
+            { prompt: "How is the electrical energy that we use produced?",
+              options: ["By changing some other form of energy", "It is dug out of the ground", "It grows on trees", "It is made from nothing"],
+              answer: "By changing some other form of energy",
+              why: "Electrical energy is produced by changing some other form of energy, such as chemical energy or energy of motion." },
+            { prompt: "Which list shows common fuels named in the textbook?",
+              options: ["Coal, natural gas, petroleum, and wood", "Water, sand, glass, and iron", "Wind, sunlight, rain, and snow", "Copper, zinc, plastic, and paper"],
+              answer: "Coal, natural gas, petroleum, and wood",
+              why: "Common fuels include coal, natural gas, petroleum, and wood." },
+            { prompt: "How do plants store energy from the sun?",
+              options: ["They change sunlight into plant materials, such as wood", "They store sunlight as electricity", "They turn sunlight into water", "They do not store any energy"],
+              answer: "They change sunlight into plant materials, such as wood",
+              why: "Plants change the energy of sunlight into plant materials that store energy, such as wood." },
+            { prompt: "Laura read that the energy for any fuel used in combustion comes from the sun. What does this mean?",
+              options: ["All fuels originally come from plants that used sunlight or animals that ate the plants", "The fuels used to produce power are renewable", "Fuels absorb sunlight and release it when they burn", "Power plants can only use solar panels"],
+              answer: "All fuels originally come from plants that used sunlight or animals that ate the plants",
+              why: "Fuels formed from plants that used sunlight, or from animals that ate those plants, so their energy first came from the sun." },
+            { prompt: "Solar cells make only a small part of our electricity. Why is the sun still the primary source of most of our electricity?",
+              options: ["The energy stored in fuels like coal and oil first came from sunlight", "Power plants are built in sunny places", "Electricity is made of sunlight", "Solar cells are inside every power plant"],
+              answer: "The energy stored in fuels like coal and oil first came from sunlight",
+              why: "Most electricity comes from burning fuels, and the energy in those fuels came from the sun long ago." },
+            { prompt: "In a coal power plant, what is the primary source of energy?",
+              options: ["Coal", "Water", "The cooling tower", "The generator"],
+              answer: "Coal",
+              why: "In a coal power plant, the primary source of energy is the coal." },
+            { prompt: "What connects the turbine to the generator so the generator spins?",
+              options: ["A shaft", "A battery", "A cooling tower", "A solar panel"],
+              answer: "A shaft",
+              why: "As the turbine spins, it turns a shaft that causes motion in the generator." },
+            { prompt: "Why is the steam sent to a cooling tower?",
+              options: ["It still has a lot of heat energy and must cool back into liquid water", "To make it hotter", "To turn it into coal", "To spin the generator faster"],
+              answer: "It still has a lot of heat energy and must cool back into liquid water",
+              why: "The steam still has a lot of heat energy. It flows through pipes in the cooling tower and becomes liquid water again." },
+            { prompt: "What does a battery do?",
+              options: ["Stores chemical energy and converts it into electrical energy", "Burns fuel to make heat", "Spins a turbine", "Turns electricity into coal"],
+              answer: "Stores chemical energy and converts it into electrical energy",
+              why: "A battery stores chemical energy and can convert that energy into electrical energy." },
+            { prompt: "What produces the electric current inside a battery?",
+              options: ["Chemical changes inside the battery", "Burning fuel inside the battery", "A spinning turbine", "Steam from a boiler"],
+              answer: "Chemical changes inside the battery",
+              why: "When you use a battery, chemical changes inside the battery produce an electric current." },
+            { prompt: "Which device would most likely use a battery instead of burning fuel?",
+              options: ["A flashlight", "A campfire", "A gas stove", "A coal boiler"],
+              answer: "A flashlight",
+              why: "Devices you carry around, like a phone, flashlight, or computer, use batteries. You do not want to burn something to make them work!" },
+            { prompt: "In the potato lab, which two metals were pushed into the potato to light an LED?",
+              options: ["Copper and zinc", "Gold and silver", "Iron and aluminum", "Coal and uranium"],
+              answer: "Copper and zinc",
+              why: "A copper strip and a zinc strip in a potato can make enough electricity to light an LED." },
+            { prompt: "What does a hybrid car use to run?",
+              options: ["Both gasoline and electricity", "Only gasoline", "Only sunlight", "Only wind"],
+              answer: "Both gasoline and electricity",
+              why: "Hybrid cars use both gasoline and electricity to run." },
+            { prompt: "Why are electric cars more efficient than gasoline cars?",
+              options: ["They use less total energy", "They are always bigger", "They burn more fuel", "They never need energy"],
+              answer: "They use less total energy",
+              why: "Electric cars are much more efficient than cars that use gas. They use less total energy." },
+            { prompt: "Why might a solar car have trouble traveling at night?",
+              options: ["There is no sunlight to charge its batteries", "Its tires get cold", "It runs out of gasoline", "The road is too dark to see"],
+              answer: "There is no sunlight to charge its batteries",
+              why: "Solar panels charge the batteries only when enough light is available, so a solar car could run low at night." },
+          ],
+        },
+        lesson2: {
+          name: "Lesson 2: Nonrenewable Energy Sources",
+          cards: [
+            {
+              title: "1. ♻️ Renewable vs. Nonrenewable",
+              rule: "A <strong>nonrenewable resource</strong> is a natural resource that <strong>cannot be replaced</strong> by nature fast enough to keep up with how quickly we use it. Once it is used up, it is gone. A <strong>renewable resource</strong> is one that nature <strong>replaces</strong> or that <strong>does not run out</strong>, like sunlight and wind.",
+              tip: "NON-renewable = NOT coming back (in our lifetime). Renewable = REnews itself again and again.",
+              examples: [
+                { label: "⛔ Nonrenewable", text: "Coal, petroleum (oil), natural gas, and uranium." },
+                { label: "✅ Renewable", text: "Solar, wind, hydropower, biomass, and geothermal." },
+              ],
+            },
+            {
+              title: "2. 🦕 Fossil Fuels",
+              rule: "Much of the energy people use comes from <strong>fossil fuels</strong> &mdash; materials that formed as <strong>ancient plants and animals decayed underground</strong> over millions of years. The three main types are <strong>coal, petroleum, and natural gas</strong>. They release heat and light when they react with oxygen during combustion. Fossil fuels are <strong>nonrenewable</strong>, and burning them can harm the environment (air pollution, acidic rivers and lakes).",
+              tip: "Three fossil fuels, three states of matter: coal = solid, petroleum = liquid, natural gas = gas!",
+              examples: [
+                { label: "🌿 Where the energy came from", text: "Ancient plants used sunlight to make food (photosynthesis). That chemical energy is still trapped in fossil fuels." },
+              ],
+            },
+            {
+              title: "3. ⬛ Coal (Solid)",
+              rule: "<strong>Coal</strong> is a <strong>solid</strong> fossil fuel &mdash; a hard, black rock made from the remains of <strong>plants</strong> (dead trees) that lived long ago, during the <strong>Carboniferous period</strong>. How it forms: <strong>1.</strong> Plants die and sink to the bottom of <strong>swamps</strong>. <strong>2.</strong> Layers of dead plants build up and are covered by rock and soil. <strong>3.</strong> Over time, the plant matter is <strong>squeezed and heated</strong> until it turns to coal. Coal is burned in thermal power plants to generate <strong>electricity</strong>.",
+              tip: "Coal = old swamp plants squeezed into black rock.",
+              examples: [
+                { label: "⚡ Use", text: "Burned in thermal power plants to make electricity." },
+                { label: "⚠️ Problem", text: "As coal is used up, no more coal replaces it, and burning it pollutes the air." },
+              ],
+            },
+            {
+              title: "4. 🛢️ Petroleum / Oil (Liquid)",
+              rule: "<strong>Petroleum (oil)</strong> is a <strong>liquid</strong> fossil fuel made from the remains of <strong>plants and animals</strong> that lived millions of years ago. How it forms: <strong>1.</strong> Plants and animals die and sink to the bottom of the <strong>ocean</strong>. <strong>2.</strong> They are covered by layers of sand, silt, and rock; <strong>heat and pressure</strong> change them into oil. <strong>3.</strong> Oil collects in <strong>underground reservoirs</strong> and is <strong>pumped</strong> out. Factories called <strong>refineries</strong> separate petroleum into parts.",
+              tip: "Petroleum gives us much more than fuel &mdash; lots of everyday products start as oil!",
+              examples: [
+                { label: "⛽ Fuels", text: "Gasoline and diesel for car engines; also burned in power plants." },
+                { label: "🧴 Products", text: "Plastics, textiles (cloth), fertilizers, and medicine." },
+              ],
+            },
+            {
+              title: "5. 🔵 Natural Gas (Gas)",
+              rule: "<strong>Natural gas</strong> is a fossil fuel in the <strong>gas</strong> state. It forms the same way as oil, and the two are often found <strong>together in underground reservoirs</strong>. Because natural gas is <strong>lighter than oil</strong>, it rises to the <strong>top</strong> of the reservoir. It is <strong>highly combustible</strong> (burns easily).",
+              tip: "Oil and gas are neighbours underground &mdash; gas floats on top because it's lighter.",
+              examples: [
+                { label: "⚡ Electricity", text: "Burned in thermal power plants." },
+                { label: "🍳 Homes", text: "Used for heating and cooking in many homes." },
+              ],
+            },
+            {
+              title: "6. ☢️ Nuclear Fuel: Uranium",
+              rule: "<strong>Nuclear energy</strong> comes from changes inside particles of matter. Most nuclear power plants use the element <strong>uranium</strong>, which is found in <strong>underground rocks</strong> and dug up by <strong>miners</strong>. Uranium is <strong>nonrenewable</strong> because only a limited amount can be mined. <strong>Chemical energy</strong> is released when molecules break apart and form new molecules &mdash; the atoms stay the same. <strong>Nuclear energy</strong> is released when <strong>atoms themselves</strong> break apart or join together.",
+              tip: "Chemical reactions do NOT change the atoms. Nuclear reactions DO!",
+              examples: [
+                { label: "⛏️ Mining", text: "Uranium is collected from rocks that miners dig up." },
+              ],
+            },
+            {
+              title: "7. 🏭 How a Nuclear Power Plant Works",
+              rule: "<strong>1.</strong> <strong>Fission</strong> in the reactor releases heat that <strong>boils water</strong>. <strong>2.</strong> The steam hits the blades of a <strong>turbine</strong> and makes it spin. <strong>3.</strong> The turbine turns a <strong>generator</strong>, which makes electricity that travels through <strong>power lines</strong>. <strong>4.</strong> In a <strong>condenser</strong>, cold seawater cools the steam back into water. <strong>5.</strong> The water is <strong>pumped back</strong> into the reactor to be boiled again (a full cycle takes about 10 minutes). Nuclear power plants are <strong>free from carbon emissions</strong>.",
+              tip: "Same steps as a coal plant &mdash; only the heat comes from splitting uranium atoms instead of burning fuel.",
+              examples: [
+                { label: "🔄 Energy chain", text: "Nuclear energy → heat → steam → turbine (motion) → generator → electricity." },
+              ],
+            },
+            {
+              title: "8. ☀️ Fission vs. Fusion",
+              rule: "<strong>Nuclear fission</strong> is when one heavy atom <strong>splits into two</strong> smaller atoms. Power plants split <strong>uranium</strong>, the heaviest atom found on Earth &mdash; the heavier the atom, the more energy released. <strong>Nuclear fusion</strong> is when two light atoms <strong>join together</strong> into one heavier atom. The <strong>sun</strong> uses fusion: <strong>hydrogen</strong> atoms smash together to form <strong>helium</strong>. Fusion needs extreme temperature and pressure, so it is not easy to use on Earth.",
+              tip: "FISSion = split (like a crack, “fissure”). FUSion = fuse together.",
+              examples: [
+                { label: "✂️ Fission", text: "Uranium atom splits apart in a nuclear power plant." },
+                { label: "🤝 Fusion", text: "Hydrogen atoms join to make helium inside the sun." },
+              ],
+            },
+            {
+              title: "9. 🐤 A Canary in a Coal Mine",
+              rule: "The expression <strong>“a canary in a coal mine”</strong> means someone or something that <strong>warns of danger</strong>. Digging coal in a deep underground mine can be dangerous. One risk is a poisonous gas, <strong>carbon monoxide</strong> &mdash; you <strong>cannot see it or smell it</strong>. It forms when carbon from coal and oxygen from air combine during <strong>combustion</strong> (burning). Long ago, mine rescuers carried a small caged <strong>canary</strong>. Canaries are more sensitive to carbon monoxide than people, so if the bird stopped singing or swayed on its perch, the miners knew to return to the surface quickly. Today, miners carry <strong>electronic detectors</strong>.",
+              tip: "Canary = early warning! If the bird got sick, the miners knew to get out.",
+              examples: [
+                { label: "⛏️ Then", text: "A canary in a cage warned miners of poisonous gas." },
+                { label: "📟 Now", text: "Electronic detectors warn miners of carbon monoxide." },
+              ],
+            },
+            {
+              title: "10. ⛏️ Textbook: How Coal Formed",
+              rule: "Many millions of years ago, <strong>swamps</strong> covered large areas of Earth. When plants died and fell into the water, they decomposed and formed layers of <strong>peat</strong>. After a very long time, <strong>heat from inside Earth</strong> and <strong>pressure from soil and rock</strong> changed the peat into <strong>coal</strong>. The whole change took <strong>more than 10 million years</strong>. The coal that exists today will last <strong>more than a hundred years</strong> at current rates, but as it is used up, no more coal replaces it. Fossil fuel supply is limited because it takes <strong>millions of years</strong> to change living materials into fossil fuels. Burning them can have a harmful <strong>outcome</strong>, or <strong>result</strong>, such as air pollution and acidic rivers and lakes.",
+              tip: "Dead swamp plants → peat → (heat + pressure) → coal. Academic word: <strong>outcome</strong> = result.",
+              examples: [
+                { label: "🌿 Step 1", text: "Plants die in swamps and form layers of peat." },
+                { label: "🪨 Step 2", text: "Heat and pressure change peat into coal over 10+ million years." },
+              ],
+            },
+            {
+              title: "11. 🛢️ Textbook: Petroleum Up Close",
+              rule: "What do you buy at a gas station? Not a gas, but <strong>gasoline</strong>! The most important transportation fuels &mdash; <strong>gasoline and diesel</strong> &mdash; are made from petroleum. When plants and animals died in the <strong>ocean</strong>, they fell to the bottom. Most were <strong>single-celled plankton and algae</strong>. <strong>Sediment</strong> covered them, and over a long time they decomposed and formed <strong>oil and natural gas</strong>, which today fill <strong>small gaps and pores in rock</strong> deep below the surface. Petroleum is not found in as many places as coal. <strong>Saudi Arabia, Russia, and the United States</strong> produce the most. It is shipped using <strong>pipelines, trains, trucks, and large ships</strong>. <strong>Oil rigs</strong> drill and remove petroleum from beneath the ground.",
+              tip: "Coal = land plants in swamps. Petroleum = tiny ocean plankton and algae. That's one reason they are different!",
+              examples: [
+                { label: "🔎 Finding oil", text: "Engineers use echoes from underground to decide where to drill for oil." },
+                { label: "🚚 Shipping", text: "Pipelines, trains, trucks, and large ships carry petroleum to faraway places." },
+              ],
+            },
+            {
+              title: "12. 🔵 Textbook: Natural Gas & Nuclear Fuel",
+              rule: "Engineers often find <strong>natural gas</strong> in or near petroleum. In many places it <strong>flows through pipes</strong> to homes and businesses, where it is used for <strong>heating, cooking, and water heating</strong>. It is also an important fuel for producing electricity, and some modern vehicles use it. Because it is a gas, natural gas is <strong>harder to store and transport</strong> than coal or petroleum. It is stored and shipped in containers at <strong>very high pressure</strong> &mdash; many of these containers are <strong>spheres</strong>, because a sphere is very strong. <strong>Nuclear fuel:</strong> beginning in the <strong>second half of the twentieth century</strong>, people used nuclear energy to make electricity. The unstable elements that produce this energy are called <strong>nuclear fuel</strong>. Nuclear plants work like fossil fuel plants, but the fuel is <strong>not burned</strong> &mdash; uranium atoms are split apart to produce heat.",
+              tip: "Vocabulary: fossil fuel, coal, petroleum, natural gas, nuclear fuel, uranium.",
+              examples: [
+                { label: "⚪ Gas tanks", text: "Giant round (sphere-shaped) tanks safely hold natural gas at high pressure." },
+                { label: "☢️ Not burned", text: "Nuclear fuel is split, not burned, to make heat." },
+              ],
+            },
+          ],
+          quizBank: [
+            { prompt: "What is a nonrenewable resource?",
+              options: ["A resource that cannot be replaced by nature fast enough to keep up with how fast we use it", "A resource that never runs out", "A resource made in a factory", "A resource that comes only from the sun"],
+              answer: "A resource that cannot be replaced by nature fast enough to keep up with how fast we use it",
+              why: "A nonrenewable resource cannot be readily replaced by natural means at a pace quick enough to keep up with consumption." },
+            { prompt: "Fossil fuels formed from...",
+              options: ["Ancient plants and animals that decayed underground", "Melted ice from glaciers", "Volcano lava", "Sunlight trapped in clouds"],
+              answer: "Ancient plants and animals that decayed underground",
+              why: "Fossil fuels are materials that formed as ancient plants and animals decayed underground." },
+            { prompt: "What are the three main types of fossil fuels?",
+              options: ["Coal, petroleum, and natural gas", "Wind, water, and sun", "Uranium, coal, and wood", "Biomass, oil, and steam"],
+              answer: "Coal, petroleum, and natural gas",
+              why: "The three main types of fossil fuels are coal, petroleum, and natural gas." },
+            { prompt: "Why are fossil fuels nonrenewable?",
+              options: ["They are not replaced as fast as we use them", "They are found everywhere", "They can be grown on farms", "They come from the wind"],
+              answer: "They are not replaced as fast as we use them",
+              why: "Fossil fuels are not replenished at the speed that they are consumed." },
+            { prompt: "What state of matter is coal?",
+              options: ["Solid", "Liquid", "Gas", "Plasma"],
+              answer: "Solid",
+              why: "Coal is a solid fossil fuel." },
+            { prompt: "Coal is made mostly from the remains of...",
+              options: ["Plants (dead trees) from long ago", "Ocean fish", "Volcanic rock", "Melted metal"],
+              answer: "Plants (dead trees) from long ago",
+              why: "Coal is the carbon-rich remains of dead trees and plants." },
+            { prompt: "Where did the plants that became coal pile up?",
+              options: ["In swamps and marshes", "On mountaintops", "In deserts", "In the clouds"],
+              answer: "In swamps and marshes",
+              why: "Dead plants sank to the bottom of swamps, and layers built up over time." },
+            { prompt: "What turns buried plant matter into coal?",
+              options: ["Being squeezed and heated over a long time", "Being frozen", "Being dried in the sun", "Being mixed with water"],
+              answer: "Being squeezed and heated over a long time",
+              why: "Over time, the plant matter is squeezed and heated until it turns to coal." },
+            { prompt: "What state of matter is petroleum (oil)?",
+              options: ["Liquid", "Solid", "Gas", "It has no state"],
+              answer: "Liquid",
+              why: "Petroleum (oil) is a liquid fossil fuel." },
+            { prompt: "What are the factories that separate petroleum into different parts called?",
+              options: ["Refineries", "Generators", "Turbines", "Reservoirs"],
+              answer: "Refineries",
+              why: "Factories called refineries separate parts of petroleum to use as fuel and to make products." },
+            { prompt: "Which of these is made from petroleum?",
+              options: ["Plastic", "Wood", "Glass", "Stone"],
+              answer: "Plastic",
+              why: "Petroleum is used to make plastics, textiles, fertilizers, and medicine." },
+            { prompt: "Gasoline and diesel come from which fossil fuel?",
+              options: ["Petroleum", "Coal", "Natural gas", "Uranium"],
+              answer: "Petroleum",
+              why: "Gasoline and diesel are liquid fuels made from petroleum." },
+            { prompt: "Where is oil found?",
+              options: ["In underground reservoirs", "In the sky", "On top of mountains", "Inside trees"],
+              answer: "In underground reservoirs",
+              why: "Oil is found in underground reservoirs and can be pumped out." },
+            { prompt: "Why does natural gas rise to the top of an underground reservoir?",
+              options: ["It is lighter than oil", "It is heavier than oil", "It is colder than oil", "It is a solid"],
+              answer: "It is lighter than oil",
+              why: "Natural gas is lighter than oil, so it rises to the top of the reservoir." },
+            { prompt: "Which is a common use of natural gas in homes?",
+              options: ["Heating and cooking", "Making plastic bottles", "Building roads", "Making glass"],
+              answer: "Heating and cooking",
+              why: "Natural gas is used for heating and cooking in many homes." },
+            { prompt: "What element do most nuclear power plants use as fuel?",
+              options: ["Uranium", "Hydrogen", "Oxygen", "Carbon"],
+              answer: "Uranium",
+              why: "Most nuclear power plants use the element uranium." },
+            { prompt: "Why is uranium a nonrenewable energy source?",
+              options: ["Only a limited amount can be mined", "It grows back every year", "It comes from the wind", "It is made by plants"],
+              answer: "Only a limited amount can be mined",
+              why: "Uranium is nonrenewable because only a limited amount of uranium can be mined." },
+            { prompt: "What is the difference between chemical and nuclear reactions?",
+              options: ["Nuclear reactions change the atoms; chemical reactions do not", "Chemical reactions change the atoms; nuclear reactions do not", "They are exactly the same", "Neither one releases energy"],
+              answer: "Nuclear reactions change the atoms; chemical reactions do not",
+              why: "Chemical reactions don't change the atoms in the reactions. Nuclear reactions do." },
+            { prompt: "When one heavy atom splits into two smaller atoms, it is called...",
+              options: ["Nuclear fission", "Nuclear fusion", "Combustion", "Photosynthesis"],
+              answer: "Nuclear fission",
+              why: "When one atom breaks into two, it is called nuclear fission." },
+            { prompt: "When two light atoms join together to make one heavier atom, it is called...",
+              options: ["Nuclear fusion", "Nuclear fission", "Combustion", "Evaporation"],
+              answer: "Nuclear fusion",
+              why: "When two atoms join together to form one heavier atom, it is called nuclear fusion." },
+            { prompt: "What kind of nuclear reaction happens in the sun?",
+              options: ["Fusion of hydrogen into helium", "Fission of uranium", "Combustion of coal", "Burning of wood"],
+              answer: "Fusion of hydrogen into helium",
+              why: "In the sun, hydrogen atoms smash together to form helium atoms. That is nuclear fusion." },
+            { prompt: "In a nuclear power plant, what does the heat from fission do first?",
+              options: ["Boils water into steam", "Spins the generator directly", "Makes light", "Cools the seawater"],
+              answer: "Boils water into steam",
+              why: "Fission in the reactor releases heat that is used to boil water." },
+            { prompt: "In a nuclear power plant, what is the condenser used for?",
+              options: ["Cooling the steam back into water using cold seawater", "Splitting uranium atoms", "Making electricity", "Storing nuclear waste"],
+              answer: "Cooling the steam back into water using cold seawater",
+              why: "In the condenser, cold seawater cools the steam so it turns into water again." },
+            { prompt: "True or False: Nuclear power plants are free from carbon emissions.",
+              options: ["True", "False"],
+              answer: "True",
+              why: "Nuclear power plants do not burn fuel, so they are free from carbon emissions." },
+            { prompt: "What does the expression “a canary in a coal mine” mean?",
+              options: ["Someone or something that warns of danger", "A bird that lives underground", "A miner who sings", "A type of coal"],
+              answer: "Someone or something that warns of danger",
+              why: "The expression means someone or something that warns of danger." },
+            { prompt: "What poisonous gas was a danger to coal miners?",
+              options: ["Carbon monoxide", "Oxygen", "Helium", "Water vapor"],
+              answer: "Carbon monoxide",
+              why: "One risk to coal miners is a poisonous gas, carbon monoxide." },
+            { prompt: "Why is carbon monoxide so dangerous?",
+              options: ["You cannot see it or smell it", "It is bright red", "It smells very strong", "It is very heavy and easy to find"],
+              answer: "You cannot see it or smell it",
+              why: "Carbon monoxide is poisonous, and you cannot see it or smell it." },
+            { prompt: "Why did miners bring canaries into mines?",
+              options: ["Canaries are more sensitive to carbon monoxide than people, so they warned of danger", "Canaries could dig coal", "Canaries kept the miners warm", "Canaries could find oil"],
+              answer: "Canaries are more sensitive to carbon monoxide than people, so they warned of danger",
+              why: "If the canary stopped singing or swayed on its perch, the miners knew to return to the surface quickly." },
+            { prompt: "Carbon from coal and oxygen from air combine to form carbon monoxide. What process produces this gas?",
+              options: ["Combustion (burning)", "Melting", "Photosynthesis", "Evaporation"],
+              answer: "Combustion (burning)",
+              why: "When carbon combines with oxygen, it is combustion, or burning." },
+            { prompt: "What do miners use today instead of canaries?",
+              options: ["Electronic detectors", "Parrots", "Candles", "Flashlights"],
+              answer: "Electronic detectors",
+              why: "Today, miners carry electronic detectors that warn them of carbon monoxide." },
+            { prompt: "How do engineers decide where to drill for oil?",
+              options: ["They use echoes from underground", "They look for oil on the surface", "They guess", "They follow rivers"],
+              answer: "They use echoes from underground",
+              why: "Engineers use echoes from underground to decide where to drill for oil." },
+            { prompt: "When swamp plants died and decomposed, what did they form first?",
+              options: ["Layers of peat", "Natural gas", "Uranium", "Sand"],
+              answer: "Layers of peat",
+              why: "When plants died and fell into the water, they decomposed and formed layers of peat." },
+            { prompt: "What changed peat into coal?",
+              options: ["Heat from inside Earth and pressure from soil and rock", "Cold water and ice", "Sunlight and wind", "Electricity"],
+              answer: "Heat from inside Earth and pressure from soil and rock",
+              why: "After a very long time, heat from inside Earth and pressure from soil and rock changed the peat into coal." },
+            { prompt: "About how long did it take for peat to change into coal?",
+              options: ["More than 10 million years", "About 10 years", "About 100 years", "One day"],
+              answer: "More than 10 million years",
+              why: "The whole change took more than 10 million years." },
+            { prompt: "Why is the supply of fossil fuels limited?",
+              options: ["It takes millions of years to change living materials into fossil fuels", "People do not like using them", "They are only found in one country", "They disappear in sunlight"],
+              answer: "It takes millions of years to change living materials into fossil fuels",
+              why: "The supply is limited because it takes millions of years to change living materials into fossil fuels." },
+            { prompt: "The academic word “outcome” means...",
+              options: ["Result", "Beginning", "Fuel", "Machine"],
+              answer: "Result",
+              why: "Burning fossil fuels can have a harmful outcome, or result, on the environment." },
+            { prompt: "Most of the ocean organisms that became petroleum were...",
+              options: ["Single-celled plankton and algae", "Large trees", "Dinosaurs", "Swamp ferns"],
+              answer: "Single-celled plankton and algae",
+              why: "Most of these organisms were single-celled plankton and algae." },
+            { prompt: "Where are oil and natural gas found today?",
+              options: ["In small gaps and pores in rock deep below the surface", "Floating on top of the ocean", "Inside trees", "In the clouds"],
+              answer: "In small gaps and pores in rock deep below the surface",
+              why: "Today, these materials fill small gaps and pores in rock deep below the surface." },
+            { prompt: "Why are coal and petroleum different?",
+              options: ["Coal formed from land plants in swamps, but petroleum formed from tiny ocean organisms", "Coal is renewable but petroleum is not", "Petroleum is a solid and coal is a liquid", "They are exactly the same"],
+              answer: "Coal formed from land plants in swamps, but petroleum formed from tiny ocean organisms",
+              why: "Coal formed from swamp plants and peat. Petroleum formed from plankton and algae in the ocean, covered by sediment." },
+            { prompt: "Why are fossil fuels found underground?",
+              options: ["The dead plants and animals were buried and covered by soil, sediment, and rock", "People buried them on purpose", "They fell from the sky", "They grow roots"],
+              answer: "The dead plants and animals were buried and covered by soil, sediment, and rock",
+              why: "Fossil fuels formed from dead plants and animals that were covered by layers of soil, sediment, and rock over a long time." },
+            { prompt: "Which three countries produce the most petroleum?",
+              options: ["Saudi Arabia, Russia, and the United States", "Taiwan, Japan, and Korea", "France, Italy, and Spain", "Brazil, Kenya, and Canada"],
+              answer: "Saudi Arabia, Russia, and the United States",
+              why: "Saudi Arabia, Russia, and the United States produce the most petroleum." },
+            { prompt: "What do you actually buy at a “gas” station?",
+              options: ["Gasoline, a liquid made from petroleum", "Natural gas", "Coal", "Uranium"],
+              answer: "Gasoline, a liquid made from petroleum",
+              why: "You buy gasoline, not a gas! Gasoline and diesel are made from petroleum." },
+            { prompt: "Why is natural gas harder to store and transport than coal or petroleum?",
+              options: ["Because it is a gas", "Because it is a solid", "Because it is radioactive", "Because it is very heavy"],
+              answer: "Because it is a gas",
+              why: "Because it is a gas, natural gas is harder to store and transport than coal or petroleum." },
+            { prompt: "Why are many natural gas storage containers shaped like spheres?",
+              options: ["A sphere is very strong", "Spheres are cheaper to paint", "Spheres float on water", "Spheres keep the gas cold"],
+              answer: "A sphere is very strong",
+              why: "Natural gas is stored at very high pressure. Many containers are spheres because a sphere is very strong." },
+            { prompt: "In homes, natural gas is used for heating, cooking, and...",
+              options: ["Water heating", "Making plastic", "Charging phones", "Growing plants"],
+              answer: "Water heating",
+              why: "In homes, natural gas is used for heating, cooking, and water heating." },
+            { prompt: "When did people begin using nuclear energy to produce electricity?",
+              options: ["In the second half of the twentieth century", "Thousands of years ago", "In the 1500s", "Last year"],
+              answer: "In the second half of the twentieth century",
+              why: "Beginning in the second half of the twentieth century, people used nuclear energy to produce electrical energy." },
+            { prompt: "How is nuclear fuel different from fossil fuel in a power plant?",
+              options: ["Nuclear fuel is not burned; uranium atoms are split apart", "Nuclear fuel is burned in a fire", "Nuclear fuel is a liquid", "Nuclear fuel comes from plants"],
+              answer: "Nuclear fuel is not burned; uranium atoms are split apart",
+              why: "Nuclear power plants work in a similar way to fossil fuel plants, but the fuel is not burned. Uranium atoms are split apart to produce heat." },
+          ],
+        },
+        lesson3: {
+          name: "Lesson 3: Renewable Energy Sources",
+          cards: [
+            {
+              title: "1. 🌱 What Is Renewable Energy?",
+              rule: "<strong>Renewable energy sources</strong> do <strong>not run out</strong> as we use them &mdash; nature keeps producing them. The five main ones are <strong>solar, wind, hydroelectric, biomass, and geothermal</strong>. Some renewable energy can be used <strong>directly</strong> (like the sun heating water). Other forms are changed into <strong>electrical energy</strong> or <strong>chemical fuels</strong> before we use them. Renewables provide more of our power every year.",
+              tip: "Remember the 5 renewables: Sun, Wind, Water, Plants (biomass), Earth's heat (geothermal).",
+              examples: [
+                { label: "💨 Never runs out", text: "The sun heats the air unevenly, which makes wind blow. The wind may stop, but it always starts again." },
+              ],
+            },
+            {
+              title: "2. ☀️ Solar Energy",
+              rule: "<strong>Solar energy</strong> is energy from sunlight. The heat and light from the sun is called <strong>radiant energy</strong>. Solar energy can heat water or air in a building <strong>directly</strong>. <strong>Photovoltaic cells (solar panels)</strong> change sunlight <strong>directly into electricity</strong> &mdash; <strong>without</strong> using a generator. Light is absorbed and <strong>electrons are released</strong>, making an electric current (the <strong>photoelectric effect</strong>).",
+              tip: "Solar panels are special: no turbine, no generator &mdash; sunlight goes straight to electricity!",
+              examples: [
+                { label: "🏠 Use", text: "Solar panels on roofs and solar water heaters." },
+                { label: "🌙 Limit", text: "Solar energy is not available at night." },
+              ],
+            },
+            {
+              title: "3. 💨 Wind Power",
+              rule: "<strong>Wind power</strong> generates electricity through <strong>movement</strong>. Wind turns the <strong>rotor blades</strong> of a wind turbine, and the blades are connected to an electric <strong>generator</strong>. Groups of turbines are called <strong>wind farms</strong>. The <strong>larger the rotor</strong>, the more wind energy it can capture. Turbines are often placed <strong>at sea (offshore)</strong>, where winds are stronger &mdash; but offshore turbines are <strong>harder to build and maintain</strong>.",
+              tip: "Wind (kinetic energy) → spinning blades → generator → electricity.",
+              examples: [
+                { label: "🌊 Offshore", text: "Stronger winds at sea, but harder to build and fix." },
+              ],
+            },
+            {
+              title: "4. 💧 Hydropower",
+              rule: "<strong>Hydropower</strong> (hydroelectric energy) is energy captured from <strong>moving water</strong>. The most common type is the <strong>hydroelectric dam</strong>. The dam blocks a river and stores water in a <strong>reservoir</strong>. When the water is released, it flows through a <strong>turbine</strong>, spinning it and turning a <strong>generator</strong>. The power depends on the <strong>volume</strong> (amount) and <strong>height</strong> of the water.",
+              tip: "Hydro = water. More water falling from higher up = more electricity!",
+              examples: [
+                { label: "🔄 Energy chain", text: "Moving water (kinetic) → turbine → generator → electricity." },
+              ],
+            },
+            {
+              title: "5. 🌾 Biomass",
+              rule: "<strong>Biomass</strong> is any burnable fuel that comes from <strong>living things alive today</strong> &mdash; plants or animals. Plants store the sun's energy as <strong>chemical energy</strong>. Examples: <strong>wood, crop waste, vegetable oils, and animal waste</strong>. <strong>Dry biomass</strong> (like wood pellets) is burned in boilers. <strong>Wet biomass</strong> (like food waste) rots in sealed tanks and makes <strong>methane gas (biogas)</strong>, which is captured and burned. The heat boils water into steam to spin a turbine. Biomass is the renewable source <strong>most similar to fossil fuels</strong>, and it is renewable because <strong>new plants can be replanted</strong>. However, it is <strong>very inefficient</strong>.",
+              tip: "Biomass = “bio” (life) + “mass” (stuff). Fuel from things that are alive now, not millions of years ago.",
+              examples: [
+                { label: "🪵 Dry", text: "Wood pellets burned in furnaces." },
+                { label: "🍌 Wet", text: "Food waste rots and gives off methane (biogas)." },
+              ],
+            },
+            {
+              title: "6. 🌋 Geothermal Energy",
+              rule: "<strong>Geothermal energy</strong> is <strong>heat energy from inside the Earth</strong>. Earth's hot interior heats water beneath the surface. Instead of burning fuel or using nuclear reactions, we <strong>drill underground</strong> to reach reservoirs of <strong>steam and hot water</strong>. That heat boils water into steam, which turns a <strong>turbine</strong>, which turns a <strong>generator</strong>.",
+              tip: "Geo = Earth, thermal = heat. Geothermal = Earth heat!",
+              examples: [
+                { label: "♨️ Hot springs", text: "Places with hot springs (like Beitou in Taipei) show Earth's heat close to the surface." },
+              ],
+            },
+            {
+              title: "7. 🌍 Why Renewable Energy Is Important",
+              rule: "Fossil fuels have been the main energy source since the <strong>Industrial Revolution</strong>, and <strong>over 80%</strong> of the world still uses them. Burning fossil fuels makes <strong>greenhouse gases</strong> &mdash; <strong>carbon dioxide and methane</strong> &mdash; which <strong>trap heat</strong> in the atmosphere. Global temperatures have risen about <strong>1.1°C</strong>, which contributes to <strong>extreme weather</strong>: heat waves, droughts, heavy rain, wildfires, and floods.",
+              tip: "Renewable energy helps because it doesn't run out AND makes far less greenhouse gas.",
+              examples: [
+                { label: "🔥 Extreme weather", text: "Heat waves, droughts, wildfires, and floods." },
+              ],
+            },
+            {
+              title: "8. 🌞 Textbook: The Sun, Earth's Biggest Energy Source",
+              rule: "The most abundant source of energy on Earth is not actually on the planet. Every day, the sun provides <strong>10,000 times more energy</strong> to Earth than people use. Because this energy is <strong>spread out</strong> across the planet, people have developed systems to <strong>concentrate</strong> and use it. The United States already has <strong>more than 1 million</strong> solar energy systems. Solar energy in a home is used in <strong>two common ways</strong>: (1) sunlight <strong>directly heats</strong> the house or heats water for washing and laundry; (2) <strong>photovoltaic cells</strong> on the roof produce electric current that can be <strong>used immediately or stored in a battery</strong> for later. Solar energy can also be changed to electricity in large facilities and <strong>transmitted to users far away</strong>. The sun will keep shining for the next <strong>few billion years</strong>!",
+              tip: "Academic word: <strong>available</strong> = able to be had. Solar energy is not available at night.",
+              examples: [
+                { label: "🏠 Way 1", text: "Sunlight directly heats the house or heats water." },
+                { label: "🔋 Way 2", text: "Photovoltaic cells on the roof make electricity to use now or store in a battery." },
+              ],
+            },
+            {
+              title: "9. 🌍 Is Renewable Energy All Around?",
+              rule: "<strong>Biomass:</strong> plants use sunlight to grow; plant materials can be <strong>burned as firewood or changed into liquid fuels</strong>. <strong>Solar:</strong> energy from the sun can be used directly or changed to electrical energy. <strong>Wind:</strong> as the sun heats the atmosphere, <strong>air moves around</strong>; wind turbines change that motion into electrical energy. <strong>Hydropower:</strong> solar energy causes water to <strong>evaporate</strong>; after the water condenses and falls as <strong>rain or snow</strong>, the energy of flowing rivers can generate electricity. <strong>Geothermal:</strong> Earth's hot interior heats water beneath the surface; this <strong>warm water can heat homes and other buildings</strong>.",
+              tip: "Look closely: wind, hydropower, and biomass all get their energy from the sun too! Only geothermal comes from inside the Earth.",
+              examples: [
+                { label: "💨 Wind ← sun", text: "The sun heats the air unevenly, making wind." },
+                { label: "🌧️ Water ← sun", text: "The sun evaporates water, which falls as rain and fills rivers." },
+              ],
+            },
+            {
+              title: "10. 🌽 Textbook: Renewable Fuels & Biofuels",
+              rule: "Plants store the energy they get from the sun as <strong>chemical energy in their cells</strong>. For a very long time, people burned wood and other plant materials, known as <strong>biomass</strong>. Today, we also use plants to produce chemical fuels, such as <strong>alcohol</strong>. These fuels are <strong>easier to store and transport</strong> than biomass, and most gasoline includes some alcohol. <strong>Corn</strong> can be made into a renewable fuel called <strong>ethanol</strong> &mdash; but corn is also an important food, so using it for fuel can affect the food supply. Biomass is renewable because new plants can be replanted. However, it is an <strong>extremely inefficient</strong> way to store energy: <strong>much less than 1 percent</strong> of the sun's energy makes it into the biofuel, and <strong>a lot of land</strong> must be used to grow it.",
+              tip: "Biomass ✅ renewable (can replant) ❌ inefficient (less than 1% of sunlight, needs lots of land).",
+              examples: [
+                { label: "🌽 Ethanol", text: "Fuel made from corn is renewable because corn can be planted again and again." },
+                { label: "⛽ In gasoline", text: "Most gasoline includes some alcohol made from plants." },
+              ],
+            },
+            {
+              title: "11. 💧 Textbook: Hydropower & Wind",
+              rule: "If you stand outside during a heavy rainfall, you can feel the energy of falling water. Using the energy of moving water is called <strong>hydropower</strong>. Hydropower relies on flowing water to create motion, such as a <strong>water wheel turning</strong>. Today, <strong>dams hold water in a lake</strong>. As the water flows through openings in the dam, it turns a <strong>turbine</strong>; the turbine (connected by a <strong>shaft</strong>) causes the <strong>generator</strong> to move and produce electricity. Moving water in flowing rivers can also turn turbines. <strong>Wind energy is completely renewable</strong>: the atmosphere absorbs energy from the sun, and <strong>temperature differences</strong> in the atmosphere cause wind to blow. The wind may stop now and then, but it always starts again.",
+              tip: "In a hydropower plant, the turbine's job is to make the generator move!",
+              examples: [
+                { label: "🌀 Turbine", text: "Moving water spins the turbine." },
+                { label: "⚡ Generator", text: "The turbine turns the generator, which makes electricity." },
+              ],
+            },
+            {
+              title: "12. 📊 Reading the Energy Pie Chart",
+              rule: "In one recent year, energy came from: <strong>petroleum 36%</strong>, <strong>natural gas 26%</strong>, <strong>coal 20%</strong>, <strong>renewable energy 9%</strong>, and <strong>nuclear 8%</strong>. Inside that 9% of renewable energy: <strong>hydroelectric power 35%</strong>, wood 22%, biofuels 21%, wind 13%, waste 5%, geothermal 2%, and solar 2%. So the <strong>largest renewable source</strong> that year was <strong>hydropower</strong>. Renewable and nonrenewable sources are <strong>alike</strong> because both can be used to produce energy and electricity. They are <strong>different</strong> because renewable sources do not run out, but nonrenewable sources do.",
+              tip: "Many energy sources are changed into electricity before we use them, because electricity can travel through wires to far-away places and can power many different devices.",
+              examples: [
+                { label: "🥇 Biggest overall", text: "Petroleum was the largest energy source." },
+                { label: "💧 Biggest renewable", text: "Hydropower was the largest renewable source." },
+              ],
+            },
+          ],
+          quizBank: [
+            { prompt: "What makes an energy source renewable?",
+              options: ["It does not run out as we use it", "It is found underground", "It must be burned", "It was made millions of years ago"],
+              answer: "It does not run out as we use it",
+              why: "Renewable energy sources do not run out as we use them." },
+            { prompt: "Which list shows only renewable energy sources?",
+              options: ["Solar, wind, hydroelectric, biomass, geothermal", "Coal, oil, natural gas, uranium", "Solar, coal, wind, oil", "Uranium, wind, petroleum, biomass"],
+              answer: "Solar, wind, hydroelectric, biomass, geothermal",
+              why: "The five renewable energy sources are solar, wind, hydroelectric, biomass, and geothermal." },
+            { prompt: "The heat and light from the sun is called...",
+              options: ["Radiant energy", "Nuclear waste", "Biomass", "Geothermal energy"],
+              answer: "Radiant energy",
+              why: "The heat and light from the sun is called radiant energy." },
+            { prompt: "What do photovoltaic cells (solar panels) do?",
+              options: ["Change sunlight directly into electricity", "Burn fuel to make heat", "Store water in a reservoir", "Spin a turbine with steam"],
+              answer: "Change sunlight directly into electricity",
+              why: "Photovoltaic cells transform sunlight directly into electricity without an electric generator." },
+            { prompt: "Solar panels make electricity WITHOUT using a...",
+              options: ["Generator", "Sunlight", "Electrons", "Wire"],
+              answer: "Generator",
+              why: "Solar panels change sunlight directly into electricity without the use of an electric generator." },
+            { prompt: "What is one limit of solar energy?",
+              options: ["It is not available at night", "It runs out after one year", "It causes acid rain", "It needs uranium"],
+              answer: "It is not available at night",
+              why: "Solar energy is not available at night." },
+            { prompt: "In a wind turbine, what does the wind spin?",
+              options: ["The rotor blades", "The solar panel", "The reservoir", "The boiler"],
+              answer: "The rotor blades",
+              why: "Wind rotates a turbine's rotor blades, which are connected to a generator." },
+            { prompt: "Which wind turbine can capture the most wind energy?",
+              options: ["One with a larger rotor", "One with a smaller rotor", "One painted white", "One with no blades"],
+              answer: "One with a larger rotor",
+              why: "The larger the rotor, the more wind energy can be captured." },
+            { prompt: "Why are many wind turbines built at sea (offshore)?",
+              options: ["Wind currents can be stronger there", "It is easier to build them there", "There is no wind on land", "Sea water makes electricity"],
+              answer: "Wind currents can be stronger there",
+              why: "Wind turbines are often located at sea, where wind currents can be stronger. But offshore turbines are harder to build and maintain." },
+            { prompt: "Hydropower is energy captured from...",
+              options: ["Moving water", "Burning wood", "Splitting atoms", "Sunlight"],
+              answer: "Moving water",
+              why: "Hydropower, or hydroelectric energy, is energy captured by moving water." },
+            { prompt: "What is the most common type of hydropower?",
+              options: ["The hydroelectric dam", "The solar panel", "The wind farm", "The coal mine"],
+              answer: "The hydroelectric dam",
+              why: "The most common type of hydropower is the hydroelectric dam." },
+            { prompt: "The power we get from a hydroelectric dam depends on the water's...",
+              options: ["Volume and height", "Color and taste", "Temperature only", "Saltiness"],
+              answer: "Volume and height",
+              why: "The power depends on the volume and height of the source of the water's outflow." },
+            { prompt: "What is biomass?",
+              options: ["Burnable fuel that comes from living things alive today", "Fuel from plants that died millions of years ago", "Heat from inside the Earth", "Electricity from sunlight"],
+              answer: "Burnable fuel that comes from living things alive today",
+              why: "Biomass is any combustible fuel that comes from living things alive today." },
+            { prompt: "Which of these is an example of biomass?",
+              options: ["Wood", "Coal", "Uranium", "Natural gas"],
+              answer: "Wood",
+              why: "Wood, crop waste, vegetable oils, and animal waste can all be used as biomass fuels." },
+            { prompt: "When wet biomass like food waste rots in sealed tanks, what gas does it make?",
+              options: ["Methane (biogas)", "Oxygen", "Helium", "Steam"],
+              answer: "Methane (biogas)",
+              why: "As food waste rots, it produces methane gas (biogas), which can be captured and burned." },
+            { prompt: "Why is biomass a renewable energy source?",
+              options: ["New plants can be replanted many times", "It never needs to be burned", "It comes from the sun directly", "It is found deep underground"],
+              answer: "New plants can be replanted many times",
+              why: "Biomass is renewable because new plants can be replanted many times in the same place." },
+            { prompt: "Which renewable energy source is most similar to fossil fuels?",
+              options: ["Biomass", "Solar", "Wind", "Geothermal"],
+              answer: "Biomass",
+              why: "Biomass is the renewable energy resource most similar to fossil fuels. Most machines that run on fossil fuels can also run on biomass fuels." },
+            { prompt: "Geothermal energy is...",
+              options: ["Heat energy from inside the Earth", "Energy from moving water", "Energy from the wind", "Energy from burning plants"],
+              answer: "Heat energy from inside the Earth",
+              why: "Geothermal energy is heat energy obtained from beneath Earth's surface." },
+            { prompt: "How do we reach geothermal energy?",
+              options: ["By drilling underground to reservoirs of steam and hot water", "By building tall towers", "By planting trees", "By putting panels on roofs"],
+              answer: "By drilling underground to reservoirs of steam and hot water",
+              why: "We must drill underground to reach reservoirs of steam and hot water to drive turbines." },
+            { prompt: "Which TWO greenhouse gases are produced by burning fossil fuels?",
+              options: ["Carbon dioxide and methane", "Oxygen and hydrogen", "Helium and neon", "Water vapor and oxygen"],
+              answer: "Carbon dioxide and methane",
+              why: "Fossil fuels produce greenhouse gases, carbon dioxide and methane, which trap heat in the atmosphere." },
+            { prompt: "About how much of the world still uses fossil fuels?",
+              options: ["Over 80%", "About 10%", "About 25%", "None"],
+              answer: "Over 80%",
+              why: "Over 80% of the world still uses fossil fuels." },
+            { prompt: "Rising global temperatures contribute to which of these?",
+              options: ["Extreme weather like heat waves, droughts, and floods", "Longer days", "More moons", "Colder summers everywhere"],
+              answer: "Extreme weather like heat waves, droughts, and floods",
+              why: "Rising temperatures contribute to extreme weather events such as heat waves, droughts, heavy rainfall, wildfires, and floods." },
+            { prompt: "Every day, the sun provides about how much more energy to Earth than people use?",
+              options: ["10,000 times more", "2 times more", "10 times more", "Less than people use"],
+              answer: "10,000 times more",
+              why: "Every day, the sun provides 10,000 times more energy to Earth than people use." },
+            { prompt: "Why have people developed systems to concentrate solar energy?",
+              options: ["Because the sun's energy is spread out across the planet", "Because the sun is too small", "Because sunlight is dangerous", "Because sunlight runs out quickly"],
+              answer: "Because the sun's energy is spread out across the planet",
+              why: "Because the sun's energy is spread out across the planet, people developed systems to concentrate and use it." },
+            { prompt: "What are the two common ways solar energy is used in a home?",
+              options: ["Directly heating the house or water, and photovoltaic cells that make electricity", "Burning wood and burning coal", "Building dams and drilling wells", "Splitting atoms and burning gas"],
+              answer: "Directly heating the house or water, and photovoltaic cells that make electricity",
+              why: "In one method, sunlight directly heats the house or water. The other method uses photovoltaic cells to produce electric current." },
+            { prompt: "What can happen to electricity made by solar cells on a roof?",
+              options: ["It can be used immediately or stored in a battery", "It must be used within one second", "It turns into coal", "It can only be used at night"],
+              answer: "It can be used immediately or stored in a battery",
+              why: "The electricity from these cells can be used immediately or stored in a battery for later use." },
+            { prompt: "The academic word “available” means...",
+              options: ["Able to be had", "Too expensive", "Broken", "Far away"],
+              answer: "Able to be had",
+              why: "When something is available, it is able to be had. Solar energy is not available at night." },
+            { prompt: "How long will the sun continue to provide energy to Earth?",
+              options: ["At least the next few billion years", "About 100 more years", "Only until next century", "It already stopped"],
+              answer: "At least the next few billion years",
+              why: "Solar energy does not run out, at least for the next few billion years!" },
+            { prompt: "What causes wind to blow?",
+              options: ["Temperature differences in the atmosphere caused by the sun", "Spinning wind turbines", "Ocean waves", "Earthquakes"],
+              answer: "Temperature differences in the atmosphere caused by the sun",
+              why: "As the atmosphere absorbs energy from the sun, temperature differences cause wind to blow." },
+            { prompt: "How does the sun help create hydropower?",
+              options: ["It evaporates water, which falls as rain or snow and fills rivers", "It melts the dam", "It heats the generator", "It has nothing to do with hydropower"],
+              answer: "It evaporates water, which falls as rain or snow and fills rivers",
+              why: "Solar energy causes water to evaporate. After it falls as rain or snow, flowing rivers can generate electricity." },
+            { prompt: "Besides making electricity, how can geothermal warm water be used?",
+              options: ["To heat homes and other buildings", "To make gasoline", "To grow corn", "To charge batteries directly"],
+              answer: "To heat homes and other buildings",
+              why: "Geothermal warm water can heat homes and other buildings." },
+            { prompt: "Plants store the energy they get from the sun as...",
+              options: ["Chemical energy in their cells", "Electricity in their leaves", "Sound energy", "Nuclear energy"],
+              answer: "Chemical energy in their cells",
+              why: "Plants store the energy they get from the sun as chemical energy in their cells." },
+            { prompt: "What renewable fuel can be made from corn?",
+              options: ["Ethanol", "Coal", "Uranium", "Diesel"],
+              answer: "Ethanol",
+              why: "Corn can be used to make a renewable fuel called ethanol." },
+            { prompt: "Is fuel made from corn a renewable resource?",
+              options: ["Yes, because corn can be planted again many times", "No, because corn runs out forever", "No, because corn is a fossil fuel", "Yes, because corn comes from underground"],
+              answer: "Yes, because corn can be planted again many times",
+              why: "Corn is a plant, so it can be replanted many times. That makes corn fuel a renewable biofuel." },
+            { prompt: "How could using corn for fuel cause a problem?",
+              options: ["Corn is also an important food, so it could affect the food supply", "Corn is poisonous", "Corn makes radioactive waste", "Corn cannot be burned"],
+              answer: "Corn is also an important food, so it could affect the food supply",
+              why: "Corn is an important food in many diets, so using it for fuel can affect the supply of corn for food." },
+            { prompt: "Why is biomass an extremely inefficient way to store energy?",
+              options: ["Much less than 1 percent of the sun's energy makes it into the biofuel", "It stores too much energy", "It never burns", "It only works at night"],
+              answer: "Much less than 1 percent of the sun's energy makes it into the biofuel",
+              why: "Much less than 1 percent of the sun's energy makes it into the biofuel. Also, a lot of land must be used to grow it." },
+            { prompt: "Why do people make plant materials into chemical fuels like alcohol?",
+              options: ["They are easier to store and transport than biomass", "They are heavier than wood", "They cannot burn", "They are fossil fuels"],
+              answer: "They are easier to store and transport than biomass",
+              why: "Chemical fuels such as alcohol are easier to store and transport than biomass." },
+            { prompt: "Using the energy of moving water is called...",
+              options: ["Hydropower", "Geothermal energy", "Biomass", "Solar energy"],
+              answer: "Hydropower",
+              why: "Using the energy of moving water is called hydropower." },
+            { prompt: "In a hydropower plant, what is the function of the turbine?",
+              options: ["It causes the generator to move", "It pushes water through the dam", "It stores the electricity", "It heats water into steam"],
+              answer: "It causes the generator to move",
+              why: "Moving water spins the turbine, and the turbine is connected by a shaft to the generator, causing it to move." },
+            { prompt: "Why is wind energy called completely renewable?",
+              options: ["It is produced continually by nature and will always start blowing again", "It must be replanted", "It is mined from rocks", "It is stored underground"],
+              answer: "It is produced continually by nature and will always start blowing again",
+              why: "Wind energy is produced continually by nature. While it may stop now and then, it will start blowing again." },
+            { prompt: "According to the energy pie chart, what was the largest renewable energy source that year?",
+              options: ["Hydropower", "Wind", "Solar", "Natural gas"],
+              answer: "Hydropower",
+              why: "Hydroelectric power made up 35% of renewable energy, the biggest part." },
+            { prompt: "According to the energy pie chart, which was the largest energy source overall?",
+              options: ["Petroleum", "Coal", "Solar", "Nuclear"],
+              answer: "Petroleum",
+              why: "Petroleum made up 36% of the energy used that year, the largest share." },
+            { prompt: "What is one SIMILARITY between renewable and nonrenewable energy sources?",
+              options: ["Both can be used to produce energy and electricity", "Both will never run out", "Both come from inside the Earth", "Both are always clean"],
+              answer: "Both can be used to produce energy and electricity",
+              why: "Both kinds of sources can be used to make energy and electricity. The difference is that renewable sources do not run out." },
+            { prompt: "Why do people often change energy sources into electrical energy instead of using them directly?",
+              options: ["Electricity can travel through wires far away and power many different devices", "Electricity is a fossil fuel", "Electricity never needs a power plant", "Electricity is heavier and easier to carry"],
+              answer: "Electricity can travel through wires far away and power many different devices",
+              why: "Electrical energy can be transmitted to users far from where it is made, and it works in many different devices." },
+          ],
+        },
+        lesson4: {
+          name: "Lesson 4: Environmental Impacts of Energy Use",
+          cards: [
+            {
+              title: "1. 🌍 Impacts, Emissions, and Pollutants",
+              rule: "The human use of energy has <strong>impacts</strong> (effects) on the environment. Impacts happen when humans <strong>change the land</strong> to build structures or remove resources, and during <strong>energy production</strong>. <strong>Emissions</strong> are the release of substances into the environment. A <strong>pollutant</strong> is a harmful substance that can poison <strong>land, water, or air</strong>. <strong>Sustainable</strong> means able to be kept going at a certain rate or level.",
+              tip: "Every energy source has some impact &mdash; the question is how big, and how we can reduce it.",
+              examples: [
+                { label: "💨 Emission", text: "Smoke coming out of a power plant chimney." },
+              ],
+            },
+            {
+              title: "2. 🏭 Power Plant Pollution & Acid Rain",
+              rule: "Burning fuels in fossil-fuel plants releases <strong>ash</strong> and <strong>harmful chemicals</strong>. Some chemicals make rain become an <strong>acid</strong> (<strong>acid rain</strong>). The acid gets into rivers and lakes and makes it harder for them to support living things. Most power plants use <strong>scrubbers</strong> &mdash; gases pass through a substance that <strong>reduces the pollutants</strong> going into the air. But getting rid of the trapped pollutants also causes impacts.",
+              tip: "Scrubber = a filter that “scrubs” dirty gases cleaner before they go up the chimney.",
+              examples: [
+                { label: "🐟 Acid rain", text: "Acidic lakes and streams can no longer support as many fish and plants." },
+              ],
+            },
+            {
+              title: "3. 🌡️ Greenhouse Gases & Global Warming",
+              rule: "A <strong>greenhouse gas</strong> is a pollutant that increases the atmosphere's ability to <strong>hold heat</strong>. The main one from power plants is <strong>carbon dioxide (CO₂)</strong>, which is <strong>always produced by combustion</strong>. CO₂ traps some of the sun's heat like a <strong>blanket</strong> &mdash; this is the <strong>greenhouse effect</strong>. CO₂ naturally moves between the air and living things in the <strong>carbon cycle</strong> (plants take it in; we breathe it out). Burning fossil fuels takes carbon buried <strong>deep underground</strong> and adds it to the air. More CO₂ means a stronger greenhouse effect, warming the world's climates &mdash; <strong>global warming</strong>.",
+              tip: "Fossil fuels = old carbon from underground suddenly added to the air → thicker “blanket” → warmer Earth.",
+              examples: [
+                { label: "🌿 Carbon cycle", text: "Plants take in CO₂ to make food; animals and people breathe out CO₂." },
+              ],
+            },
+            {
+              title: "4. ⛏️ Impacts of Obtaining Fuel",
+              rule: "<strong>Mining</strong> changes the land surface. Forests and fields are often removed to reach the fuel underneath, and <strong>coal mines</strong> can leave large areas completely changed. Some mined materials dissolve in water and <strong>pollute streams and rivers</strong>. <strong>Drilling</strong> for oil and gas requires roads and cutting down forests. Some drilling methods use <strong>toxic materials</strong> that can spill and pollute land and water.",
+              tip: "Mining and drilling cause habitat loss &mdash; plants and animals lose their homes.",
+              examples: [
+                { label: "🌲 Habitat loss", text: "Cutting down a forest to dig a coal mine." },
+              ],
+            },
+            {
+              title: "5. 🚢 Impacts of Transporting Fuel",
+              rule: "Large <strong>pipelines</strong> (some over one meter wide) carry natural gas and crude oil for <strong>thousands of kilometers</strong>. If a pipeline <strong>leaks</strong> and no one notices quickly, a lot of fuel can spill. <strong>Oil spills</strong> are very hard to clean because crude oil is <strong>very sticky</strong>. Natural gas leaks add <strong>greenhouse gases</strong> to the air. Huge <strong>ships</strong> carry oil across oceans &mdash; if one crashes, oil floats on the water and <strong>currents spread it</strong> over a large area.",
+              tip: "Oil + water = disaster for sea life. Oil sticks to feathers and fur.",
+              examples: [
+                { label: "🐦 Oil spill", text: "Birds covered in oil cannot fly, and fish and sea animals can be poisoned." },
+              ],
+            },
+            {
+              title: "6. ☠️ Pollution",
+              rule: "<strong>Pollution</strong> is any substance released into the environment that is <strong>harmful to living things</strong>. It can be in the <strong>air, water, or soil</strong>. Some pollutants <strong>stick</strong> to living things so they can't breathe, fly, or swim; some <strong>hurt</strong> living things; others are <strong>poisonous</strong> and make them sick. <strong>Smoke</strong> from burning fossil fuels or biomass is air pollution. Chemicals from <strong>mines</strong> pollute soil and water &mdash; and some materials for renewable energy are mined too.",
+              tip: "Three places pollution goes: air, water, soil.",
+              examples: [
+                { label: "🌫️ Air", text: "Smoke from burning coal or wood." },
+                { label: "💧 Water / soil", text: "Oil spills and chemical waste from mines." },
+              ],
+            },
+            {
+              title: "7. 🏞️ Impacts of Hydropower",
+              rule: "Even renewable energy has impacts. <strong>Hydroelectric dams</strong> stop a river, <strong>flooding the land</strong> behind the dam and greatly <strong>reducing the water</strong> that flows downriver. Habitats below the dam may not get enough water. Dams can also stop <strong>fish</strong> from swimming up and down the river. Some fish lay their <strong>eggs upriver</strong> &mdash; if the dam blocks them, they cannot reproduce and may <strong>go extinct</strong> in that environment.",
+              tip: "Clean electricity, but a big change to the river's ecosystem.",
+              examples: [
+                { label: "🐟 Salmon", text: "Fish that swim upriver to lay eggs can be blocked by a dam." },
+              ],
+            },
+            {
+              title: "8. ☢️ Impacts of Nuclear Power",
+              rule: "Nuclear power plants do <strong>not produce air pollutants</strong> and are among the <strong>safest and cleanest</strong> forms of energy production. But they make <strong>radioactive waste</strong> that stays dangerous for <strong>thousands to millions of years</strong>, and they release large amounts of <strong>hot water</strong>. If radioactive waste escapes, its <strong>radiation</strong> can burn, poison, and kill living things, even at a distance, and can cause cancer and harmful mutations.",
+              tip: "Nuclear: clean air ✅, but the waste problem ⚠️ is still a big challenge.",
+              examples: [
+                { label: "🛢️ Waste", text: "Used uranium fuel must be stored safely for a very, very long time." },
+              ],
+            },
+            {
+              title: "9. ☁️ Cooling Towers: Not Smoke!",
+              rule: "The tall towers at a modern power plant look like they release smoke, but they are <strong>not smokestacks</strong>. What you see is <strong>water vapor</strong>. As the vapor cools in the air, it forms small droplets &mdash; you are actually looking at a <strong>cloud</strong>! Power plants make a lot of steam to run turbines. The hot steam condenses to make <strong>hot water</strong>. In the past, the hot water was often <strong>dumped into a river or lake</strong>, which can harm living things there. In cooling towers, some hot water <strong>evaporates</strong>; since it takes energy to make water vapor, the remaining water becomes cooler. When it has cooled enough, the water is <strong>recycled</strong> to make new steam.",
+              tip: "Dumping very hot water into a river can heat the water and harm fish and other living things.",
+              examples: [
+                { label: "☁️ The white cloud", text: "Water vapor, not smoke." },
+                { label: "♻️ Recycled water", text: "Cooled water goes back to make new steam." },
+              ],
+            },
+            {
+              title: "10. 🌳 How Can the Use of Energy Damage Ecosystems?",
+              rule: "Energy use can affect ecosystems in many ways. <strong>Surface mine:</strong> mining can cause a <strong>loss of habitat</strong> for plants and animals, and <strong>disturbing land can pollute streams and rivers</strong>. <strong>Roads</strong> built for mining and drilling can <strong>break up habitat areas</strong>. <strong>Coal power plant:</strong> fossil fuel combustion can <strong>pollute the atmosphere</strong>. <strong>Hydropower dam:</strong> building dams can <strong>damage stream habitats</strong>. An energy source that <strong>does not use fuel</strong> (like solar or wind) has a <strong>smaller environmental impact</strong> because there is no fuel to mine, drill, transport, or burn.",
+              tip: "Academic word: <strong>impact</strong> = effect. Vocabulary: emission, pollutant, scrubber, greenhouse gas.",
+              examples: [
+                { label: "⛏️ Mine", text: "Loss of habitat; polluted streams and rivers." },
+                { label: "🏭 Coal plant", text: "Polluted air." },
+                { label: "🏞️ Dam", text: "Damaged stream habitats." },
+              ],
+            },
+            {
+              title: "11. 🧽 Why Is Oil Cleanup So Hard?",
+              rule: "When crude oil spills on a beach, scientists must find ways to clean it up. In the lab, students mixed a spoonful of oil into a bowl of sand and tried to separate them using spoons, paper towels, or a sieve. Oil is hard to separate from sand because crude oil is <strong>very sticky</strong> and <strong>coats</strong> every grain it touches. This model shows that once oil pollutes a beach, it is <strong>very difficult to remove</strong>, and it can harm the plants and animals that live there.",
+              tip: "Sticky oil + sand = a big mess that is very hard to clean!",
+              examples: [
+                { label: "🏖️ Beach", text: "Oil sticks to sand, rocks, birds, and sea animals." },
+              ],
+            },
+            {
+              title: "12. 📈 Using Evidence: Greenhouse Gases & Climate Change",
+              rule: "As the amount of greenhouse gases in the atmosphere increases, climates around the world become warmer. This is known as <strong>global climate change</strong>. Graphs from a <strong>U.S. government website</strong> (a reliable source &mdash; more reliable than an oil company's website, which might want to sell oil) show: <strong>coal</strong> made 42% of U.S. electricity but <strong>76% of the carbon dioxide</strong> from electricity, while <strong>nonfossil fuels</strong> (like nuclear, hydro, wind, and solar) made 34% of electricity but almost <strong>no carbon dioxide</strong>. Very little petroleum is used to make electricity, but petroleum causes the <strong>largest amount of total carbon dioxide</strong> &mdash; so most petroleum is used for energy that is <strong>not electricity</strong> (like cars). Coal releases <strong>more CO₂ than natural gas</strong> for the same energy, but natural gas still releases some CO₂. One way to help prevent climate change is to <strong>use more nonfossil fuel sources</strong> to produce electricity.",
+              tip: "Nuclear power plants make about 20% of U.S. electricity and release almost no carbon dioxide, so nuclear belongs in the “nonfossil fuels” part of the graph.",
+              examples: [
+                { label: "🏭 Fossil fuels", text: "Coal, natural gas, and petroleum produce carbon dioxide." },
+                { label: "🌬️ Nonfossil fuels", text: "Wind, solar, hydro, and nuclear produce almost no carbon dioxide." },
+              ],
+            },
+          ],
+          quizBank: [
+            { prompt: "What are emissions?",
+              options: ["The release of substances into the environment", "Machines that make electricity", "Underground reservoirs of oil", "Types of renewable energy"],
+              answer: "The release of substances into the environment",
+              why: "Emissions are the release of substances into the environment." },
+            { prompt: "What is a pollutant?",
+              options: ["A harmful substance that can poison land, water, or air", "A type of solar panel", "A clean fuel", "A part of a generator"],
+              answer: "A harmful substance that can poison land, water, or air",
+              why: "A pollutant is a harmful substance released during energy production that can poison land, water, or air." },
+            { prompt: "What does “sustainable” mean?",
+              options: ["Able to be kept going at a certain rate or level", "Able to burn very quickly", "Found only underground", "Made from fossils"],
+              answer: "Able to be kept going at a certain rate or level",
+              why: "Sustainable means able to be maintained at a certain rate or level." },
+            { prompt: "Chemicals from burning fossil fuels can cause rain to become...",
+              options: ["Acidic (acid rain)", "Sweet", "Frozen", "Radioactive"],
+              answer: "Acidic (acid rain)",
+              why: "Some chemicals released by burning fuels cause rain to become an acid." },
+            { prompt: "How does acid rain harm streams and lakes?",
+              options: ["It reduces their ability to support living things", "It makes the water colder", "It adds more fish", "It makes the water sweet"],
+              answer: "It reduces their ability to support living things",
+              why: "Acid gets into surface water and reduces the ability of streams and lakes to support organisms." },
+            { prompt: "What do scrubbers in power plants do?",
+              options: ["Reduce the pollutants that get into the air", "Make more electricity", "Cool the steam", "Spin the turbine"],
+              answer: "Reduce the pollutants that get into the air",
+              why: "In a scrubber, gases pass through a substance that reduces the amount of pollutants that get into the air." },
+            { prompt: "What is a greenhouse gas?",
+              options: ["A pollutant that increases the atmosphere's ability to hold heat", "A gas used only in greenhouses to grow plants", "A gas that cools the Earth", "A type of nuclear fuel"],
+              answer: "A pollutant that increases the atmosphere's ability to hold heat",
+              why: "A greenhouse gas is a pollutant that increases the atmosphere's ability to hold heat." },
+            { prompt: "What is the main greenhouse gas released by power plants?",
+              options: ["Carbon dioxide (CO₂)", "Oxygen", "Helium", "Hydrogen"],
+              answer: "Carbon dioxide (CO₂)",
+              why: "Power plants release greenhouse gases, mainly carbon dioxide." },
+            { prompt: "Carbon dioxide traps the sun's heat in the atmosphere like a...",
+              options: ["Blanket", "Mirror", "Fan", "Window"],
+              answer: "Blanket",
+              why: "CO₂ traps some of the sun's thermal radiation in the atmosphere, like a blanket. This is the greenhouse effect." },
+            { prompt: "The natural movement of carbon between the atmosphere and living things is called the...",
+              options: ["Carbon cycle", "Water cycle", "Rock cycle", "Energy chain"],
+              answer: "Carbon cycle",
+              why: "CO₂ cycles between the atmosphere and living things in a cycle called the carbon cycle." },
+            { prompt: "Why does burning fossil fuels add extra CO₂ to the air?",
+              options: ["It releases carbon that was buried deep underground", "It removes carbon from the air", "It turns CO₂ into oxygen", "It makes plants grow faster"],
+              answer: "It releases carbon that was buried deep underground",
+              why: "Burning fossil fuels takes carbon that was buried deep underground and releases it into the atmosphere as CO₂." },
+            { prompt: "More CO₂ makes the greenhouse effect stronger, warming Earth's climates. This is called...",
+              options: ["Global warming", "Nuclear fusion", "Combustion", "Photosynthesis"],
+              answer: "Global warming",
+              why: "With more CO₂ in the atmosphere, the greenhouse effect is greater, warming the world's climates. This is called global warming." },
+            { prompt: "How can mining for fuel harm plants and animals?",
+              options: ["Forests and fields are removed, causing habitat loss", "It adds more trees", "It makes rivers cleaner", "It has no effect"],
+              answer: "Forests and fields are removed, causing habitat loss",
+              why: "Mining changes the land surface. Often forests and fields are removed to get the fuel beneath them." },
+            { prompt: "Why are oil spills so hard to clean up?",
+              options: ["Crude oil is very sticky and covers everything it touches", "Oil sinks to the bottom right away", "Oil turns into gas", "Oil disappears in the sun"],
+              answer: "Crude oil is very sticky and covers everything it touches",
+              why: "Crude oil is very sticky. It covers anything it touches." },
+            { prompt: "What is one harmful effect of an oil spill?",
+              options: ["Oil sticks to animals and can kill or poison them", "It makes the ocean warmer for fish", "It creates new habitats", "It makes electricity"],
+              answer: "Oil sticks to animals and can kill or poison them",
+              why: "When petroleum spills into the water or soil, it can stick to and kill living things, or poison them." },
+            { prompt: "What happens when an oil ship crashes at sea?",
+              options: ["Oil floats on the water and currents spread it over a large area", "The oil sinks and disappears", "The oil turns into natural gas", "Nothing happens"],
+              answer: "Oil floats on the water and currents spread it over a large area",
+              why: "The oil floats on the water, and currents can spread it over a large area." },
+            { prompt: "Natural gas pipeline leaks are harmful because they add...",
+              options: ["Greenhouse gases to the atmosphere", "Oxygen to the air", "Clean water to rivers", "Sunlight to the sky"],
+              answer: "Greenhouse gases to the atmosphere",
+              why: "Natural gas leaks add a lot of greenhouse gases to the atmosphere." },
+            { prompt: "Pollution can be found in which three places?",
+              options: ["Air, water, and soil", "Only the air", "Only the ocean", "Only inside factories"],
+              answer: "Air, water, and soil",
+              why: "Pollution can be in the air, water, or the soil." },
+            { prompt: "How can a hydroelectric dam harm fish?",
+              options: ["It can stop them from swimming upriver to lay eggs", "It makes the water too salty", "It adds oil to the river", "It makes the fish glow"],
+              answer: "It can stop them from swimming upriver to lay eggs",
+              why: "Some fish lay their eggs upriver. If the dam stops them, they will not be able to reproduce." },
+            { prompt: "What happens to the land behind a hydroelectric dam?",
+              options: ["It gets flooded", "It becomes a desert", "It turns into coal", "Nothing changes"],
+              answer: "It gets flooded",
+              why: "Dams stop a river, flooding the land behind the dam." },
+            { prompt: "What is the biggest environmental challenge of nuclear power?",
+              options: ["Radioactive waste that stays dangerous for a very long time", "Lots of smoke and air pollution", "Acid rain", "Oil spills"],
+              answer: "Radioactive waste that stays dangerous for a very long time",
+              why: "Nuclear plants produce solid waste that remains dangerous for thousands to millions of years." },
+            { prompt: "True or False: Nuclear power plants produce a lot of air pollution.",
+              options: ["False", "True"],
+              answer: "False",
+              why: "Nuclear power plants do not produce air pollutants, but they do produce radioactive waste and hot water." },
+            { prompt: "True or False: Renewable energy sources can also have impacts on the environment.",
+              options: ["True", "False"],
+              answer: "True",
+              why: "Even renewable energy has impacts. For example, dams change rivers, and some materials for renewable energy are mined." },
+            { prompt: "The white clouds coming from a power plant's tall cooling towers are mostly...",
+              options: ["Water vapor", "Smoke", "Coal dust", "Carbon dioxide"],
+              answer: "Water vapor",
+              why: "The towers are not smokestacks. What you see is water vapor, which cools and forms a cloud." },
+            { prompt: "In the past, what was often done with hot water from power plants?",
+              options: ["It was dumped into a river or lake", "It was sold as drinking water", "It was frozen into ice", "It was burned as fuel"],
+              answer: "It was dumped into a river or lake",
+              why: "In the past, the hot water often was dumped into a river or lake." },
+            { prompt: "How could dumping very hot water into a river affect the environment?",
+              options: ["It could heat the river and harm fish and other living things", "It would make the river cleaner", "It would help fish grow faster", "It would have no effect"],
+              answer: "It could heat the river and harm fish and other living things",
+              why: "Very hot water changes the river's temperature, which can harm the organisms living there." },
+            { prompt: "How do cooling towers cool the hot water?",
+              options: ["Some water evaporates, which makes the remaining water cooler", "They add ice to it", "They burn it", "They mix it with oil"],
+              answer: "Some water evaporates, which makes the remaining water cooler",
+              why: "Some of the hot water evaporates. Since it takes energy to make water vapor, the remaining water becomes cooler and is recycled." },
+            { prompt: "The academic word “impact” means...",
+              options: ["Effect", "Fuel", "Machine", "Energy source"],
+              answer: "Effect",
+              why: "The human use of energy has impacts, or effects, on the environment." },
+            { prompt: "How can mining cause harm to ecosystems?",
+              options: ["It can cause a loss of habitat for plants and animals", "It plants new forests", "It cleans rivers", "It makes the air cleaner"],
+              answer: "It can cause a loss of habitat for plants and animals",
+              why: "Mining can cause a loss of habitat for plants and animals." },
+            { prompt: "How can roads built for mining and drilling harm ecosystems?",
+              options: ["They can break up habitat areas", "They make more habitats", "They stop pollution", "They help fish swim upstream"],
+              answer: "They can break up habitat areas",
+              why: "Roads can break up habitat areas." },
+            { prompt: "What impact does disturbing land have?",
+              options: ["It can pollute streams and rivers", "It makes rivers cleaner", "It creates fossil fuels", "It stops acid rain"],
+              answer: "It can pollute streams and rivers",
+              why: "Disturbing land can pollute streams and rivers." },
+            { prompt: "How can building dams harm the environment?",
+              options: ["It can damage stream habitats", "It pollutes the air with smoke", "It causes oil spills", "It releases radioactive waste"],
+              answer: "It can damage stream habitats",
+              why: "Building dams can damage stream habitats." },
+            { prompt: "Why does an energy source that does NOT use fuel have a smaller environmental impact?",
+              options: ["No fuel needs to be mined, drilled, transported, or burned", "It is always smaller in size", "It never makes electricity", "It works only at night"],
+              answer: "No fuel needs to be mined, drilled, transported, or burned",
+              why: "Sources like solar and wind do not need fuel, so there is no mining, drilling, transporting, or burning." },
+            { prompt: "In the oil cleanup lab, why was oil so hard to separate from sand?",
+              options: ["Crude oil is very sticky and coats the sand", "Oil is heavier than sand", "Oil turns into sand", "Sand dissolves in oil"],
+              answer: "Crude oil is very sticky and coats the sand",
+              why: "Crude oil is very sticky. It covers anything it touches, so it is hard to remove from sand." },
+            { prompt: "What are two ways that power plants can affect the environment?",
+              options: ["They release pollutants and greenhouse gases into the air, and they release hot water", "They plant trees and clean rivers", "They create new animals and plants", "They make rain cleaner and air cooler"],
+              answer: "They release pollutants and greenhouse gases into the air, and they release hot water",
+              why: "Power plants can release ash, harmful chemicals, and greenhouse gases, and they produce large amounts of hot water." },
+            { prompt: "How do scrubbers help reduce pollution?",
+              options: ["Gases from the plant pass through a substance that reduces the pollutants", "They spray water on the coal", "They make the chimney taller", "They turn off the power plant"],
+              answer: "Gases from the plant pass through a substance that reduces the pollutants",
+              why: "In a scrubber, gases pass through a substance that reduces the amount of pollutants that get into the air." },
+            { prompt: "In what way does a nuclear power plant have a smaller impact than a coal power plant?",
+              options: ["Nuclear plants do not release pollutants into the atmosphere, but coal plants do", "Nuclear plants are smaller", "Nuclear fuel is not mined", "Nuclear plants make no hot water"],
+              answer: "Nuclear plants do not release pollutants into the atmosphere, but coal plants do",
+              why: "Nuclear power plants do not produce air pollutants, but coal plants release ash, chemicals, and carbon dioxide." },
+            { prompt: "Which website would be the most reliable source about environmental impacts of energy?",
+              options: ["A U.S. government website", "An oil company website", "A random blog", "An advertisement"],
+              answer: "A U.S. government website",
+              why: "A government website is usually more reliable. An oil company might only share information that helps it sell oil." },
+            { prompt: "As greenhouse gases in the atmosphere increase, climates around the world become warmer. This is known as...",
+              options: ["Global climate change", "Nuclear fission", "The water cycle", "Combustion"],
+              answer: "Global climate change",
+              why: "As greenhouse gases increase, climates become warmer. This is known as global climate change." },
+            { prompt: "What is one way to help prevent climate change?",
+              options: ["Use more nonfossil fuel sources of energy to produce electricity", "Use more petroleum to produce electricity", "Burn more coal", "Cut down more forests"],
+              answer: "Use more nonfossil fuel sources of energy to produce electricity",
+              why: "Nonfossil fuel sources, like wind, solar, hydro, and nuclear, release almost no carbon dioxide." },
+            { prompt: "Based on Manny's graphs, which energy source produced the most carbon dioxide from making electricity?",
+              options: ["Coal", "Nonfossil fuels", "Wind", "Solar"],
+              answer: "Coal",
+              why: "Coal made 42% of U.S. electricity but 76% of the carbon dioxide from electricity." },
+            { prompt: "Very little petroleum is used to make electricity, but petroleum makes the most total carbon dioxide. What can we conclude?",
+              options: ["Most petroleum is used to produce energy that is not electricity", "Burning petroleum does not release carbon dioxide", "A lot of petroleum is used to make electricity", "Petroleum is not a source of greenhouse gases"],
+              answer: "Most petroleum is used to produce energy that is not electricity",
+              why: "Most petroleum is used for other energy, especially gasoline and diesel for transportation." },
+            { prompt: "Coal releases more CO₂ than natural gas. If we used only natural gas instead of coal, would that remove ALL carbon dioxide emissions?",
+              options: ["No, because natural gas also releases carbon dioxide when burned", "Yes, natural gas releases no carbon dioxide", "Yes, because natural gas is renewable", "No, because natural gas is radioactive"],
+              answer: "No, because natural gas also releases carbon dioxide when burned",
+              why: "Using natural gas would reduce CO₂, but natural gas is still a fossil fuel and releases carbon dioxide during combustion." },
+            { prompt: "Nuclear power makes about 20% of U.S. electricity. What can we conclude about nuclear power and carbon dioxide?",
+              options: ["Nuclear power produces almost no carbon dioxide, so it is part of the nonfossil fuels", "Nuclear power produces the most carbon dioxide", "Nuclear power is a fossil fuel", "Nuclear power burns coal"],
+              answer: "Nuclear power produces almost no carbon dioxide, so it is part of the nonfossil fuels",
+              why: "Nuclear fuel is not burned, so nuclear plants release almost no carbon dioxide. It belongs with the nonfossil fuels." },
+          ],
+        },
+      },
+    },
   };
+
+  // Topics split into lessons: the topic-level quiz bank is all lessons combined.
+  Object.values(SCIENCE_TOPICS).forEach(t => {
+    if (t.lessons && !t.quizBank) t.quizBank = Object.values(t.lessons).flatMap(l => l.quizBank);
+  });
 
   const scienceTopics = Object.keys(SCIENCE_TOPICS).map((id, i) => ({
     id, icon: String(i + 1), name: SCIENCE_TOPICS[id].name,
-    status: SCIENCE_TOPICS[id].quizBank.length ? SCIENCE_TOPICS[id].quizBank.length + " questions ready" : "Coming soon",
+    status: SCIENCE_TOPICS[id].lessons ? Object.keys(SCIENCE_TOPICS[id].lessons).length + " lessons"
+      : SCIENCE_TOPICS[id].quizBank.length ? SCIENCE_TOPICS[id].quizBank.length + " questions ready" : "Coming soon",
     enabled: true,
   }));
 
   let currentScienceTopic = "topic1";
-  function SCI() { return SCIENCE_TOPICS[currentScienceTopic]; }
+  let currentScienceLesson = null;
+  function SCI() {
+    const t = SCIENCE_TOPICS[currentScienceTopic];
+    return (t.lessons && currentScienceLesson) ? t.lessons[currentScienceLesson] : t;
+  }
+  function SCI_LABEL() {
+    const t = SCIENCE_TOPICS[currentScienceTopic];
+    return (t.lessons && currentScienceLesson) ? t.name + " — " + SCI().name : t.name;
+  }
 
   let currentSocialLesson = "lesson1";
   function SL() { return SS().lessons[currentSocialLesson]; }
@@ -7884,8 +9151,14 @@
 
   function openScienceTopic(topic) {
     navStack.push({ id: "screen-science", title: "Science" });
-    if (topic.enabled) {
+    if (topic.enabled && SCIENCE_TOPICS[topic.id].lessons) {
       currentScienceTopic = topic.id;
+      currentScienceLesson = null;
+      renderScienceLessonGrid();
+      showScreen("screen-sciencelessons", "Science — " + topic.name);
+    } else if (topic.enabled) {
+      currentScienceTopic = topic.id;
+      currentScienceLesson = null;
       renderScienceTopicContent();
       showScienceTab("summary");
       showScreen("screen-sciencetopic", "Science — " + topic.name);
@@ -7893,6 +9166,24 @@
       document.getElementById("placeholderSubject").textContent = topic.name;
       showScreen("screen-placeholder", topic.name);
     }
+  }
+
+  function renderScienceLessonGrid() {
+    const lessons = SCIENCE_TOPICS[currentScienceTopic].lessons;
+    renderGrid("scienceLessonGrid", Object.keys(lessons).map((id, i) => ({
+      id, icon: String(i + 1), name: lessons[id].name,
+      status: lessons[id].quizBank.length ? lessons[id].quizBank.length + " questions ready" : "Coming soon",
+      enabled: true,
+    })), openScienceLesson);
+  }
+
+  function openScienceLesson(lesson) {
+    const topic = SCIENCE_TOPICS[currentScienceTopic];
+    navStack.push({ id: "screen-sciencelessons", title: "Science — " + topic.name });
+    currentScienceLesson = lesson.id;
+    renderScienceTopicContent();
+    showScienceTab("summary");
+    showScreen("screen-sciencetopic", "Science — " + lesson.name);
   }
 
   function showScienceTab(tab) {
@@ -8274,6 +9565,7 @@
     document.getElementById("printSocialChapterField").style.display = sec === "social" ? "flex" : "none";
     document.getElementById("printSocialLessonField").style.display = sec === "social" ? "flex" : "none";
     document.getElementById("printScienceTopicField").style.display = sec === "science" ? "flex" : "none";
+    updatePrintScienceLessons();
     document.getElementById("printNovelField").style.display = sec === "novel" ? "flex" : "none";
     document.getElementById("printVocabTypesField").style.display = sec === "vocab" ? "flex" : "none";
     document.getElementById("printCountField").style.display = sec === "vocab" ? "none" : "flex";
@@ -8289,7 +9581,7 @@
       if (sec === "math") return MATH_CHAPTERS[val("printChapter")].quizBank;
       if (sec === "grammar") return GRAMMAR_UNITS[val("printGrammarUnit")].quizBank;
       if (sec === "social") return SOCIAL_CHAPTERS[val("printSocialChapter")].lessons[val("printSocialLesson")].quizBank;
-      if (sec === "science") return SCIENCE_TOPICS[val("printScienceTopic")].quizBank;
+      if (sec === "science") return printSciencePick().bank;
       if (sec === "novel") return NOVELS[val("printNovel")].quizBank;
     } catch (e) {}
     return null;
@@ -8304,6 +9596,29 @@
     document.getElementById("printCountAll").textContent = "All (" + bank.length + " questions)";
     [...sel.options].forEach(o => { if (o.value !== "all") o.disabled = parseInt(o.value, 10) > bank.length; });
     if (sel.selectedOptions[0] && sel.selectedOptions[0].disabled) sel.value = "all";
+  }
+
+  // Science topics with lessons get a Lesson dropdown (plus an "All lessons" review option).
+  function updatePrintScienceLessons() {
+    const topic = SCIENCE_TOPICS[document.getElementById("printScienceTopic").value];
+    const sec = document.getElementById("printSection").value;
+    const field = document.getElementById("printScienceLessonField");
+    if (!topic || !topic.lessons) { field.style.display = "none"; return; }
+    field.style.display = sec === "science" ? "flex" : "none";
+    const sel = document.getElementById("printScienceLesson");
+    const prev = sel.value;
+    sel.innerHTML = `<option value="all">All lessons (topic review)</option>` +
+      Object.keys(topic.lessons).map(id => `<option value="${id}">${topic.lessons[id].name}</option>`).join("");
+    if ([...sel.options].some(o => o.value === prev)) sel.value = prev;
+  }
+
+  function printSciencePick() {
+    const topic = SCIENCE_TOPICS[document.getElementById("printScienceTopic").value];
+    const lessonId = document.getElementById("printScienceLesson").value;
+    if (topic.lessons && lessonId && lessonId !== "all" && topic.lessons[lessonId]) {
+      return { name: topic.name + " — " + topic.lessons[lessonId].name, bank: topic.lessons[lessonId].quizBank };
+    }
+    return { name: topic.name, bank: topic.quizBank };
   }
 
   function updatePrintSocialLessons() {
@@ -8514,7 +9829,7 @@
       else if (setId === "chapterQuiz") sectionInfo = { unitName: M().name, section: "Math" };
       else if (setId === "grammarUnitQuiz") sectionInfo = { unitName: G().name, section: "ENG Grammar" };
       else if (setId === "socialLessonQuiz") sectionInfo = { unitName: SS().name + " — " + SL().name, section: "Social Studies" };
-      else if (setId === "scienceTopicQuiz") sectionInfo = { unitName: SCI().name, section: "Science" };
+      else if (setId === "scienceTopicQuiz") sectionInfo = { unitName: SCI_LABEL(), section: "Science" };
       else if (setId === "guoyuUnitQuiz") sectionInfo = { unitName: GY().name, section: "國語" };
       else if (setId === "novelQuiz") sectionInfo = { unitName: NV().name, section: "Core Novel" };
       else sectionInfo = { unitName: U().name };
@@ -8743,10 +10058,10 @@
       groupName = NOVELS[novelId].name;
       bank = NOVELS[novelId].quizBank;
     } else {
-      const scienceTopicId = document.getElementById("printScienceTopic").value;
+      const sciencePick = printSciencePick();
       sectionName = "Science";
-      groupName = SCIENCE_TOPICS[scienceTopicId].name;
-      bank = SCIENCE_TOPICS[scienceTopicId].quizBank;
+      groupName = sciencePick.name;
+      bank = sciencePick.bank;
     }
     if (!bank.length) { alert("This unit doesn't have any quiz questions to print yet."); return; }
     const countVal = document.getElementById("printCount").value;
@@ -8866,6 +10181,7 @@
   updatePrintSocialLessons();
   document.getElementById("printScienceTopic").innerHTML =
     Object.keys(SCIENCE_TOPICS).map(id => `<option value="${id}">${SCIENCE_TOPICS[id].name}</option>`).join("");
+  updatePrintScienceLessons();
   renderUnitContent();
   updateGlobalScore();
 </script>
