@@ -127,6 +127,32 @@
     border: 1px solid var(--border); margin: 0 0 8px 12px;
   }
   .lesson-card::after { content: ""; display: block; clear: both; }
+  /* ---- Lively vocabulary flip cards ---- */
+  .vocab-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin-top: 12px; }
+  .vflip { perspective: 900px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .vflip-inner { display: grid; transition: transform .5s cubic-bezier(.3,1.4,.5,1); transform-style: preserve-3d; height: 100%; }
+  .vflip.flipped .vflip-inner { transform: rotateY(180deg); }
+  .vface { grid-area: 1 / 1; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 16px;
+           padding: 14px 12px; border: 2px solid var(--vc); background: var(--vbg); display: flex; flex-direction: column; min-height: 170px; }
+  .vfront { align-items: center; justify-content: center; text-align: center; gap: 4px; }
+  .vback { transform: rotateY(180deg); font-size: .9rem; line-height: 1.4; gap: 6px; }
+  .vflip:hover .vfront { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(0,0,0,.08); }
+  .vemoji { font-size: 2.6rem; line-height: 1; animation: vbob 2.4s ease-in-out infinite; }
+  .vflip:nth-child(2n) .vemoji { animation-delay: .6s; }
+  .vflip:nth-child(3n) .vemoji { animation-delay: 1.2s; }
+  @keyframes vbob { 0%,100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-5px) rotate(-6deg); } }
+  .vword { font-weight: 800; font-size: 1.1rem; color: var(--vc); }
+  .vpos { font-size: .75rem; font-style: italic; color: var(--muted); }
+  .vhint { font-size: .7rem; color: var(--muted); margin-top: 4px; }
+  .vspeak { border: none; background: #fff; border-radius: 999px; width: 34px; height: 34px; font-size: 1rem; cursor: pointer;
+            box-shadow: 0 1px 4px rgba(0,0,0,.12); margin-top: 6px; }
+  .vspeak:active { transform: scale(.9); }
+  .vback .vword { font-size: .95rem; }
+  .vdef { font-weight: 600; }
+  .vex { background: rgba(255,255,255,.75); border-radius: 10px; padding: 6px 8px; }
+  .vtrick { font-size: .82rem; color: var(--text); }
+  .vsa { font-size: .8rem; }
+  @media (prefers-reduced-motion: reduce) { .vemoji { animation: none; } .vflip-inner { transition: none; } }
   .lesson-card h4 { margin: 0 0 4px 0; color: var(--primary-dark); font-size: 1.1rem; }
   .lesson-card .pron { color: var(--muted); font-size: 0.85rem; margin-left: 6px; font-weight: normal; }
   .lesson-card p { margin: 6px 0; font-size: 0.92rem; line-height: 1.45; }
@@ -365,9 +391,9 @@
     </div>
 
     <div id="unit-cards" class="unit-tab" style="display:none">
-      <p class="intro">Tap a card to flip it. Try to say the meaning before you flip!</p>
+      <p class="intro">Tap a card to flip it 🔄 and tap 🔊 to hear the word. Try to say the meaning before you flip!</p>
       <button class="print-btn" style="margin-bottom:16px" onclick="shuffleCards()">🔀 Shuffle cards</button>
-      <div class="card-grid" id="cardGrid"></div>
+      <div id="cardGrid"></div>
     </div>
 
     <div id="unit-practice" class="unit-tab" style="display:none">
@@ -440,9 +466,9 @@
     </div>
 
     <div id="story-cards" class="story-tab" style="display:none">
-      <p class="intro">Tap a card to flip it. Try to say the meaning before you flip!</p>
+      <p class="intro">Tap a card to flip it 🔄 and tap 🔊 to hear the word. Try to say the meaning before you flip!</p>
       <button class="print-btn" style="margin-bottom:16px" onclick="shuffleStoryCards()">🔀 Shuffle cards</button>
-      <div class="card-grid" id="storyCardGrid"></div>
+      <div id="storyCardGrid"></div>
     </div>
 
     <div id="story-quiz" class="story-tab" style="display:none">
@@ -546,7 +572,7 @@
   <!-- SOCIAL STUDIES: LESSON SCREEN (shared by all lessons) -->
   <section class="screen" id="screen-sociallesson">
     <div class="tabs">
-      <button class="tab-btn active" data-social-tab="lesson" onclick="showSocialTab('lesson')">Lesson</button>
+      <button class="tab-btn active" data-social-tab="lesson" onclick="showSocialTab('lesson')">Summary</button>
       <button class="tab-btn" data-social-tab="quiz" onclick="showSocialTab('quiz')">Quiz</button>
     </div>
 
@@ -5367,6 +5393,7 @@
             },
             {"title": "6. 🏞️ Worksheet: Landform Picture Map", "rule": "The worksheet's picture labels <strong>12 landforms</strong>: <strong>mountain peak</strong>, <strong>mountain range</strong>, <strong>hill</strong>, <strong>plains</strong>, <strong>plateau</strong>, <strong>canyon</strong>, <strong>flood plain</strong>, <strong>lake</strong>, <strong>bay</strong>, <strong>island</strong>, <strong>coast</strong>, and <strong>cliff</strong>. Landforms along the coast include <strong>beaches</strong>, <strong>dunes</strong>, and <strong>cliffs</strong>.", "tip": "Watch the spelling: <strong>plateau</strong> (one plateau) &rarr; <strong>plateaus</strong> (more than one).", "examples": [{"label": "⛰️ Mountain peak", "text": "The highest, pointy top of a mountain."}, {"label": "🏔️ Mountain range", "text": "A long chain or group of mountains."}, {"label": "🏝️ Island", "text": "Land with water all around it."}, {"label": "🌊 Bay", "text": "Part of a lake or ocean that curves into the land."}, {"label": "🪨 Cliff", "text": "A steep, high wall of rock, often along the coast."}, {"label": "🏖️ Coast", "text": "The land along the edge of an ocean."}, {"label": "🌾 Plains", "text": "Wide, flat land, great for farming."}]},
             {"title": "7. 🗺️ Worksheet: What Each Region Has", "rule": "The United States is divided into five <strong>regions</strong>, each with unique <strong>landforms</strong>. A <strong>landform</strong> is a natural feature on the earth's surface. A <strong>boundary</strong> is a line that divides one area or state from another, and boundaries often follow <strong>natural features</strong>.", "tip": "Match the clue to the region: 🌲 rocky coast = Northeast, 🐊 wetlands = Southeast, 🌽 Great Lakes = Midwest, 🌵 deserts = Southwest, 🏔️ Rocky Mountains = West.", "examples": [{"label": "1. Northeast", "text": "Appalachian Mountains, forests, hills, rocky coast."}, {"label": "2. Southeast", "text": "Low coastal plains, the Mississippi River, wetlands."}, {"label": "3. Midwest", "text": "Broad grassy plains, rich farmland, major rivers, the Great Lakes."}, {"label": "4. Southwest", "text": "Dry plains, canyons, deserts, plateaus."}, {"label": "5. West", "text": "The Rocky Mountains and many different landforms."}]},
+            {"title": "8. 🌟 Lesson 1 Word Wall", "rule": "Tap a card to flip it! 🔄 Tap 🔊 to hear the word.", "tip": "Academic vocabulary: <strong>feature</strong> and <strong>varied</strong>.", "vocab": [{"emoji": "⛰️", "word": "landform", "pos": "noun", "def": "a natural feature of Earth's surface, like a mountain, hill, or valley", "example": "Taiwan's Yushan (Jade Mountain) is a landform, and so is the Taroko Gorge!", "trick": "LAND + FORM = the shape (form) of the land."}, {"emoji": "🍽️", "word": "mesa", "pos": "noun", "def": "a hill with a flat top", "example": "The mesa looked like a giant table standing in the desert.", "trick": "\"Mesa\" means \"table\" in Spanish. Flat on top like a table!"}, {"emoji": "🟫", "word": "plateau", "pos": "noun", "def": "a large, flat, raised area of land", "example": "We drove up and up, and then the land on the plateau was flat for miles.", "trick": "A plateau is like a giant stage: raised up high and flat on top."}, {"emoji": "🏜️", "word": "canyon", "pos": "noun", "def": "a deep, narrow valley with steep, rocky sides", "example": "We shouted \"Hello!\" into the canyon and heard our echo.", "trick": "The Grand Canyon is the most famous canyon. It's deep, narrow, and rocky!"}, {"emoji": "🌊", "word": "flood plain", "pos": "noun", "def": "land along a river that forms after the river overflows its banks", "example": "After the river flooded, the flood plain had rich soil for farming.", "trick": "FLOOD + PLAIN = the flat land the river floods."}, {"emoji": "🗺️", "word": "region", "pos": "noun", "def": "an area where the places share similar features", "example": "The Southwest region has lots of deserts and canyons.", "trick": "A region is like a team of places that are alike."}, {"emoji": "🌵", "word": "desert", "pos": "noun", "def": "a dry area that gets very little rain", "example": "Cactuses can live in the desert because they store water.", "trick": "Desert has ONE \"s\" (sandy and dry). Dessert has TWO, for sweet stuff! 🍨"}, {"emoji": "📏", "word": "boundary", "pos": "noun", "def": "a line that divides one area or state from another", "example": "The river is the boundary between the two states.", "trick": "A boundary is a BOUND: the edge you stop at."}, {"emoji": "🔍", "word": "feature", "pos": "noun", "def": "a part or characteristic of something", "example": "Tall mountains are the main feature of the West region.", "trick": "A feature is a special part that stands out."}, {"emoji": "🎨", "word": "varied", "pos": "adjective", "def": "different or changed; having many kinds", "example": "The West has varied landforms: mountains, forests, and coasts.", "trick": "Varied comes from VARIETY. Lots of different kinds!"}], "examples": [{"label": "landform", "text": "a natural feature of Earth's surface, like a mountain, hill, or valley"}, {"label": "mesa", "text": "a hill with a flat top"}, {"label": "plateau", "text": "a large, flat, raised area of land"}, {"label": "canyon", "text": "a deep, narrow valley with steep, rocky sides"}, {"label": "flood plain", "text": "land along a river that forms after the river overflows its banks"}, {"label": "region", "text": "an area where the places share similar features"}, {"label": "desert", "text": "a dry area that gets very little rain"}, {"label": "boundary", "text": "a line that divides one area or state from another"}, {"label": "feature", "text": "a part or characteristic of something"}, {"label": "varied", "text": "different or changed; having many kinds"}]},
           ],
           quizBank: [
             { prompt: 'What is a landform?',
@@ -5758,6 +5785,7 @@
             },
             {"title": "6. 📝 Worksheet: 4 Factors & the Water Cycle", "rule": "<strong>Weather</strong> is the condition of the air at a certain time and place, and it changes from day to day. <strong>Climate</strong> is the pattern of weather in a place over a long period of time. The worksheet lists <strong>4 factors</strong> that influence weather and climate: <strong>location</strong>, <strong>elevation</strong>, <strong>temperature</strong>, and <strong>humidity</strong>.", "tip": "Water cycle order: evaporation ☀️ &rarr; condensation ☁️ &rarr; precipitation 🌧️ &rarr; and around again!", "examples": [{"label": "☀️ Evaporation", "text": "Liquid water is heated and changed into water vapor."}, {"label": "☁️ Condensation", "text": "Water vapor cools and forms drops, which make clouds."}, {"label": "🌧️ Precipitation", "text": "Water falls from clouds as rain, snow, sleet, or hail."}, {"label": "⛰️ Elevation", "text": "How high the land is above sea level."}, {"label": "💧 Humidity", "text": "The amount of water in the air."}]},
             {"title": "7. 🗺️ Worksheet: Climate Regions Map", "rule": "The climate map shows four main kinds of climate in the US. Use the states on the map to remember where each one is!", "tip": "AZ, NM, CO, and NV are circled on the map as dry places. Think 🌵 desert!", "examples": [{"label": "❄️ Arctic (Alaska)", "text": "Very cold and dry most of the year."}, {"label": "🌴 Tropical (South Florida)", "text": "Warm and wet all year."}, {"label": "🌤️ Temperate (most of the US)", "text": "Moderate temperatures, not too hot and not too cold."}, {"label": "🌵 Dry (AZ, NM, CO, NV)", "text": "Less rain falls."}]},
+            {"title": "8. 🌟 Lesson 2 Word Wall", "rule": "Tap a card to flip it! 🔄 Tap 🔊 to hear the word.", "tip": "Academic vocabulary: <strong>contribute</strong> and <strong>factor</strong>.", "vocab": [{"emoji": "🌦️", "word": "weather", "pos": "noun", "def": "the condition of the air at a certain time and place", "example": "The weather today is sunny and warm, so let's play outside!", "trick": "Weather = what's happening in the sky TODAY."}, {"emoji": "🌡️", "word": "climate", "pos": "noun", "def": "the pattern of weather in a place over a long period of time", "example": "Taiwan has a warm, rainy climate, so we hardly ever see snow.", "trick": "Climate = the weather pattern over MANY years."}, {"emoji": "🔥", "word": "temperature", "pos": "noun", "def": "how hot or cold something is", "example": "The temperature dropped, so I put on my jacket.", "trick": "A thermometer measures temperature: up = hot, down = cold."}, {"emoji": "🌧️", "word": "precipitation", "pos": "noun", "def": "water that falls to the ground as rain, snow, sleet, or hail", "example": "Typhoon season brings lots of precipitation to Taiwan.", "trick": "Precipitation = anything wet that falls from the sky! ☔❄️"}, {"emoji": "💦", "word": "humidity", "pos": "noun", "def": "the amount of water vapor in the air", "example": "High humidity makes summer days feel sticky and hot.", "trick": "Humidity is the HUMID, damp feeling in the air."}, {"emoji": "🏔️", "word": "elevation", "pos": "noun", "def": "how high the land is above sea level", "example": "At a high elevation on the mountain, it was much colder.", "trick": "Elevation is like an ELEVATOR going up. Higher land!"}, {"emoji": "🤲", "word": "contribute", "pos": "verb", "def": "to give to; to add to", "example": "Ocean winds contribute to the cool climate near the coast.", "trick": "Contribute = give your part, like adding a piece to a puzzle."}, {"emoji": "🧩", "word": "factor", "pos": "noun", "def": "a cause; something that helps produce a result", "example": "Distance from the equator is one factor that affects climate.", "trick": "A factor is one of the reasons why something happens."}], "examples": [{"label": "weather", "text": "the condition of the air at a certain time and place"}, {"label": "climate", "text": "the pattern of weather in a place over a long period of time"}, {"label": "temperature", "text": "how hot or cold something is"}, {"label": "precipitation", "text": "water that falls to the ground as rain, snow, sleet, or hail"}, {"label": "humidity", "text": "the amount of water vapor in the air"}, {"label": "elevation", "text": "how high the land is above sea level"}, {"label": "contribute", "text": "to give to; to add to"}, {"label": "factor", "text": "a cause; something that helps produce a result"}]},
           ],
           quizBank: [
             { prompt: 'What is weather?',
@@ -6158,6 +6186,7 @@
             },
             {"title": "7. 🗺️ Worksheet: Natural Resources Map", "rule": "The worksheet map shows the resources in each region. The <strong>West</strong> most likely has many miners, who mine minerals such as gold, silver, and copper. In the <strong>Midwest</strong>, you would most likely see farming and cattle ranching, because the region has vast plains and fertile soil for growing crops and raising animals.", "tip": "Look at the map icons: ⛏️ mining cart = minerals, 🌽 corn, 🐄 cattle, 🐑 sheep, 🛢️ oil, 🌲 forests, 🐟 fish.", "examples": [{"label": "West", "text": "Cattle ranching, lumber, and minerals like gold, silver, and copper."}, {"label": "Midwest", "text": "Rich soil, corn, soybeans, wheat, hogs and cows, and minerals."}, {"label": "Northeast", "text": "Forests, soil, and fish."}, {"label": "Southwest", "text": "Cattle and sheep, cotton, oil, and minerals like copper."}, {"label": "Southeast", "text": "Rich soil, cotton, fruit, oil, and coal."}]},
             {"title": "8. 🍦 Worksheet: N, H, or C?", "rule": "<strong>Natural resources (N)</strong> are things found in nature that people use. <strong>Human resources (H)</strong> are people's skills, ideas, and hard work. <strong>Capital resources (C)</strong> are human-made things that we use to grow or make other things. <strong>Products</strong> are items people make or grow to sell. <strong>Nonrenewable</strong> resources like coal, oil, and natural gas cannot be replaced, but <strong>renewable</strong> resources like wind, sunlight, and trees can. To <strong>conserve</strong> means to save or protect.", "tip": "Ask: Did it come from nature? &rarr; N. Is it a person working? &rarr; H. Did people build it to make things? &rarr; C.", "examples": [{"label": "🌲 N", "text": "Coal, natural gas, iron ore, and anything that comes from nature."}, {"label": "👥 H", "text": "Waiters, teachers, and bus drivers."}, {"label": "🚜 C", "text": "Tools, machines, buildings, packing boxes, and uniforms."}, {"label": "🍦 Ice cream factory", "text": "N: milk, sugar, fruit. H: factory workers, delivery drivers, dairy farmers. C: machines, building, delivery trucks."}]},
+            {"title": "9. 🌟 Lesson 3 Word Wall", "rule": "Tap a card to flip it! 🔄 Tap 🔊 to hear the word.", "tip": "Academic vocabulary: <strong>produce</strong> and <strong>process</strong>.", "vocab": [{"emoji": "🌳", "word": "natural resource", "pos": "noun", "def": "something found in nature that people use, like water, soil, trees, or oil", "example": "Trees are a natural resource we use to make paper.", "trick": "NATURAL = from nature. RESOURCE = something useful."}, {"emoji": "💹", "word": "economy", "pos": "noun", "def": "the way a region uses its resources to make and buy goods and services", "example": "Farming is a big part of the Midwest's economy.", "trick": "The economy is how people make, buy, and sell things."}, {"emoji": "📦", "word": "product", "pos": "noun", "def": "something that is made or grown to be sold", "example": "Corn is an important product of Iowa.", "trick": "A product is what gets PRODUCED and sold."}, {"emoji": "🔧", "word": "capital resource", "pos": "noun", "def": "a human-made thing used to make goods and services, like tools, machines, and buildings", "example": "A tractor is a capital resource that helps farmers grow crops.", "trick": "Capital resources are the TOOLS that help make things."}, {"emoji": "👷", "word": "human resource", "pos": "noun", "def": "the people who work and their skills and knowledge", "example": "Doctors, builders, and teachers are human resources.", "trick": "HUMAN resources = PEOPLE power!"}, {"emoji": "⛽", "word": "nonrenewable", "pos": "adjective", "def": "cannot be replaced once it is used up", "example": "Oil and coal are nonrenewable, so we can't make more.", "trick": "NON = not. Not renewable = gone forever when used up."}, {"emoji": "♻️", "word": "conserve", "pos": "verb", "def": "to protect something and use it carefully so it isn't wasted", "example": "Turn off the tap while brushing your teeth to conserve water.", "trick": "Conserve = save it, don't waste it! 💧"}, {"emoji": "☀️", "word": "renewable", "pos": "adjective", "def": "can be replaced or made again by nature", "example": "Sunlight and wind are renewable resources.", "trick": "RE-new = it comes back NEW again."}, {"emoji": "🧑‍🌾", "word": "produce", "pos": "verb", "def": "to make or grow something", "example": "Farms in the Southeast produce cotton and peanuts.", "trick": "Produce = make it! A producer makes things."}, {"emoji": "⚙️", "word": "process", "pos": "verb", "def": "to use a series of actions to change something into a product", "example": "Factories process wheat into flour and bread.", "trick": "Process = step 1, step 2, step 3... until it becomes a product!"}], "examples": [{"label": "natural resource", "text": "something found in nature that people use, like water, soil, trees, or oil"}, {"label": "economy", "text": "the way a region uses its resources to make and buy goods and services"}, {"label": "product", "text": "something that is made or grown to be sold"}, {"label": "capital resource", "text": "a human-made thing used to make goods and services, like tools, machines, and buildings"}, {"label": "human resource", "text": "the people who work and their skills and knowledge"}, {"label": "nonrenewable", "text": "cannot be replaced once it is used up"}, {"label": "conserve", "text": "to protect something and use it carefully so it isn't wasted"}, {"label": "renewable", "text": "can be replaced or made again by nature"}, {"label": "produce", "text": "to make or grow something"}, {"label": "process", "text": "to use a series of actions to change something into a product"}]},
           ],
           quizBank: [
             { prompt: 'What is a natural resource?',
@@ -6541,6 +6570,7 @@
             },
             {"title": "5. 📝 Worksheet: Adapt or Change?", "rule": "People <strong>adapt</strong> to and <strong>change</strong> the environment to meet their needs. To <strong>adapt</strong> to the environment, people change <strong>themselves</strong> or the way they live to fit the environment. To <strong>change</strong> the environment, people change the <strong>land</strong> or <strong>water</strong> to meet their needs.", "tip": "Adapt = change YOU 🧥. Change = change the LAND or WATER 🚜.", "examples": [{"label": "No oceans or beaches", "text": "Adapt: swim in a freshwater lake."}, {"label": "Lots of rain or snow", "text": "Adapt: build houses with steep, sloped roofs."}, {"label": "Cold, snowy winters", "text": "Adapt: build glass tunnels so you don't have to go outside."}, {"label": "Coast with heavy rain and winds", "text": "Adapt: raise houses above the ground."}, {"label": "Fertile soil", "text": "Adapt: grow crops and build farms."}, {"label": "Change", "text": "Irrigation brings water to crops. Dams hold back rivers. Bridges connect places separated by rivers or streams. Early European settlers cut forests to clear fields for planting. American Indians burned prairies to clear land, make rich soil, and create better grazing areas."}]},
             {"title": "6. 🔧 Worksheet: Saving Resources with Technology", "rule": "<strong>Technology</strong> is the use of tools and scientific knowledge to do work. People build <strong>dams or reservoirs</strong> to hold water. Factories reduce pollution by passing dirty air through a <strong>scrubber</strong>, a device that removes pollutants from gas. People have developed <strong>improved irrigation systems</strong> and <strong>water treatment plants</strong> to conserve renewable resources.", "tip": "An aquifer is like a giant underground sponge made of rock 🪨💧.", "examples": [{"label": "🌊 Irrigation", "text": "The use of technology to bring water to crops."}, {"label": "🪨 Aquifer", "text": "Underground rock that holds water. It is used to irrigate crops."}, {"label": "🗺️ Ogallala Aquifer", "text": "In the center of the US, beneath parts of eight states."}]},
+            {"title": "7. 🌟 Lesson 4 Word Wall", "rule": "Tap a card to flip it! 🔄 Tap 🔊 to hear the word.", "tip": "Academic vocabulary: <strong>depend</strong> and <strong>monitor</strong>.", "vocab": [{"emoji": "🧥", "word": "adapt", "pos": "verb", "def": "to change to fit a new place or situation", "example": "People in cold places adapt by wearing warm coats and boots.", "trick": "Adapt = change YOURSELF to fit in."}, {"emoji": "🤖", "word": "technology", "pos": "noun", "def": "the use of tools, machines, and scientific knowledge to do things", "example": "Air conditioners are technology that helps us stay cool.", "trick": "Technology = tools and inventions that make life easier."}, {"emoji": "🚿", "word": "irrigation", "pos": "noun", "def": "the use of technology to bring water to crops", "example": "Farmers in dry places use irrigation to water their fields.", "trick": "Irrigation gets water to plants that don't get enough rain."}, {"emoji": "🪨", "word": "aquifer", "pos": "noun", "def": "underground rock that holds water", "example": "Farmers pump water from the aquifer to irrigate crops.", "trick": "AQUA = water. An aquifer holds water underground."}, {"emoji": "🤝", "word": "depend", "pos": "verb", "def": "to rely on", "example": "Farmers depend on rain and irrigation to grow crops.", "trick": "Depend = need someone or something to help you."}, {"emoji": "📟", "word": "monitor", "pos": "verb", "def": "to control; to watch and check something", "example": "Scientists monitor the air to make sure it is clean.", "trick": "A monitor keeps an eye on things, like a hall monitor! 👀"}], "examples": [{"label": "adapt", "text": "to change to fit a new place or situation"}, {"label": "technology", "text": "the use of tools, machines, and scientific knowledge to do things"}, {"label": "irrigation", "text": "the use of technology to bring water to crops"}, {"label": "aquifer", "text": "underground rock that holds water"}, {"label": "depend", "text": "to rely on"}, {"label": "monitor", "text": "to control; to watch and check something"}]},
           ],
           quizBank: [
             { prompt: 'What does it mean to adapt?',
@@ -6887,6 +6917,1607 @@
         },
       },
     },
+    chapter4: {
+      "name": "Chapter 4: The Nation's Economy",
+      "lessons": {
+        "lesson1": {
+          "name": "Lesson 1: What Is the Economy?",
+          "cards": [
+            {
+              "title": "1. 💰 What Is the Economy?",
+              "rule": "When you buy something or use something you bought, you are taking part in the <strong>economy</strong>. The <strong>economy</strong> is how the resources of an area or country are <strong>produced</strong>, <strong>delivered</strong>, and <strong>used</strong>. Every town, region, and state has an economy. Economies around the world may be different, but they all have things in common.",
+              "tip": "🔑 Big Question: Economies exist to satisfy people's <strong>needs</strong> and <strong>wants</strong>.",
+              "examples": [
+                {
+                  "label": "🛍️ Taking part",
+                  "text": "Buying a snack at your favorite local store makes you part of the economy."
+                },
+                {
+                  "label": "🌎 Everywhere",
+                  "text": "Every town, region, and state has its own economy."
+                }
+              ]
+            },
+            {
+              "title": "2. 🍎 Needs and Wants, Goods and Services",
+              "rule": "<strong>Needs</strong> are things you must have to survive, such as <strong>food</strong>, <strong>clothing</strong>, and <strong>shelter</strong>. <strong>Wants</strong> are things you would like to have but can do without, such as a skateboard or a movie ticket. Needs and wants come in two types: <strong>goods</strong> and <strong>services</strong>. <strong>Goods</strong> are actual products you can buy (a car, apples, shoes). <strong>Services</strong> are things other people do for you (cutting your hair, giving you music lessons).",
+              "tip": "Ask yourself: \"Can I survive without it?\" If yes → it's a want. Can you hold it? → good. Does someone do it for you? → service.",
+              "examples": [
+                {
+                  "label": "✅ Needs (Reading Check 1)",
+                  "text": "drinking water, a home, shoes, food"
+                },
+                {
+                  "label": "⭐ Wants (Reading Check 1)",
+                  "text": "lemonade, a bicycle, a vacation, a dance class"
+                },
+                {
+                  "label": "📦 Good",
+                  "text": "A car, apples, or shoes."
+                },
+                {
+                  "label": "✂️ Service",
+                  "text": "A haircut or music lessons."
+                }
+              ]
+            },
+            {
+              "title": "3. 🛒 Making Choices: Producers and Consumers",
+              "rule": "All economies produce goods and services for people to buy and use. A <strong>producer</strong> is a person or company who makes a good or service to sell to others. A <strong>consumer</strong> is a person or company who buys a good or service. In the United States there are many producers, so consumers have many choices of products and places to shop (in a store or online). Being part of an economy <strong>involves</strong> choices. If you spend your money on a video game, you may have no money left for a soccer ball. Consumers must weigh their needs and wants before spending their money.",
+              "tip": "<strong>Pro</strong>ducer <strong>pro</strong>duces (makes). <strong>Con</strong>sumer <strong>con</strong>sumes (buys and uses).",
+              "examples": [
+                {
+                  "label": "🧑‍🍳 Producer",
+                  "text": "A baker who bakes bread to sell."
+                },
+                {
+                  "label": "🛍️ Consumer",
+                  "text": "A family who buys the bread."
+                },
+                {
+                  "label": "⚖️ Choice",
+                  "text": "Buying the video game fulfills a want, but you lose the chance to buy the soccer ball."
+                }
+              ]
+            },
+            {
+              "title": "4. 🏭 Types of Economies",
+              "rule": "All economies answer three basic questions: <strong>What</strong> goods and services should be produced? <strong>How</strong> should they be produced? <strong>For whom</strong> should they be produced? The U.S. economy is based on the <strong>free enterprise system</strong> — producers have the right to create any goods or services they want, and they set the prices and quantities. The government does not tell them what to make or sell. Another name for a free enterprise system is a <strong>market economy</strong> (here, \"market\" means a whole area or country where things are bought and sold freely). Some countries, such as <strong>Cuba</strong>, have a <strong>command economy</strong>, where the <strong>government</strong> decides what goods and services can be made and sold, how much to produce, and often sets the prices.",
+              "tip": "Market economy = producers decide. Command economy = the government commands (decides).",
+              "examples": [
+                {
+                  "label": "🟧 Market Economy",
+                  "text": "Producers decide what to produce. The government does not decide how much of a product should be made."
+                },
+                {
+                  "label": "🟥 Command Economy",
+                  "text": "The government tells producers what to produce. The government decides how much of a product should be made."
+                },
+                {
+                  "label": "📘 Word Wise",
+                  "text": "Multiple-meaning words: market, enterprise, services, command."
+                }
+              ]
+            },
+            {
+              "title": "5. 🌲 Parts of the Economy",
+              "rule": "Producers use <strong>resources</strong> to create goods and services: <strong>natural resources</strong> (trees), <strong>human resources</strong> (truck drivers), and <strong>capital resources</strong> — human-made products used to make goods and services (the oven in a bakery). The U.S. economy is divided into parts called <strong>sectors</strong>: <strong>agriculture</strong> (grows food), <strong>mining</strong> (coal for electricity), <strong>manufacturing</strong> (makes goods your family buys), <strong>transportation</strong> (moves people and goods by car, train, and plane), <strong>services</strong> (teachers, doctors, the person who sells you a movie ticket), and <strong>entertainment</strong> (songs and films).",
+              "tip": "Chart \"Jobs in the United States\": Services ≈ 120 million, Manufacturing ≈ 12 million, Construction ≈ 6 million, Agriculture ≈ 2 million, Mining ≈ 0.8 million. Services has about <strong>10 times</strong> as many jobs as manufacturing!",
+              "examples": [
+                {
+                  "label": "🎬 West",
+                  "text": "Entertainment is important to California."
+                },
+                {
+                  "label": "🐄 Southwest",
+                  "text": "Ranching (raising livestock) is big in Texas."
+                },
+                {
+                  "label": "🚗 Midwest",
+                  "text": "Manufacturing and transportation help Michigan."
+                },
+                {
+                  "label": "⛏️ Southeast",
+                  "text": "Mining gives jobs in West Virginia; tourism (a service) is important in Florida."
+                },
+                {
+                  "label": "🏙️ Northeast",
+                  "text": "The services sector is important in places like New York."
+                }
+              ]
+            },
+            {
+              "title": "6. 🏛️ Government and the Economy",
+              "rule": "The U.S. government does not run the economy, but it has important jobs. <strong>Makes laws:</strong> a market economy needs rules. The government protects <strong>private property</strong> — land, homes, stores, and goods that people or companies own — for example by making stealing against the law. <strong>Producer:</strong> it makes <strong>public</strong> goods and services that everyone can use, even people who cannot pay — roads, schools, education, and mail delivery. Citizens pay for them with <strong>taxes</strong>. <strong>Consumer:</strong> it buys goods and services from companies and <strong>individuals</strong>, like planes for the navy, police cars, computers and paper, or the services of a public-school teacher.",
+              "tip": "In the U.S., <strong>both</strong> the people and the government are producers AND consumers.",
+              "examples": [
+                {
+                  "label": "🎩 Alexander Hamilton",
+                  "text": "First secretary of the U.S. Treasury, the part of government responsible for economic rules."
+                },
+                {
+                  "label": "📜 Primary Source",
+                  "text": "\"In what can it [the government] be so useful, as in promoting and improving the efforts of industry?\" — Report on Manufactures, 1791"
+                },
+                {
+                  "label": "🚒 Government as producer",
+                  "text": "Firefighters and highway bridges."
+                }
+              ]
+            },
+            {
+              "title": "7. 🌟 Lesson 1 Word Wall",
+              "rule": "Tap a card to flip it! 🔄 Tap 🔊 to hear the word.",
+              "tip": "Academic vocabulary: <strong>involve</strong> and <strong>individual</strong>.",
+              "vocab": [
+                {
+                  "emoji": "🧑‍🍳",
+                  "word": "producer",
+                  "pos": "noun",
+                  "def": "a person or company who makes a good or service to sell to others",
+                  "example": "Grandma bakes 100 pineapple cakes to sell at the night market. She is a producer!",
+                  "trick": "PRO-ducer PRO-duces — producers make things."
+                },
+                {
+                  "emoji": "🛍️",
+                  "word": "consumer",
+                  "pos": "noun",
+                  "def": "a person or company who buys a good or service",
+                  "example": "When you buy bubble tea after school, you are a consumer. 🧋",
+                  "trick": "Consumers con-SUME: they buy it and use it up!"
+                },
+                {
+                  "emoji": "🚀",
+                  "word": "free enterprise system",
+                  "pos": "noun",
+                  "def": "a system in which producers have the right to create any goods or services they want",
+                  "example": "Lily wants to sell slime, and Max wants to sell cookies. In free enterprise, they both can!",
+                  "trick": "FREE to make what you want, FREE to set your price."
+                },
+                {
+                  "emoji": "🏪",
+                  "word": "market economy",
+                  "pos": "noun",
+                  "def": "another name for a free enterprise system; an area or country where things are bought and sold freely",
+                  "example": "In a market economy, any shop can decide to sell sneakers and pick the price.",
+                  "trick": "Here, \"market\" isn't one store. It's the whole country buying and selling freely!"
+                },
+                {
+                  "emoji": "📢",
+                  "word": "command economy",
+                  "pos": "noun",
+                  "def": "an economy where the government decides what goods and services can be made and sold",
+                  "example": "In a command economy, the government might say, \"This factory makes only 500 bikes this year.\"",
+                  "trick": "The government gives the COMMAND, like a captain giving orders. 🫡"
+                },
+                {
+                  "emoji": "🏠",
+                  "word": "private property",
+                  "pos": "noun",
+                  "def": "land, homes, stores, and goods that people or companies own",
+                  "example": "Your bike, your family's apartment, and the corner bakery are all private property.",
+                  "trick": "Private = it belongs to someone. Hands off without asking! ✋"
+                },
+                {
+                  "emoji": "🧩",
+                  "word": "involve",
+                  "pos": "verb",
+                  "def": "to take into account; include",
+                  "example": "Planning a class party involves choosing snacks, games, and music.",
+                  "trick": "Involve = bring IN. All the pieces are included."
+                },
+                {
+                  "emoji": "🙋",
+                  "word": "individual",
+                  "pos": "noun",
+                  "def": "a single human being",
+                  "example": "Each individual in our class gets one vote for the class pet.",
+                  "trick": "Individual = just ONE person, not a group."
+                }
+              ],
+              "examples": [
+                {
+                  "label": "producer",
+                  "text": "a person or company who makes a good or service to sell to others"
+                },
+                {
+                  "label": "consumer",
+                  "text": "a person or company who buys a good or service"
+                },
+                {
+                  "label": "free enterprise system",
+                  "text": "a system in which producers have the right to create any goods or services they want"
+                },
+                {
+                  "label": "market economy",
+                  "text": "another name for a free enterprise system; things are bought and sold freely"
+                },
+                {
+                  "label": "command economy",
+                  "text": "the government decides what goods and services can be made and sold"
+                },
+                {
+                  "label": "private property",
+                  "text": "land, homes, stores, and goods that people or companies own"
+                },
+                {
+                  "label": "involve (v.)",
+                  "text": "to take into account; include"
+                },
+                {
+                  "label": "individual (n.)",
+                  "text": "a single human being"
+                }
+              ]
+            }
+          ],
+          "quizBank": [
+            {
+              "prompt": "What is the economy?",
+              "options": [
+                "How the resources of an area or country are produced, delivered, and used",
+                "A store where people buy food",
+                "The money a family saves",
+                "A law made by the government"
+              ],
+              "answer": "How the resources of an area or country are produced, delivered, and used",
+              "why": "The economy is how the resources of an area or country are produced, delivered, and used."
+            },
+            {
+              "prompt": "Why do economies exist?",
+              "options": [
+                "To satisfy people's needs and wants",
+                "To make the weather better",
+                "To choose leaders",
+                "To build mountains"
+              ],
+              "answer": "To satisfy people's needs and wants",
+              "why": "The Big Question: economies exist to satisfy people's needs and wants."
+            },
+            {
+              "prompt": "Which places have an economy?",
+              "options": [
+                "Every town, region, and state",
+                "Only big cities",
+                "Only the United States",
+                "Only countries with oceans"
+              ],
+              "answer": "Every town, region, and state",
+              "why": "Every town, region, and state has an economy."
+            },
+            {
+              "prompt": "What are needs?",
+              "options": [
+                "Things you must have to survive",
+                "Things you would like to have but can do without",
+                "Things the government sells",
+                "Things that are always expensive"
+              ],
+              "answer": "Things you must have to survive",
+              "why": "Needs are the things you must have to survive, such as food, clothing, and shelter."
+            },
+            {
+              "prompt": "What are wants?",
+              "options": [
+                "Things you would like to have but can do without",
+                "Things you must have to survive",
+                "Only food and water",
+                "Things you get for free"
+              ],
+              "answer": "Things you would like to have but can do without",
+              "why": "Wants are things you would like to have but can do without, like a skateboard or a movie ticket."
+            },
+            {
+              "prompt": "Which of these is a NEED?",
+              "options": [
+                "Shelter",
+                "A skateboard",
+                "A movie ticket",
+                "A video game"
+              ],
+              "answer": "Shelter",
+              "why": "Food, clothing, and shelter are needs."
+            },
+            {
+              "prompt": "Which of these is a WANT?",
+              "options": [
+                "A vacation",
+                "Food",
+                "Drinking water",
+                "A home"
+              ],
+              "answer": "A vacation",
+              "why": "You can live without a vacation, so it is a want."
+            },
+            {
+              "prompt": "Reading Check: Where does a DANCE CLASS go on the Needs and Wants chart?",
+              "options": [
+                "Wants",
+                "Needs",
+                "Both",
+                "Neither"
+              ],
+              "answer": "Wants",
+              "why": "A dance class is fun, but you can do without it — it is a want."
+            },
+            {
+              "prompt": "Reading Check: Where do SHOES go on the Needs and Wants chart?",
+              "options": [
+                "Needs",
+                "Wants",
+                "Neither",
+                "Services"
+              ],
+              "answer": "Needs",
+              "why": "Shoes are clothing, and clothing is a need."
+            },
+            {
+              "prompt": "What are goods?",
+              "options": [
+                "Actual products that you can buy",
+                "Things other people do for you",
+                "Money in a bank",
+                "Rules made by the government"
+              ],
+              "answer": "Actual products that you can buy",
+              "why": "Goods are actual products you can buy, such as a car, apples, or shoes."
+            },
+            {
+              "prompt": "What are services?",
+              "options": [
+                "Things that other people do for you",
+                "Products you can hold",
+                "Natural resources like trees",
+                "Coins and paper bills"
+              ],
+              "answer": "Things that other people do for you",
+              "why": "Services are things other people do for you, such as cutting your hair or giving you music lessons."
+            },
+            {
+              "prompt": "Which of these is a SERVICE?",
+              "options": [
+                "Getting a haircut",
+                "A pair of shoes",
+                "A bag of apples",
+                "A new car"
+              ],
+              "answer": "Getting a haircut",
+              "why": "Cutting your hair is something someone does for you, so it is a service."
+            },
+            {
+              "prompt": "Which of these is a GOOD?",
+              "options": [
+                "Apples",
+                "Music lessons",
+                "A haircut",
+                "Mail delivery"
+              ],
+              "answer": "Apples",
+              "why": "Apples are an actual product you can buy, so they are a good."
+            },
+            {
+              "prompt": "What is a producer?",
+              "options": [
+                "A person or company who makes a good or service to sell to others",
+                "A person or company who buys a good or service",
+                "A person who only saves money",
+                "A government leader"
+              ],
+              "answer": "A person or company who makes a good or service to sell to others",
+              "why": "A producer makes a good or service to sell to others."
+            },
+            {
+              "prompt": "What is a consumer?",
+              "options": [
+                "A person or company who buys a good or service",
+                "A person or company who makes a good or service",
+                "A worker in a factory only",
+                "A person who sets prices for the country"
+              ],
+              "answer": "A person or company who buys a good or service",
+              "why": "A consumer is a person or company who buys a good or service."
+            },
+            {
+              "prompt": "A baker makes cakes to sell. A family buys a cake. Who is the consumer?",
+              "options": [
+                "The family",
+                "The baker",
+                "The oven",
+                "The government"
+              ],
+              "answer": "The family",
+              "why": "The family buys the cake, so they are the consumer. The baker is the producer."
+            },
+            {
+              "prompt": "Why do consumers in the United States have many choices?",
+              "options": [
+                "There are many different producers",
+                "The government makes all products",
+                "There is only one store",
+                "Everything is free"
+              ],
+              "answer": "There are many different producers",
+              "why": "Because there are many producers, consumers have many choices of products and places to shop."
+            },
+            {
+              "prompt": "You spend all your money on a video game, so you can't buy a soccer ball. What does this show?",
+              "options": [
+                "Being part of an economy involves choices",
+                "Video games are needs",
+                "Soccer balls are services",
+                "Stores are closed"
+              ],
+              "answer": "Being part of an economy involves choices",
+              "why": "Choosing one thing can mean losing the chance to buy something else. Consumers must weigh their needs and wants."
+            },
+            {
+              "prompt": "What does the word INVOLVE mean?",
+              "options": [
+                "To take into account; include",
+                "A single human being",
+                "To trade one thing for another",
+                "To make something"
+              ],
+              "answer": "To take into account; include",
+              "why": "Involve (v.) means to take into account; include."
+            },
+            {
+              "prompt": "What are the three basic questions every economy answers?",
+              "options": [
+                "What to produce, how to produce it, and for whom",
+                "Who is the leader, where is the capital, and when is the holiday",
+                "How much rain, how much snow, and how much sun",
+                "What to buy, where to sleep, and when to eat"
+              ],
+              "answer": "What to produce, how to produce it, and for whom",
+              "why": "All economies answer: What goods and services should be produced? How? For whom?"
+            },
+            {
+              "prompt": "The economy of the United States is based on the...",
+              "options": [
+                "Free enterprise system",
+                "Command economy",
+                "Barter system only",
+                "Government-run system"
+              ],
+              "answer": "Free enterprise system",
+              "why": "In the United States, the economy is based on the free enterprise system."
+            },
+            {
+              "prompt": "In a free enterprise system, who decides what goods and services to create?",
+              "options": [
+                "Producers",
+                "The government",
+                "Only consumers",
+                "Other countries"
+              ],
+              "answer": "Producers",
+              "why": "Producers have the right to create any goods or services they want."
+            },
+            {
+              "prompt": "In a free enterprise system, who sets the prices and quantities of goods?",
+              "options": [
+                "Producers",
+                "The government",
+                "The bank",
+                "Teachers"
+              ],
+              "answer": "Producers",
+              "why": "Producers set the prices and quantities for their goods and services."
+            },
+            {
+              "prompt": "What is another name for a free enterprise system?",
+              "options": [
+                "Market economy",
+                "Command economy",
+                "Private property",
+                "Public service"
+              ],
+              "answer": "Market economy",
+              "why": "Another name for a free enterprise system is a market economy."
+            },
+            {
+              "prompt": "In the term \"market economy,\" what does MARKET mean?",
+              "options": [
+                "An entire area or country where things are bought and sold freely",
+                "A single grocery store",
+                "A farmers' stand",
+                "A bank"
+              ],
+              "answer": "An entire area or country where things are bought and sold freely",
+              "why": "Here, a market is not a store — it is a whole area or country where things are bought and sold freely."
+            },
+            {
+              "prompt": "In a command economy, who decides what goods and services can be made and sold?",
+              "options": [
+                "The government",
+                "The producers",
+                "The consumers",
+                "The teachers"
+              ],
+              "answer": "The government",
+              "why": "In a command economy, the government decides what can be made and sold, and often sets prices."
+            },
+            {
+              "prompt": "Which country is given as an example of a command economy?",
+              "options": [
+                "Cuba",
+                "The United States",
+                "Canada",
+                "Mexico"
+              ],
+              "answer": "Cuba",
+              "why": "The text says some countries, such as Cuba, have a command economy."
+            },
+            {
+              "prompt": "Reading Check: In a market economy, ____ decide what to produce.",
+              "options": [
+                "producers",
+                "the government",
+                "the navy",
+                "banks"
+              ],
+              "answer": "producers",
+              "why": "In a market economy, producers decide what to produce."
+            },
+            {
+              "prompt": "Reading Check: In a command economy, ____ decides how much of a product should be made.",
+              "options": [
+                "the government",
+                "each consumer",
+                "each producer",
+                "the store"
+              ],
+              "answer": "the government",
+              "why": "In a command economy, the government decides how much of a product should be made."
+            },
+            {
+              "prompt": "The oven in a bakery is an example of a...",
+              "options": [
+                "Capital resource",
+                "Natural resource",
+                "Human resource",
+                "Public service"
+              ],
+              "answer": "Capital resource",
+              "why": "Capital resources are human-made products used to make goods and services, like a bakery oven."
+            },
+            {
+              "prompt": "Trees are an example of a...",
+              "options": [
+                "Natural resource",
+                "Capital resource",
+                "Human resource",
+                "Service"
+              ],
+              "answer": "Natural resource",
+              "why": "Trees come from nature, so they are a natural resource."
+            },
+            {
+              "prompt": "Truck drivers are an example of a...",
+              "options": [
+                "Human resource",
+                "Natural resource",
+                "Capital resource",
+                "Good"
+              ],
+              "answer": "Human resource",
+              "why": "People who work, like truck drivers, are human resources."
+            },
+            {
+              "prompt": "What are the parts of the economy called?",
+              "options": [
+                "Sectors",
+                "Regions",
+                "Taxes",
+                "Currencies"
+              ],
+              "answer": "Sectors",
+              "why": "Our giant economy is divided into important parts, or sectors."
+            },
+            {
+              "prompt": "Which sector grows much of the food you eat?",
+              "options": [
+                "Agricultural",
+                "Mining",
+                "Entertainment",
+                "Transportation"
+              ],
+              "answer": "Agricultural",
+              "why": "The agricultural sector grows much of the food you eat."
+            },
+            {
+              "prompt": "Which sector provides materials such as coal for electricity?",
+              "options": [
+                "Mining",
+                "Services",
+                "Manufacturing",
+                "Entertainment"
+              ],
+              "answer": "Mining",
+              "why": "The mining sector provides materials such as coal for electricity."
+            },
+            {
+              "prompt": "Teachers, doctors, and the person who sells you a movie ticket are part of which sector?",
+              "options": [
+                "Services",
+                "Mining",
+                "Agricultural",
+                "Manufacturing"
+              ],
+              "answer": "Services",
+              "why": "The services sector includes all the people who provide services for others."
+            },
+            {
+              "prompt": "Which sector gets people and goods from place to place in cars, trains, and planes?",
+              "options": [
+                "Transportation",
+                "Entertainment",
+                "Mining",
+                "Agricultural"
+              ],
+              "answer": "Transportation",
+              "why": "The transportation sector moves people and goods from place to place."
+            },
+            {
+              "prompt": "Reading Check: Look at the chart. About how many jobs are in services compared to manufacturing?",
+              "options": [
+                "About 120 million services jobs vs. 12 million manufacturing jobs — about 10 times more",
+                "About the same number",
+                "Manufacturing has more jobs",
+                "About 2 million in each"
+              ],
+              "answer": "About 120 million services jobs vs. 12 million manufacturing jobs — about 10 times more",
+              "why": "Services has about 120 million jobs and manufacturing about 12 million, so services has about 10 times as many."
+            },
+            {
+              "prompt": "Which sector has the MOST jobs in the United States?",
+              "options": [
+                "Services",
+                "Mining",
+                "Construction",
+                "Agricultural"
+              ],
+              "answer": "Services",
+              "why": "The chart shows services with about 120 million jobs — by far the most."
+            },
+            {
+              "prompt": "Entertainment is especially important to the economy of which state?",
+              "options": [
+                "California",
+                "Texas",
+                "Michigan",
+                "West Virginia"
+              ],
+              "answer": "California",
+              "why": "In the West, entertainment is important to California's economy."
+            },
+            {
+              "prompt": "Ranching, or raising livestock, plays a large role in which state's economy?",
+              "options": [
+                "Texas",
+                "Florida",
+                "New York",
+                "Michigan"
+              ],
+              "answer": "Texas",
+              "why": "In the Southwest, ranching plays a large role in the Texas economy."
+            },
+            {
+              "prompt": "Manufacturing and transportation contribute to which Midwest state's economy?",
+              "options": [
+                "Michigan",
+                "California",
+                "Florida",
+                "Texas"
+              ],
+              "answer": "Michigan",
+              "why": "In the Midwest, manufacturing and transportation contribute to Michigan's economy."
+            },
+            {
+              "prompt": "Mining provides many jobs in which Southeast state?",
+              "options": [
+                "West Virginia",
+                "New York",
+                "California",
+                "Michigan"
+              ],
+              "answer": "West Virginia",
+              "why": "In the Southeast, mining provides many jobs in West Virginia."
+            },
+            {
+              "prompt": "Tourism, part of the services sector, is important in which state?",
+              "options": [
+                "Florida",
+                "Michigan",
+                "West Virginia",
+                "Texas"
+              ],
+              "answer": "Florida",
+              "why": "Tourism is important in Florida."
+            },
+            {
+              "prompt": "What is private property?",
+              "options": [
+                "Land, homes, stores, and goods that people or companies own",
+                "Roads and schools everyone can use",
+                "Money the government collects",
+                "Things that are free"
+              ],
+              "answer": "Land, homes, stores, and goods that people or companies own",
+              "why": "Private property is land, homes, stores, and goods that people or companies own."
+            },
+            {
+              "prompt": "How does the government protect private property?",
+              "options": [
+                "It makes stealing against the law",
+                "It tells people what to buy",
+                "It sets all prices",
+                "It owns every store"
+              ],
+              "answer": "It makes stealing against the law",
+              "why": "Making stealing against the law is one way the government protects private property."
+            },
+            {
+              "prompt": "Why is protecting private property important in a free enterprise system?",
+              "options": [
+                "The system is based on the buying and selling of private property",
+                "Because the government owns everything",
+                "Because nobody buys anything",
+                "Because prices never change"
+              ],
+              "answer": "The system is based on the buying and selling of private property",
+              "why": "A free enterprise system is based on the buying and selling of private property."
+            },
+            {
+              "prompt": "Which of these is a public good or service the government produces?",
+              "options": [
+                "Roads and schools",
+                "A skateboard from a toy store",
+                "A haircut at a salon",
+                "A movie ticket"
+              ],
+              "answer": "Roads and schools",
+              "why": "Public goods include roads and schools. Public services include education and mail delivery."
+            },
+            {
+              "prompt": "How do citizens pay for public goods and services?",
+              "options": [
+                "With taxes",
+                "With bartering",
+                "They never pay",
+                "With seashells"
+              ],
+              "answer": "With taxes",
+              "why": "Citizens pay for public goods and services with taxes."
+            },
+            {
+              "prompt": "Reading Check: Which shows the government acting as a CONSUMER?",
+              "options": [
+                "Buying planes for the navy or police cars",
+                "Making stealing illegal",
+                "Building roads",
+                "Delivering the mail"
+              ],
+              "answer": "Buying planes for the navy or police cars",
+              "why": "As a consumer, the government buys goods (planes, police cars) and services (a teacher's work)."
+            },
+            {
+              "prompt": "What does the word INDIVIDUAL mean?",
+              "options": [
+                "A single human being",
+                "A large company",
+                "A group of countries",
+                "To include"
+              ],
+              "answer": "A single human being",
+              "why": "Individual (n.) means a single human being."
+            },
+            {
+              "prompt": "Who was the first secretary of the U.S. Treasury?",
+              "options": [
+                "Alexander Hamilton",
+                "George Washington",
+                "Yelitsa Jean-Charles",
+                "Abraham Lincoln"
+              ],
+              "answer": "Alexander Hamilton",
+              "why": "Alexander Hamilton was the first secretary of the U.S. Treasury, the division of government responsible for economic rules."
+            },
+            {
+              "prompt": "In the United States, who are producers AND consumers?",
+              "options": [
+                "Both the people and the government",
+                "Only the people",
+                "Only the government",
+                "Only big companies"
+              ],
+              "answer": "Both the people and the government",
+              "why": "Both the people and the government take part in the economy as producers and consumers."
+            },
+            {
+              "prompt": "Main Idea: What is the main purpose of an economy?",
+              "options": [
+                "To produce and provide goods and services that satisfy people's needs and wants",
+                "To make the government bigger",
+                "To stop people from buying things",
+                "To decide the weather"
+              ],
+              "answer": "To produce and provide goods and services that satisfy people's needs and wants",
+              "why": "Economies produce goods and services so people can satisfy their needs and wants."
+            },
+            {
+              "prompt": "You are going camping. Which item is a NEED?",
+              "options": [
+                "A tent for shelter",
+                "A video game",
+                "A comic book",
+                "Candy"
+              ],
+              "answer": "A tent for shelter",
+              "why": "A tent gives you shelter, which is a need. The others are wants."
+            }
+          ]
+        },
+        "lesson2": {
+          "name": "Lesson 2: Trade and Markets",
+          "cards": [
+            {
+              "title": "1. 💵 Currency: The Money We Use",
+              "rule": "Long ago, items such as <strong>seashells</strong> and pieces of <strong>metal</strong> served as money. Today, paper bills and metal coins are the most common forms of currency. <strong>Currency</strong> is the type of money used in a particular place. In the United States, our currency is the <strong>United States dollar</strong>.",
+              "tip": "🔑 Big Question: Businesses supply goods and services to match <strong>demand</strong>.",
+              "examples": [
+                {
+                  "label": "🐚 Wampum",
+                  "text": "Belts woven with beads made out of seashells. Wampum served as currency between some American Indians and the first colonists."
+                },
+                {
+                  "label": "🇺🇸 U.S. currency",
+                  "text": "The United States dollar."
+                }
+              ]
+            },
+            {
+              "title": "2. 🔄 Trade and Money: Bartering",
+              "rule": "People have exchanged things to get goods and services since ancient times. Before money, people would <strong>barter</strong>. To <strong>barter</strong> means to trade one type of good or service for another type — for example, animal furs for food. Bartering is still used today. But bartering has a problem: what if the person who has what you want isn't interested in what you have? Then the trade can't happen. That is why modern economies use <strong>money</strong>.",
+              "tip": "Money is better than bartering because it: ① can be traded for anything, ② is easy to carry, ③ can be divided into smaller amounts, and ④ is <strong>uniform</strong> (each piece is like another).",
+              "examples": [
+                {
+                  "label": "🎸 Barter today",
+                  "text": "A music teacher trades guitar lessons to a baker for fresh bread. Both get what they need and want."
+                },
+                {
+                  "label": "🃏 Barter for fun",
+                  "text": "Boys trading playing cards — each trades a card to get one he wants."
+                }
+              ]
+            },
+            {
+              "title": "3. 📈 Prices and Inflation",
+              "rule": "The buying power of our currency can change as prices change. Sometimes prices go <strong>down</strong> (headphones $50 last year → $40 this year). Sometimes prices go <strong>up</strong> (next year → $60). A rise in the usual price of many goods and services is called <strong>inflation</strong>. Inflation means you can buy <strong>fewer things for the same amount of money</strong>. It causes serious problems when the price of <strong>needs</strong> — food, shelter, basic clothing — rises, especially if the money a family earns goes down or stays the same.",
+              "tip": "Inflation → prices go UP ⬆️ → your money buys LESS ⬇️.",
+              "examples": [
+                {
+                  "label": "🎮 Reading Check 1",
+                  "text": "A video game costs $20 in January and $25 in June. If inflation continues, it might cost about $30 in August."
+                },
+                {
+                  "label": "🎧 Want vs. need",
+                  "text": "Pricier headphones won't threaten people's lives, but pricier food can make it hard for families."
+                }
+              ]
+            },
+            {
+              "title": "4. 🍞 Businesses and Markets: Profit",
+              "rule": "When you buy something, your goal is to satisfy a want or need. The goal of a business is to make a <strong>profit</strong>. <strong>Profit</strong> is the money a business has left over after it pays all its costs. The profit a business earns over a period of time, such as a year, is called <strong>income</strong>. Businesses try to keep costs down because of <strong>competition</strong> — if one business charges a high price, another may sell the same product for less. Businesses that can't match their competitors' prices or quality often close down.",
+              "tip": "Profit = Sales − Costs. Example: a bakery spends $370 a day and sells $470 → profit = $100.",
+              "examples": [
+                {
+                  "label": "🧾 Nelson's Bakery costs",
+                  "text": "Rent $3,500 + Worker Pay $4,200 + Ingredients & Packaging $2,100 + Equipment Rental $800 + Electricity & Gas $425 = $11,025"
+                },
+                {
+                  "label": "💵 Nelson's Bakery profit",
+                  "text": "Total Sales $14,100 − Total Costs $11,025 = $3,075 profit"
+                }
+              ]
+            },
+            {
+              "title": "5. 💡 Entrepreneurs",
+              "rule": "Opening a new business means taking a <strong>risk</strong>. You have to spend money to rent a workspace, pay for materials, and hire employees — and if the business fails, that money is lost. A person who takes a risk and opens a business is called an <strong>entrepreneur</strong>. Entrepreneurs believe their ideas can make money and are worth the risk. Some use their own savings; others <strong>borrow</strong> money from a bank or from <strong>investors</strong>. An <strong>investor</strong> loans money hoping to make a profit when the new business grows.",
+              "tip": "Many of our country's most important companies were started by entrepreneurs. Kids can be entrepreneurs too!",
+              "examples": [
+                {
+                  "label": "🧸 Yelitsa Jean-Charles",
+                  "text": "A young designer who started a natural-hair doll company (Healthy Roots dolls) with money from investors, to promote a positive, healthy self-image for girls."
+                },
+                {
+                  "label": "📚 Comic book business",
+                  "text": "You spend money on paper, art supplies, and printer ink. If the comics sell well, you earn your money back plus a profit."
+                }
+              ]
+            },
+            {
+              "title": "6. ⚖️ Supply and Demand",
+              "rule": "A free enterprise system is based on supply and demand. <strong>Supply</strong> is the amount of a product that businesses have <strong>available</strong> to sell. <strong>Demand</strong> is the amount of a product that consumers are willing to buy. <strong>High demand</strong> → people pay a high price → larger profits. <strong>Low demand</strong> → businesses must lower prices to attract customers → small profits. If supply is <strong>low</strong> and demand is <strong>high</strong>, the price will <strong>rise</strong>. Businesses then make more of the product. If the supply grows too much, prices will likely <strong>fall</strong>.",
+              "tip": "Supply usually responds to demand in a pattern: low supply + high demand = price ⬆️; too much supply = price ⬇️.",
+              "examples": [
+                {
+                  "label": "🧥 Demand: Low",
+                  "text": "A store is having a sale on clothing to attract customers."
+                },
+                {
+                  "label": "❄️ Demand: High",
+                  "text": "Customers rush to buy supplies before a big snowstorm, and shelves go empty."
+                },
+                {
+                  "label": "🛍️ Sales",
+                  "text": "A sale can increase the demand for goods — people line up to buy!"
+                }
+              ]
+            },
+            {
+              "title": "7. 🌟 Lesson 2 Word Wall",
+              "rule": "Tap a card to flip it! 🔄 Tap 🔊 to hear the word.",
+              "tip": "Academic vocabulary: <strong>borrow</strong> and <strong>available</strong>.",
+              "vocab": [
+                {
+                  "emoji": "💵",
+                  "word": "currency",
+                  "pos": "noun",
+                  "def": "the type of money used in a particular place",
+                  "example": "In Taiwan the currency is the New Taiwan dollar. In the United States it's the U.S. dollar.",
+                  "trick": "Currency is the money that's CURRENTLY used in a place."
+                },
+                {
+                  "emoji": "🔄",
+                  "word": "barter",
+                  "pos": "verb",
+                  "def": "to trade one type of good or service for another type",
+                  "example": "\"I'll trade you my Pokémon card for your stickers!\" That's bartering!",
+                  "trick": "Barter = swap stuff, no money needed. 🤝"
+                },
+                {
+                  "emoji": "🎈",
+                  "word": "inflation",
+                  "pos": "noun",
+                  "def": "a rise in the usual price of many goods and services",
+                  "example": "A snack cost $20 last year and $25 this year. Prices are puffing up like a balloon!",
+                  "trick": "INFLATE a balloon, and it gets bigger. Inflation makes prices bigger. 🎈"
+                },
+                {
+                  "emoji": "🤑",
+                  "word": "profit",
+                  "pos": "noun",
+                  "def": "the money a business has left over after it pays all its costs",
+                  "example": "Your lemonade stand earns $50 and the lemons and cups cost $30, so your profit is $20.",
+                  "trick": "Profit = Sales − Costs. It's the money you get to KEEP!"
+                },
+                {
+                  "emoji": "📅",
+                  "word": "income",
+                  "pos": "noun",
+                  "def": "the profit a business earns over a period of time, such as a year",
+                  "example": "Nelson's Bakery adds up its profit for the whole year. That total is its income.",
+                  "trick": "Income = the money that COMES IN over time."
+                },
+                {
+                  "emoji": "📦",
+                  "word": "supply",
+                  "pos": "noun",
+                  "def": "the amount of a product that businesses have available to sell",
+                  "example": "The toy store has 200 yo-yos on its shelves. That's its supply.",
+                  "trick": "Supply = what the SELLER has. 📦"
+                },
+                {
+                  "emoji": "🙌",
+                  "word": "demand",
+                  "pos": "noun",
+                  "def": "the amount of a product that consumers are willing to buy",
+                  "example": "Everyone wants the new game! Demand is high, so the price goes up.",
+                  "trick": "Demand = what BUYERS want. More wanting means higher prices!"
+                },
+                {
+                  "emoji": "🤲",
+                  "word": "borrow",
+                  "pos": "verb",
+                  "def": "to take and use something with the agreement of returning it at a later time",
+                  "example": "Can I borrow your eraser? I'll give it back after the test!",
+                  "trick": "Borrow = use it now, give it back later. 🔁"
+                },
+                {
+                  "emoji": "✅",
+                  "word": "available",
+                  "pos": "adjective",
+                  "def": "able to be used",
+                  "example": "Sorry, the swing isn't available right now. Someone is using it!",
+                  "trick": "Available = ready and free to use. 🟢"
+                }
+              ],
+              "examples": [
+                {
+                  "label": "currency",
+                  "text": "the type of money used in a particular place"
+                },
+                {
+                  "label": "barter",
+                  "text": "to trade one type of good or service for another type"
+                },
+                {
+                  "label": "inflation",
+                  "text": "a rise in the usual price of many goods and services"
+                },
+                {
+                  "label": "profit",
+                  "text": "the money a business has left over after it pays all its costs"
+                },
+                {
+                  "label": "income",
+                  "text": "the profit a business earns over a period of time, such as a year"
+                },
+                {
+                  "label": "supply",
+                  "text": "the amount of a product that businesses have available to sell"
+                },
+                {
+                  "label": "demand",
+                  "text": "the amount of a product that consumers are willing to buy"
+                },
+                {
+                  "label": "borrow (v.)",
+                  "text": "to take and use something with the agreement of returning it at a later time"
+                },
+                {
+                  "label": "available (adj.)",
+                  "text": "able to be used"
+                }
+              ]
+            }
+          ],
+          "quizBank": [
+            {
+              "prompt": "What is currency?",
+              "options": [
+                "The type of money used in a particular place",
+                "A rise in prices",
+                "Trading one good for another",
+                "Money left over after paying costs"
+              ],
+              "answer": "The type of money used in a particular place",
+              "why": "Currency is the type of money used in a particular place."
+            },
+            {
+              "prompt": "What is the currency of the United States?",
+              "options": [
+                "The United States dollar",
+                "Seashells",
+                "Wampum",
+                "Gold bars"
+              ],
+              "answer": "The United States dollar",
+              "why": "In the United States, our currency is the United States dollar."
+            },
+            {
+              "prompt": "Long ago, which items served as money?",
+              "options": [
+                "Seashells and pieces of metal",
+                "Paper bills only",
+                "Credit cards",
+                "Plastic toys"
+              ],
+              "answer": "Seashells and pieces of metal",
+              "why": "Long ago, items such as seashells and pieces of metal served as money."
+            },
+            {
+              "prompt": "What are the most common forms of currency today?",
+              "options": [
+                "Paper bills and metal coins",
+                "Seashells and furs",
+                "Beads and belts",
+                "Bread and milk"
+              ],
+              "answer": "Paper bills and metal coins",
+              "why": "Today, paper bills and metal coins are the most common forms of currency."
+            },
+            {
+              "prompt": "What was wampum?",
+              "options": [
+                "Beaded belts made from seashells, used as currency between some American Indians and the first colonists",
+                "A type of paper money",
+                "A kind of bread",
+                "A bank in the colonies"
+              ],
+              "answer": "Beaded belts made from seashells, used as currency between some American Indians and the first colonists",
+              "why": "Wampum belts were woven with seashell beads and served as currency."
+            },
+            {
+              "prompt": "What does it mean to barter?",
+              "options": [
+                "To trade one type of good or service for another type",
+                "To borrow money from a bank",
+                "To save money",
+                "To raise prices"
+              ],
+              "answer": "To trade one type of good or service for another type",
+              "why": "To barter means to trade one type of good or service for another type."
+            },
+            {
+              "prompt": "Before money was developed, how did people get goods and services?",
+              "options": [
+                "They bartered",
+                "They used credit cards",
+                "They used U.S. dollars",
+                "They borrowed from banks"
+              ],
+              "answer": "They bartered",
+              "why": "Before the development of money, people would barter."
+            },
+            {
+              "prompt": "A music teacher gives guitar lessons to a baker. The baker gives the teacher fresh bread. This is an example of...",
+              "options": [
+                "Bartering",
+                "Inflation",
+                "Profit",
+                "A command economy"
+              ],
+              "answer": "Bartering",
+              "why": "They trade a service for a good without money — that is bartering."
+            },
+            {
+              "prompt": "What is a big problem with bartering?",
+              "options": [
+                "The person who has what you want may not want what you have",
+                "It is too easy",
+                "It always uses money",
+                "It is against the law"
+              ],
+              "answer": "The person who has what you want may not want what you have",
+              "why": "If the other person isn't interested in what you have, the trade can't happen."
+            },
+            {
+              "prompt": "Why do modern economies use money instead of bartering?",
+              "options": [
+                "Money can be traded for anything",
+                "Money is heavier",
+                "Money can't be divided",
+                "Money is only used by banks"
+              ],
+              "answer": "Money can be traded for anything",
+              "why": "Money can be traded for anything, which solves the problem of bartering."
+            },
+            {
+              "prompt": "Which is NOT a reason money is useful?",
+              "options": [
+                "It is very heavy to carry",
+                "It is easy to carry",
+                "It can be divided into smaller quantities",
+                "It is uniform"
+              ],
+              "answer": "It is very heavy to carry",
+              "why": "Money is easy to carry, can be divided into smaller amounts, and is uniform."
+            },
+            {
+              "prompt": "Money is \"uniform.\" What does that mean?",
+              "options": [
+                "Each piece of money is like another",
+                "Money is a type of clothing",
+                "Money changes color",
+                "Money is only for schools"
+              ],
+              "answer": "Each piece of money is like another",
+              "why": "Uniform means each piece of money is like another."
+            },
+            {
+              "prompt": "What is inflation?",
+              "options": [
+                "A rise in the usual price of many goods and services",
+                "A fall in all prices",
+                "Trading cards with friends",
+                "The money a business earns in a year"
+              ],
+              "answer": "A rise in the usual price of many goods and services",
+              "why": "A rise in the usual price of many goods and services is called inflation."
+            },
+            {
+              "prompt": "What does inflation mean for your money?",
+              "options": [
+                "You can buy fewer things for the same amount of money",
+                "You can buy more things for the same money",
+                "Prices never change",
+                "Everything becomes free"
+              ],
+              "answer": "You can buy fewer things for the same amount of money",
+              "why": "Inflation means you can buy fewer things for the same amount of money."
+            },
+            {
+              "prompt": "Headphones cost $50 last year and $40 this year. What happened to the price?",
+              "options": [
+                "It went down",
+                "It went up",
+                "It stayed the same",
+                "It doubled"
+              ],
+              "answer": "It went down",
+              "why": "$50 → $40 means the price went down."
+            },
+            {
+              "prompt": "Reading Check: A video game costs $20 in January and $25 in June because of inflation. If inflation continues, about how much might it cost in August?",
+              "options": [
+                "About $30",
+                "About $15",
+                "About $20",
+                "About $5"
+              ],
+              "answer": "About $30",
+              "why": "The price went up $5, so if inflation continues it might cost about $30."
+            },
+            {
+              "prompt": "When does inflation cause the most serious problems?",
+              "options": [
+                "When the price of needs like food, shelter, or clothing rises",
+                "When the price of headphones rises",
+                "When toys go on sale",
+                "When prices go down"
+              ],
+              "answer": "When the price of needs like food, shelter, or clothing rises",
+              "why": "Inflation is serious when the cost of needs rises, especially if a family's income stays the same or goes down."
+            },
+            {
+              "prompt": "What is profit?",
+              "options": [
+                "The money a business has left over after it pays all its costs",
+                "All the money a business spends",
+                "The type of money used in a place",
+                "A loan from a bank"
+              ],
+              "answer": "The money a business has left over after it pays all its costs",
+              "why": "Profit is the money a business has left over after it pays all its costs."
+            },
+            {
+              "prompt": "What is the goal of a business?",
+              "options": [
+                "To make a profit",
+                "To give everything away",
+                "To barter only",
+                "To raise taxes"
+              ],
+              "answer": "To make a profit",
+              "why": "The goal of the business you buy from is to make a profit."
+            },
+            {
+              "prompt": "A bakery spends $370 a day to make bread and makes $470 in sales. What is its profit?",
+              "options": [
+                "$100",
+                "$840",
+                "$370",
+                "$470"
+              ],
+              "answer": "$100",
+              "why": "$470 − $370 = $100 profit."
+            },
+            {
+              "prompt": "What is income?",
+              "options": [
+                "The profit a business earns over a period of time, such as a year",
+                "Money borrowed from a bank",
+                "A rise in prices",
+                "The cost of rent"
+              ],
+              "answer": "The profit a business earns over a period of time, such as a year",
+              "why": "The profit a business earns over a period of time, such as a year, is called income."
+            },
+            {
+              "prompt": "Which of these is a COST (expense) for a bakery?",
+              "options": [
+                "Rent on the building",
+                "Total sales",
+                "Profit",
+                "Income"
+              ],
+              "answer": "Rent on the building",
+              "why": "Costs include flour, rent on the building, and money paid to employees."
+            },
+            {
+              "prompt": "Reading Check: Nelson's Bakery has total sales of $14,100 and total costs of $11,025. What is the monthly profit?",
+              "options": [
+                "$3,075",
+                "$25,125",
+                "$14,100",
+                "$11,025"
+              ],
+              "answer": "$3,075",
+              "why": "Profit = Sales − Costs: $14,100 − $11,025 = $3,075."
+            },
+            {
+              "prompt": "In Nelson's Bakery chart, which monthly cost is the LARGEST?",
+              "options": [
+                "Worker (Employee) Pay — $4,200",
+                "Rent — $3,500",
+                "Ingredients and Packaging — $2,100",
+                "Electricity and Gas — $425"
+              ],
+              "answer": "Worker (Employee) Pay — $4,200",
+              "why": "Worker pay is $4,200, the largest cost on the chart."
+            },
+            {
+              "prompt": "Why do businesses try to keep their costs down?",
+              "options": [
+                "Because of competition, they can't always raise prices",
+                "Because the government tells them to",
+                "Because they want to lose money",
+                "Because costs don't matter"
+              ],
+              "answer": "Because of competition, they can't always raise prices",
+              "why": "Competition is the reason: another business may sell the same product at a lower price."
+            },
+            {
+              "prompt": "What can happen to a business that can't match its competitors' prices or quality?",
+              "options": [
+                "It may lose customers and close down",
+                "It will always grow bigger",
+                "It gets free money",
+                "Nothing happens"
+              ],
+              "answer": "It may lose customers and close down",
+              "why": "Businesses that can't match competitors' prices or quality often close down."
+            },
+            {
+              "prompt": "What is an entrepreneur?",
+              "options": [
+                "A person who takes a risk and opens a business",
+                "A person who only buys goods",
+                "A government worker",
+                "A type of currency"
+              ],
+              "answer": "A person who takes a risk and opens a business",
+              "why": "A person who takes a risk and opens a business is called an entrepreneur."
+            },
+            {
+              "prompt": "Reading Check: Which are costs of opening a new business?",
+              "options": [
+                "Renting a workspace, paying for materials, and hiring employees",
+                "Getting free gifts",
+                "Collecting profit",
+                "Paying no money at all"
+              ],
+              "answer": "Renting a workspace, paying for materials, and hiring employees",
+              "why": "Opening a business means spending money to rent a workspace, pay for materials, and hire employees."
+            },
+            {
+              "prompt": "What can happen if a new business fails?",
+              "options": [
+                "All the money spent will be lost",
+                "The owner gets double the money back",
+                "The government pays for everything",
+                "Prices go down everywhere"
+              ],
+              "answer": "All the money spent will be lost",
+              "why": "If the business fails, all the money spent will be lost — that is the risk."
+            },
+            {
+              "prompt": "Main Idea: Why are entrepreneurs willing to take the risk of putting money into a new business?",
+              "options": [
+                "They believe their ideas can make money and are worth the risk",
+                "They want to lose their savings",
+                "The government forces them",
+                "They don't need any money"
+              ],
+              "answer": "They believe their ideas can make money and are worth the risk",
+              "why": "Entrepreneurs believe their ideas for a business can make money and are worth the risk."
+            },
+            {
+              "prompt": "Where can entrepreneurs get money to start a business?",
+              "options": [
+                "Their own savings, or by borrowing from a bank or investors",
+                "Only from the government",
+                "Only by bartering",
+                "From inflation"
+              ],
+              "answer": "Their own savings, or by borrowing from a bank or investors",
+              "why": "Some use their own savings, while others borrow money from a bank or from investors."
+            },
+            {
+              "prompt": "What is an investor?",
+              "options": [
+                "Someone who loans money hoping to make a profit when the new business grows",
+                "Someone who buys bread",
+                "A store clerk",
+                "A type of currency"
+              ],
+              "answer": "Someone who loans money hoping to make a profit when the new business grows",
+              "why": "An investor loans money in the hopes of making a profit when the new business has grown."
+            },
+            {
+              "prompt": "What does the word BORROW mean?",
+              "options": [
+                "To take and use something with the agreement of returning it later",
+                "To keep something forever",
+                "To trade a good for a service",
+                "To sell something"
+              ],
+              "answer": "To take and use something with the agreement of returning it later",
+              "why": "Borrow (v.) means to take and use something with the agreement of returning it at a later time."
+            },
+            {
+              "prompt": "Who is Yelitsa Jean-Charles?",
+              "options": [
+                "A young designer who started a natural-hair doll company",
+                "The first secretary of the Treasury",
+                "A baker in Nelson's Bakery",
+                "A music teacher"
+              ],
+              "answer": "A young designer who started a natural-hair doll company",
+              "why": "Investors gave money to Yelitsa Jean-Charles, who started a natural-hair doll company (Healthy Roots dolls)."
+            },
+            {
+              "prompt": "What is the goal of Yelitsa Jean-Charles's doll business?",
+              "options": [
+                "To promote a positive and healthy self-image for girls",
+                "To make the most expensive dolls",
+                "To stop children from playing",
+                "To barter dolls for bread"
+              ],
+              "answer": "To promote a positive and healthy self-image for girls",
+              "why": "The goal of her business is to promote a positive and healthy self-image for girls."
+            },
+            {
+              "prompt": "You start a comic book business. Which is a cost you would have?",
+              "options": [
+                "Paper, art supplies, and printer ink",
+                "Profit",
+                "Income from sales",
+                "Wampum"
+              ],
+              "answer": "Paper, art supplies, and printer ink",
+              "why": "You might spend money on paper, art supplies, and printer ink."
+            },
+            {
+              "prompt": "What is supply?",
+              "options": [
+                "The amount of a product that businesses have available to sell",
+                "The amount consumers are willing to buy",
+                "The money left after costs",
+                "The type of money used in a place"
+              ],
+              "answer": "The amount of a product that businesses have available to sell",
+              "why": "Supply is the amount of a product that businesses have available to sell."
+            },
+            {
+              "prompt": "What is demand?",
+              "options": [
+                "The amount of a product that consumers are willing to buy",
+                "The amount businesses have to sell",
+                "A rise in prices",
+                "A loan from an investor"
+              ],
+              "answer": "The amount of a product that consumers are willing to buy",
+              "why": "Demand is the amount of a product that consumers are willing to buy."
+            },
+            {
+              "prompt": "What does the word AVAILABLE mean?",
+              "options": [
+                "Able to be used",
+                "Too expensive",
+                "Broken",
+                "Sold out"
+              ],
+              "answer": "Able to be used",
+              "why": "Available (adj.) means able to be used."
+            },
+            {
+              "prompt": "If there is HIGH demand for a product, what usually happens?",
+              "options": [
+                "People pay a higher price, and businesses earn larger profits",
+                "Prices must go down",
+                "Nobody buys it",
+                "The business closes"
+              ],
+              "answer": "People pay a higher price, and businesses earn larger profits",
+              "why": "With high demand, people are more likely to pay a high price, which results in larger profits."
+            },
+            {
+              "prompt": "If there is LOW demand for a product, what will a business usually do?",
+              "options": [
+                "Lower prices to attract customers",
+                "Raise prices",
+                "Make much more of it",
+                "Stop paying workers"
+              ],
+              "answer": "Lower prices to attract customers",
+              "why": "With low demand, a business will be forced to lower prices to attract customers."
+            },
+            {
+              "prompt": "Reading Check: What happens if the amount supplied is LOW and the amount demanded is HIGH?",
+              "options": [
+                "The price of the item will rise",
+                "The price of the item will fall",
+                "The item becomes free",
+                "Nothing changes"
+              ],
+              "answer": "The price of the item will rise",
+              "why": "If supply is low and demand is high, the price of an item will rise."
+            },
+            {
+              "prompt": "After prices rise because of high demand, what might businesses do?",
+              "options": [
+                "Increase the amount they supply",
+                "Stop making the product",
+                "Close the store",
+                "Lower the quality on purpose"
+              ],
+              "answer": "Increase the amount they supply",
+              "why": "Since large profits can be made, businesses will increase the amount supplied."
+            },
+            {
+              "prompt": "What can happen if the amount supplied increases TOO much?",
+              "options": [
+                "Prices will likely fall",
+                "Prices will rise forever",
+                "Demand disappears completely",
+                "Inflation stops forever"
+              ],
+              "answer": "Prices will likely fall",
+              "why": "If the supply increases too much, prices will likely fall."
+            },
+            {
+              "prompt": "Reading Check: Why is the clothing store having a sale?",
+              "options": [
+                "Demand for the clothing is low, so the store lowers prices to attract customers",
+                "Demand is very high",
+                "The clothes are free",
+                "The government told them to"
+              ],
+              "answer": "Demand for the clothing is low, so the store lowers prices to attract customers",
+              "why": "The picture shows Demand: Low — the store lowers prices to attract customers."
+            },
+            {
+              "prompt": "Before a big snowstorm, many customers rush to buy supplies. This shows...",
+              "options": [
+                "High demand",
+                "Low demand",
+                "Bartering",
+                "Low supply only"
+              ],
+              "answer": "High demand",
+              "why": "Lots of people wanting to buy the supplies shows high demand."
+            },
+            {
+              "prompt": "How can a sale affect demand?",
+              "options": [
+                "A sale can increase the demand for goods",
+                "A sale always lowers demand",
+                "A sale stops demand",
+                "A sale has nothing to do with demand"
+              ],
+              "answer": "A sale can increase the demand for goods",
+              "why": "People lining up for a sale show that a sale can increase demand."
+            },
+            {
+              "prompt": "Entrepreneurs have to be good judges of which two things to succeed?",
+              "options": [
+                "Supply and demand",
+                "Weather and climate",
+                "Mountains and rivers",
+                "Taxes and laws"
+              ],
+              "answer": "Supply and demand",
+              "why": "Entrepreneurs have to be good judges of both supply and demand to succeed."
+            },
+            {
+              "prompt": "Which could cause the price of a good to go DOWN?",
+              "options": [
+                "Fewer people want it, or businesses make too much of it",
+                "More people want it and supply is low",
+                "Inflation",
+                "A snowstorm causing shortages"
+              ],
+              "answer": "Fewer people want it, or businesses make too much of it",
+              "why": "Low demand or too much supply can cause prices to go down."
+            }
+          ]
+        }
+      }
+    },
     // __MORE_SOCIAL_CHAPTERS__
   };
 
@@ -6898,7 +8529,7 @@
     { id: "reading", icon: "📚", name: "Reading", status: "Stories 1–3 ready", enabled: true },
     { id: "math", icon: "🔢", name: "Math", status: "Chapters 1–2 ready", enabled: true },
     { id: "grammar", icon: "✏️", name: "ENG Grammar", status: "Unit 1 ready", enabled: true },
-    { id: "social", icon: "🌍", name: "Social Studies", status: "Chapter 1 ready", enabled: true },
+    { id: "social", icon: "🌍", name: "Social Studies", status: "Chapters 1 & 4 ready", enabled: true },
     { id: "science", icon: "🔬", name: "Science", status: "Topics 1–2 ready", enabled: true },
     { id: "guoyu", icon: "國", name: "國語", status: "Lessons 1–3 ready", enabled: true },
     { id: "novel", icon: "🍑", name: "Core Novel", status: "James and the Giant Peach", enabled: true },
@@ -6965,7 +8596,7 @@
   function GY() { return GUOYU_UNITS[currentGuoyuUnit]; }
 
   const socialChapters = Object.keys(SOCIAL_CHAPTERS).map((id, i) => ({
-    id, icon: String(i + 1), name: SOCIAL_CHAPTERS[id].name,
+    id, icon: ((SOCIAL_CHAPTERS[id].name.match(/Chapter (\d+)/) || [])[1] || String(i + 1)), name: SOCIAL_CHAPTERS[id].name,
     status: Object.keys(SOCIAL_CHAPTERS[id].lessons).length + " lessons ready",
     enabled: true,
   }));
@@ -9370,6 +11001,69 @@
     if (tab === "quiz") renderSocialLessonQuiz(); // fresh random set from the question bank every time
   }
 
+  // Emoji for each Vocabulary Workshop / Reading word (used by the lively flip cards)
+  const WORD_EMOJI = {
+    celebrity:"🌟", counsel:"🗣️", demonstrate:"👩‍🏫", drowsy:"😴", essential:"🔑", hardship:"😣", haul:"🚚", humble:"🙇", pledge:"🤞", sincere:"💖", stampede:"🐃", suitable:"👔",
+    annual:"📅", basic:"🧱", competition:"🏆", contract:"📝", dismiss:"👋", neglect:"🕸️", obtain:"🫴", portion:"🍰", recall:"💭", sponsor:"💰", stern:"🧐", vacant:"🏚️",
+    attractive:"😍", burden:"🎒", consent:"🙆", dependable:"🛡️", indicate:"👉", previous:"⏪", qualify:"🎟️", response:"💬", shabby:"🧦", thaw:"🧊", urgent:"🚨", vanity:"💄",
+    ambush:"🥷", calculate:"🧮", contribute:"🤲", dread:"😨", employ:"💼", extend:"↔️", frantic:"😱", initial:"🔤", routine:"🔁", stun:"😲", sturdy:"🏰", yield:"🌾",
+    antique:"🏺", baggage:"🧳", digest:"🍽️", establish:"🏛️", eternal:"♾️", haste:"⏩", humid:"🥵", lash:"🪢", oppose:"🙅", pioneer:"🤠", sensible:"🧠", worthy:"🎖️",
+    blossom:"🌸", collide:"💥", constant:"⏱️", content:"😊", distract:"📱", drought:"🏜️", foul:"🤢", noble:"👑", policy:"📜", quiver:"🍃", slight:"🪶", tidy:"🧹",
+    accurate:"🎯", alert:"🔔", ancestor:"👴", disaster:"🌪️", elementary:"🏫", envy:"😒", epidemic:"🦠", feeble:"😮‍💨", penetrate:"🔩", romp:"🐕", staple:"🍚", survive:"❤️‍🩹",
+    awkward:"😬", clatter:"🥁", gallant:"🦸", lukewarm:"🫖", plentiful:"🧺", ration:"🥫", reserve:"🗄️", scholar:"🎓", smolder:"🔥", trudge:"🥾", volunteer:"🙋‍♀️", weary:"😩",
+    convict:"⚖️", discipline:"🥋", dungeon:"⛓️", earnest:"🙏", enclose:"📦", gradual:"🐢", grumble:"😤", jagged:"🪚", nourish:"🥕", provision:"🥖", treaty:"🕊️", uneasy:"😟",
+    distress:"😰", drench:"💦", dwell:"🏡", juvenile:"🧒", outstanding:"🥇", proceed:"➡️", register:"📋", sift:"🥣", spree:"🛒", tardy:"⏰", unfit:"🤕", variety:"🌈",
+    blockade:"🚧", chant:"📣", despair:"😭", elevate:"🛗", extraordinary:"✨", heroic:"🦸‍♂️", lance:"🏇", missionary:"⛪", pointless:"🤷", reflect:"🪞", site:"📍", toxic:"☠️",
+    bristle:"🦔", circular:"⭕", coarse:"🪨", discard:"🚮", extreme:"🌋", focus:"🎯", grasp:"✊", inspire:"🌠", magnify:"🔬", marine:"🐠", quake:"🌍", troublesome:"😈",
+    abstract:"🎨", ally:"🤝", appoint:"📌", attentive:"👂", bonus:"🎉", carefree:"🏖️", courtesy:"🎩", manufacture:"🏭", mistrust:"🤨", noticeable:"🚩", overthrow:"🤺", peculiar:"🦄",
+    absolute:"💯", arena:"🏟️", compliment:"👏", deliberate:"🤔", dense:"🌲", dominant:"🦁", hazardous:"⚠️", huddle:"🐧", necessity:"💧", offend:"😡", regain:"🔋", thorough:"🧽",
+    adopt:"🐶", agile:"🤸", analyze:"📊", assist:"🫱", babble:"👶", captivity:"🔐", drab:"🌫️", fatal:"💀", generosity:"💝", genuine:"💎", illegal:"🚫", merit:"🏅",
+    adorn:"💍", appropriate:"👌", assemble:"🧩", colossal:"🗿", effective:"✅", frail:"🥀", hostage:"🔗", landslide:"⛰️", rampage:"🦖", scamper:"🐿️", symptom:"🤒", warrant:"📄",
+    approximate:"📐", construct:"🏗️", crude:"🪵", decline:"📉", distinct:"🔷", evident:"🔍", impulse:"⚡", interpret:"🗨️", orient:"🧭", sector:"🍕", submit:"📤", zest:"🍋",
+    abide:"🚦", contrast:"🌓", depress:"😞", dismal:"🌧️", dispose:"🗑️", exaggerate:"🎣", indifferent:"😐", jubilant:"🥳", manual:"📖", originate:"🌱", recognition:"🏆", tribute:"🌹",
+    cautiously:"🧤", trickle:"💧", marvel:"🤩", mighty:"🦍", distant:"🔭", proclaim:"📯", majestic:"🏔️", sumptuous:"🍾", hoard:"💰", inadvertently:"😅",
+    luminous:"💡", transparent:"🫙", illuminate:"🔦", judge:"👩‍⚖️", perception:"👁️", aroma:"👃", distinguish:"🔎", relish:"😋", enhance:"⬆️",
+    adoringly:"🥰", capable:"💪", spectator:"👀", disbelief:"🤯", burst:"🎆", opportunity:"🚪", immigration:"✈️", refugee:"🏕️", endurance:"🏃‍♂️", confront:"🥊",
+  };
+
+  // Lively vocabulary flip cards (used by any lesson card that has a "vocab" list)
+  const VOCAB_COLORS = [["#c15f3c","#fdeee7"],["#4a7c9e","#e8f1f8"],["#5a8a5a","#eaf4ea"],["#8e5fb5","#f3ecfa"],
+                        ["#c9902a","#fdf4e2"],["#c0487a","#fbe9f1"],["#2f8f8a","#e4f5f4"],["#6b6fc4","#ecedfb"],["#b5543a","#fbece6"]];
+  function vocabFlipGrid(list) {
+    return `<div class="vocab-grid">${list.map((v, i) => {
+      const [c, bg] = VOCAB_COLORS[i % VOCAB_COLORS.length];
+      const w = v.word.replace(/'/g, "\\'");
+      return `<div class="vflip" style="--vc:${c};--vbg:${bg}" onclick="this.classList.toggle('flipped')">
+        <div class="vflip-inner">
+          <div class="vface vfront">
+            <div class="vemoji">${v.emoji}</div>
+            <div class="vword">${v.word}</div>
+            <div class="vpos">${v.pos}</div>
+            <button class="vspeak" title="Hear it" onclick="event.stopPropagation(); speakWord('${w}')">🔊</button>
+            <div class="vhint">tap to flip 🔄</div>
+          </div>
+          <div class="vface vback">
+            <div class="vword">${v.emoji} ${v.word}</div>
+            <div class="vdef">${v.def}</div>
+            <div class="vex">💬 ${v.example}</div>
+            ${v.trick ? `<div class="vtrick">🧠 ${v.trick}</div>` : ""}
+            ${v.syn && v.syn !== "&mdash;" ? `<div class="vsa"><span class="syn">Synonyms:</span> ${v.syn}</div>` : ""}
+            ${v.ant && v.ant !== "&mdash;" ? `<div class="vsa"><span class="ant">Antonyms:</span> ${v.ant}</div>` : ""}
+          </div>
+        </div>
+      </div>`;
+    }).join("")}</div>`;
+  }
+  function speakWord(word) {
+    try {
+      if (!window.speechSynthesis) return;
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(word);
+      u.lang = "en-US"; u.rate = 0.85;
+      speechSynthesis.speak(u);
+    } catch (e) {}
+  }
+
   function renderSocialLessonContent() {
     const cards = SL().cards || [];
     document.getElementById("socialLessonCards").innerHTML = cards.map(c => `
@@ -9377,7 +11071,7 @@
         <h4>${c.title}</h4>
         <p>${c.rule}</p>
         ${c.tip ? `<p class="trick">💡 <strong>Tip:</strong> ${c.tip}</p>` : ""}
-        ${c.examples.map(ex => `<p><span class="syn">${ex.label}:</span> ${ex.text}</p>`).join("")}
+        ${c.vocab ? vocabFlipGrid(c.vocab) : c.examples.map(ex => `<p><span class="syn">${ex.label}:</span> ${ex.text}</p>`).join("")}
       </div>
     `).join("") || `<div class="placeholder-box"><p><strong>${SL().name}</strong> lesson hasn't been added yet.</p></div>`;
   }
@@ -9664,14 +11358,9 @@
   }
 
   function renderStoryCards(words) {
-    document.getElementById("storyCardGrid").innerHTML = (words || S().words).map(w => `
-      <div class="flip-card" onclick="this.classList.toggle('flipped')">
-        <div class="flip-inner">
-          <div class="flip-front"><h4>${w.word}</h4><span>(${w.pos}) &mdash; Tap to flip</span></div>
-          <div class="flip-back"><strong>${w.def}</strong><br><br><em>${w.example}</em></div>
-        </div>
-      </div>
-    `).join("");
+    document.getElementById("storyCardGrid").innerHTML = vocabFlipGrid((words || S().words).map(w => ({
+      emoji: WORD_EMOJI[w.word] || "📘", word: w.word, pos: w.pos, def: w.def, example: w.example, trick: w.trick || "",
+    })));
   }
 
   function shuffleStoryCards() {
@@ -9716,14 +11405,10 @@
   }
 
   function renderCards(words) {
-    document.getElementById("cardGrid").innerHTML = (words || U().words).map(w => `
-      <div class="flip-card" onclick="this.classList.toggle('flipped')">
-        <div class="flip-inner">
-          <div class="flip-front"><h4>${w.word}</h4><span>(${w.pos}) &mdash; Tap to flip</span></div>
-          <div class="flip-back"><strong>${w.def}</strong><br><br>Synonyms: ${w.syn}<br>Antonyms: ${w.ant}</div>
-        </div>
-      </div>
-    `).join("");
+    document.getElementById("cardGrid").innerHTML = vocabFlipGrid((words || U().words).map(w => ({
+      emoji: WORD_EMOJI[w.word] || "📘", word: w.word, pos: w.pos, def: w.short || w.def,
+      example: w.example, trick: w.trick, syn: w.syn, ant: w.ant,
+    })));
   }
 
   function shuffleCards() {
