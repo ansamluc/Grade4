@@ -152,6 +152,8 @@
   .vex { background: rgba(255,255,255,.75); border-radius: 10px; padding: 6px 8px; }
   .vtrick { font-size: .82rem; color: var(--text); }
   .vsa { font-size: .8rem; }
+  .cy-rounds { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+  .cy-round.active { outline: 3px solid var(--primary-dark); outline-offset: 2px; }
   @media (prefers-reduced-motion: reduce) { .vemoji { animation: none; } .vflip-inner { transition: none; } }
   .lesson-card h4 { margin: 0 0 4px 0; color: var(--primary-dark); font-size: 1.1rem; }
   .lesson-card .pron { color: var(--muted); font-size: 0.85rem; margin-left: 6px; font-weight: normal; }
@@ -298,6 +300,7 @@
           <option value="social">Social Studies</option>
           <option value="science">Science</option>
           <option value="novel">Core Novel</option>
+          <option value="chengyu">國語 成語測驗</option>
         </select>
       </div>
       <div class="print-field" id="printUnitField">
@@ -334,6 +337,14 @@
       <div class="print-field" id="printScienceLessonField" style="display:none">
         <span>Lesson:</span>
         <select id="printScienceLesson" onchange="updatePrintCount()"></select>
+      </div>
+      <div class="print-field" id="printChengyuField" style="display:none">
+        <span>回數:</span>
+        <select id="printChengyuRound" onchange="updatePrintCount()">
+          <option value="round1">第一回（30題）</option>
+          <option value="round2">第二回（30題）</option>
+          <option value="all">第一回＋第二回（60題）</option>
+        </select>
       </div>
       <div class="print-field" id="printNovelField" style="display:none">
         <span>Novel:</span>
@@ -530,15 +541,45 @@
 
   <!-- 國語 (MANDARIN): UNIT LIST -->
   <section class="screen" id="screen-guoyu">
-    <p class="intro">Choose a lesson.</p>
-    <div class="subject-grid" id="guoyuUnitGrid"></div>
+    <div class="tabs">
+      <button class="tab-btn active" data-gy-main="lessons" onclick="showGuoyuMain('lessons')">📖 課文 Lessons</button>
+      <button class="tab-btn" data-gy-main="chengyu" onclick="showGuoyuMain('chengyu')">🀄 成語測驗</button>
+    </div>
+    <div id="gymain-lessons" class="gymain-tab">
+      <p class="intro">Choose a lesson.</p>
+      <div class="subject-grid" id="guoyuUnitGrid"></div>
+    </div>
+    <div id="gymain-chengyu" class="gymain-tab" style="display:none">
+      <p class="intro">第一課～第六課 成語綜合測驗。選一回開始作答，答完會告訴你正確答案和成語的意思！</p>
+      <div class="cy-rounds">
+        <button class="print-btn cy-round" data-cy-round="round1" onclick="startChengyuQuiz('round1')">第一回（30題）</button>
+        <button class="print-btn cy-round" data-cy-round="round2" onclick="startChengyuQuiz('round2')">第二回（30題）</button>
+        <button class="print-btn cy-round" data-cy-round="mix" onclick="startChengyuQuiz('mix')">🔀 綜合隨機（30題）</button>
+      </div>
+      <div class="set-controls"><span class="score-pill" id="chengyuQuiz-score"></span></div>
+      <div class="practice-block">
+        <h3 id="chengyuQuizTitle">成語測驗</h3>
+        <div id="chengyuQuizQs"></div>
+      </div>
+    </div>
   </section>
 
   <!-- 國語 (MANDARIN): UNIT SCREEN (shared by all lessons) -->
   <section class="screen" id="screen-guoyuunit">
     <div class="tabs">
       <button class="tab-btn active" data-guoyu-tab="lesson" onclick="showGuoyuTab('lesson')">Lesson</button>
+      <button class="tab-btn" data-guoyu-tab="chengyu" onclick="showGuoyuTab('chengyu')">🀄 成語</button>
       <button class="tab-btn" data-guoyu-tab="quiz" onclick="showGuoyuTab('quiz')">Quiz</button>
+    </div>
+
+    <div id="guoyuunit-chengyu" class="guoyuunit-tab" style="display:none">
+      <p class="intro">本課成語：點卡片翻面看意思、英文和例句 🔄，點 🔊 聽讀音。</p>
+      <div id="guoyuChengyuCards"></div>
+      <div class="practice-block" id="guoyuChengyuQuizBlock" style="margin-top:20px">
+        <div class="set-controls"><span class="score-pill" id="guoyuChengyuQuiz-score"></span></div>
+        <h3 id="guoyuChengyuQuizTitle">本課成語小測驗</h3>
+        <div id="guoyuChengyuQuizQs"></div>
+      </div>
     </div>
 
     <div id="guoyuunit-lesson" class="guoyuunit-tab">
@@ -10733,7 +10774,7 @@
     { id: "grammar", icon: "✏️", name: "ENG Grammar", status: "Units 1–2 ready", enabled: true },
     { id: "social", icon: "🌍", name: "Social Studies", status: "Chapters 1 & 4 ready", enabled: true },
     { id: "science", icon: "🔬", name: "Science", status: "Topics 1–2 ready", enabled: true },
-    { id: "guoyu", icon: "國", name: "國語", status: "Lessons 1–3 ready", enabled: true },
+    { id: "guoyu", icon: "國", name: "國語", status: "Lessons 1–6 set up", enabled: true },
     { id: "novel", icon: "🍑", name: "Core Novel", status: "James and the Giant Peach", enabled: true },
   ];
 
@@ -10773,24 +10814,1052 @@
       quizBank: [],
     },
     unit2: {
-      name: "第二課",
+      name: "第二課：請到我的家鄉來",
       worksheet: "G4-1 國單2.pdf",
       worksheetLabel: "聽寫小考卷 (Dictation Quiz Sheet)",
       lessons: [],
       quizBank: [],
     },
     unit3: {
-      name: "第三課",
+      name: "第三課：鏡頭下的家鄉",
       worksheet: "G4-1 國單3.pdf",
       worksheetLabel: "聽寫小考卷 (Dictation Quiz Sheet)",
       lessons: [],
       quizBank: [],
     },
+    unit4: {
+      name: "第四課：飛行夢",
+      lessons: [],
+      quizBank: [],
+    },
+    unit5: {
+      name: "第五課：月光下",
+      lessons: [],
+      quizBank: [],
+    },
+    unit6: {
+      name: "第六課：又遠又近的月亮",
+      lessons: [],
+      quizBank: [],
+    },
+  };
+
+  // 成語 (Chinese idioms) — Lessons 1–6, from 第一課至第六課 成語 files
+  const CHENGYU = {
+    "cards": {
+      "unit1": [
+        {
+          "emoji": "🍎",
+          "word": "唾手可得",
+          "pos": "第一課",
+          "def": "很容易就能得到。",
+          "en": "Very easy to get or achieve.",
+          "example": "對哥哥來說，這道數學題的答案簡直唾手可得。",
+          "lang": "zh-TW"
+        },
+        {
+          "emoji": "🐟",
+          "word": "相濡以沫",
+          "pos": "第一課",
+          "def": "困難時互相幫助。",
+          "en": "Help each other during difficult times.",
+          "example": "爺爺和奶奶多年來相濡以沫，一起度過許多難關。",
+          "lang": "zh-TW"
+        },
+        {
+          "emoji": "🐦",
+          "word": "精衛填海",
+          "pos": "第一課",
+          "def": "不怕困難，努力不放棄。",
+          "en": "Never give up, even when something seems impossible.",
+          "example": "他抱著精衛填海的精神，每天努力練習鋼琴。",
+          "lang": "zh-TW"
+        },
+        {
+          "emoji": "🗣️",
+          "word": "街談巷議",
+          "pos": "第一課",
+          "def": "大家到處討論的事情。",
+          "en": "Something everyone is talking about.",
+          "example": "這件新聞成了大家街談巷議的話題。",
+          "lang": "zh-TW"
+        },
+        {
+          "emoji": "🧒",
+          "word": "返老還童",
+          "pos": "第一課",
+          "def": "老人變得像年輕人一樣。",
+          "en": "To look or feel young again.",
+          "example": "爺爺每天運動，精神很好，好像返老還童一樣。",
+          "lang": "zh-TW"
+        }
+      ],
+      "unit2": [
+        {
+          "emoji": "✍️",
+          "word": "文思泉湧",
+          "pos": "第二課",
+          "def": "寫文章時，想法不斷出現。",
+          "en": "Writing ideas flow quickly and easily.",
+          "example": "小美今天文思泉湧，很快就寫完了一篇作文。",
+          "lang": "zh-TW"
+        },
+        {
+          "emoji": "🤏",
+          "word": "不足掛齒",
+          "pos": "第二課",
+          "def": "小事，不值得一提。",
+          "en": "Not worth mentioning; no big deal.",
+          "example": "這點小忙不足掛齒，你不用一直謝我。",
+          "lang": "zh-TW"
+        },
+        {
+          "emoji": "🏘️",
+          "word": "疊床架屋",
+          "pos": "第二課",
+          "def": "重複做多餘的事。",
+          "en": "To repeat things unnecessarily.",
+          "example": "這份報告的內容一再重複，簡直是疊床架屋。",
+          "lang": "zh-TW"
+        },
+        {
+          "emoji": "🏃",
+          "word": "爭先恐後",
+          "pos": "第二課",
+          "def": "大家搶著做，怕落在後面。",
+          "en": "Everyone rushes to be first.",
+          "example": "老師一提出問題，同學們就爭先恐後地舉手。",
+          "lang": "zh-TW"
+        },
+        {
+          "emoji": "🧐",
+          "word": "聚精會神",
+          "pos": "第二課",
+          "def": "非常專心。",
+          "en": "To concentrate or pay full attention.",
+          "example": "弟弟聚精會神地看著老師做科學實驗。",
+          "lang": "zh-TW"
+        }
+      ],
+      "unit3": [
+        {
+          "emoji": "⚖️",
+          "word": "明鏡高懸",
+          "pos": "第三課",
+          "def": "判案公平，不偏心。",
+          "en": "A judge is fair and makes just decisions.",
+          "example": "這位法官明鏡高懸，不會因為任何人的身分而偏心。",
+          "lang": "zh-TW"
+        },
+        {
+          "emoji": "🏚️",
+          "word": "人去樓空",
+          "pos": "第三課",
+          "def": "人都離開了，只剩空房子。",
+          "en": "Everyone has left; the place is empty.",
+          "example": "老朋友搬走後，這棟老房子已經人去樓空。",
+          "lang": "zh-TW"
+        },
+        {
+          "emoji": "🏆",
+          "word": "無與倫比",
+          "pos": "第三課",
+          "def": "非常好，沒有比得上的。",
+          "en": "Unmatched; nothing else can compare.",
+          "example": "站在山頂看到的日出，美得無與倫比。",
+          "lang": "zh-TW"
+        },
+        {
+          "emoji": "🌸",
+          "word": "柳暗花明",
+          "pos": "第三課",
+          "def": "遇到困難後，又看見希望。",
+          "en": "Finding new hope after difficulties.",
+          "example": "我們原本以為找不到小狗了，沒想到事情突然柳暗花明。",
+          "lang": "zh-TW"
+        },
+        {
+          "emoji": "🕸️",
+          "word": "網開一面",
+          "pos": "第三課",
+          "def": "原諒別人，給他一次機會。",
+          "en": "To show mercy or give someone another chance.",
+          "example": "小明主動承認錯誤，老師決定網開一面，原諒他這一次。",
+          "lang": "zh-TW"
+        }
+      ],
+      "unit4": [
+        {
+          "emoji": "💬",
+          "word": "高談闊論",
+          "pos": "第四課",
+          "def": "大聲、盡情地談論事情。",
+          "en": "To talk loudly and freely about many things.",
+          "example": "幾位叔叔坐在客廳裡高談闊論，討論各種新聞。",
+          "lang": "zh-TW"
+        },
+        {
+          "emoji": "⚽",
+          "word": "先發制人",
+          "pos": "第四課",
+          "def": "比別人先行動，取得優勢。",
+          "en": "To act first and gain an advantage.",
+          "example": "足球比賽一開始，我們隊就先發制人，搶先進球。",
+          "lang": "zh-TW"
+        },
+        {
+          "emoji": "👂",
+          "word": "耳提面命",
+          "pos": "第四課",
+          "def": "一次又一次認真地教導。",
+          "en": "To teach or remind someone repeatedly and carefully.",
+          "example": "媽媽耳提面命，提醒我要遵守交通規則。",
+          "lang": "zh-TW"
+        },
+        {
+          "emoji": "🚒",
+          "word": "義無反顧",
+          "pos": "第四課",
+          "def": "為了做對的事，勇敢向前，不退縮。",
+          "en": "To do what is right without turning back.",
+          "example": "消防員義無反顧地衝進火場，救出受困的人。",
+          "lang": "zh-TW"
+        },
+        {
+          "emoji": "💡",
+          "word": "標新立異",
+          "pos": "第四課",
+          "def": "想出和別人不同的新做法。",
+          "en": "To create new and different ideas.",
+          "example": "小華的美術作品標新立異，讓大家眼睛一亮。",
+          "lang": "zh-TW"
+        }
+      ],
+      "unit5": [
+        {
+          "emoji": "💭",
+          "word": "牽腸掛肚",
+          "pos": "第五課",
+          "def": "非常擔心、掛念一個人。",
+          "en": "To worry deeply about someone.",
+          "example": "孩子第一次自己出遠門，讓媽媽十分牽腸掛肚。",
+          "lang": "zh-TW"
+        },
+        {
+          "emoji": "🏛️",
+          "word": "美輪美奐",
+          "pos": "第五課",
+          "def": "房子或建築物非常漂亮。",
+          "en": "Beautiful and impressive buildings.",
+          "example": "這座新建的圖書館美輪美奐，吸引許多人參觀。",
+          "lang": "zh-TW"
+        },
+        {
+          "emoji": "📜",
+          "word": "金科玉律",
+          "pos": "第五課",
+          "def": "非常重要、應該遵守的規則。",
+          "en": "An important rule or principle that must be followed.",
+          "example": "爸爸把誠實待人當成生活中的金科玉律。",
+          "lang": "zh-TW"
+        },
+        {
+          "emoji": "📏",
+          "word": "循規蹈矩",
+          "pos": "第五課",
+          "def": "按照規則做事，不亂來。",
+          "en": "To follow the rules and behave properly.",
+          "example": "小美做事一向循規蹈矩，從不故意違反校規。",
+          "lang": "zh-TW"
+        },
+        {
+          "emoji": "👏",
+          "word": "拍案叫絕",
+          "pos": "第五課",
+          "def": "因為太精彩而大聲稱讚。",
+          "en": "To praise something because it is amazing.",
+          "example": "魔術師的精彩表演，讓全場觀眾拍案叫絕。",
+          "lang": "zh-TW"
+        }
+      ],
+      "unit6": [
+        {
+          "emoji": "🎭",
+          "word": "招搖撞騙",
+          "pos": "第六課",
+          "def": "到處說謊，欺騙別人。",
+          "en": "To go around lying and tricking people.",
+          "example": "那個人假裝自己是醫生，到處招搖撞騙。",
+          "lang": "zh-TW"
+        },
+        {
+          "emoji": "💎",
+          "word": "無懈可擊",
+          "pos": "第六課",
+          "def": "非常完美，找不到缺點。",
+          "en": "Flawless; impossible to find a weakness.",
+          "example": "他的演講準備得十分充分，表現幾乎無懈可擊。",
+          "lang": "zh-TW"
+        },
+        {
+          "emoji": "📚",
+          "word": "包羅萬象",
+          "pos": "第六課",
+          "def": "各種各樣的東西都有。",
+          "en": "To include many different kinds of things.",
+          "example": "這本百科全書包羅萬象，介紹了許多有趣的知識。",
+          "lang": "zh-TW"
+        },
+        {
+          "emoji": "🤼",
+          "word": "勢均力敵",
+          "pos": "第六課",
+          "def": "雙方的實力差不多。",
+          "en": "Both sides are equally strong or skilled.",
+          "example": "兩支球隊勢均力敵，直到最後一分鐘才分出勝負。",
+          "lang": "zh-TW"
+        },
+        {
+          "emoji": "🥯",
+          "word": "畫餅充飢",
+          "pos": "第六課",
+          "def": "只靠想像安慰自己，不能真正解決問題。",
+          "en": "Wishful thinking that does not solve a real problem.",
+          "example": "光想著考一百分卻不努力讀書，只是畫餅充飢。",
+          "lang": "zh-TW"
+        }
+      ]
+    },
+    "round1": [
+      {
+        "prompt": "哪一個成語的意思是「內容包含各式各樣的事物」？",
+        "options": [
+          "返老還童",
+          "包羅萬象",
+          "明鏡高懸",
+          "標新立異"
+        ],
+        "answer": "包羅萬象",
+        "why": "「包羅萬象」（第六課）：各種各樣的東西都有。",
+        "part": "成語與意思配對"
+      },
+      {
+        "prompt": "哪一個成語的意思是「做了不必要的重複工作」？",
+        "options": [
+          "明鏡高懸",
+          "相濡以沫",
+          "標新立異",
+          "疊床架屋"
+        ],
+        "answer": "疊床架屋",
+        "why": "「疊床架屋」（第二課）：重複做多餘的事。",
+        "part": "成語與意思配對"
+      },
+      {
+        "prompt": "哪一個成語的意思是「在困難中互相幫助」？",
+        "options": [
+          "疊床架屋",
+          "不足掛齒",
+          "相濡以沫",
+          "標新立異"
+        ],
+        "answer": "相濡以沫",
+        "why": "「相濡以沫」（第一課）：困難時互相幫助。",
+        "part": "成語與意思配對"
+      },
+      {
+        "prompt": "哪一個成語的意思是「想出與眾不同的新做法」？",
+        "options": [
+          "返老還童",
+          "相濡以沫",
+          "包羅萬象",
+          "標新立異"
+        ],
+        "answer": "標新立異",
+        "why": "「標新立異」（第四課）：想出和別人不同的新做法。",
+        "part": "成語與意思配對"
+      },
+      {
+        "prompt": "哪一個成語的意思是「法官判案公平」？",
+        "options": [
+          "包羅萬象",
+          "不足掛齒",
+          "明鏡高懸",
+          "相濡以沫"
+        ],
+        "answer": "明鏡高懸",
+        "why": "「明鏡高懸」（第三課）：判案公平，不偏心。",
+        "part": "成語與意思配對"
+      },
+      {
+        "prompt": "哪一個成語的意思是「非常擔心或掛念」？",
+        "options": [
+          "牽腸掛肚",
+          "明鏡高懸",
+          "標新立異",
+          "相濡以沫"
+        ],
+        "answer": "牽腸掛肚",
+        "why": "「牽腸掛肚」（第五課）：非常擔心、掛念一個人。",
+        "part": "成語與意思配對"
+      },
+      {
+        "prompt": "哪一個成語的意思是「變得像年輕時一樣有活力」？",
+        "options": [
+          "標新立異",
+          "相濡以沫",
+          "牽腸掛肚",
+          "返老還童"
+        ],
+        "answer": "返老還童",
+        "why": "「返老還童」（第一課）：老人變得像年輕人一樣。",
+        "part": "成語與意思配對"
+      },
+      {
+        "prompt": "哪一個成語的意思是「小事不值得一提」？",
+        "options": [
+          "疊床架屋",
+          "包羅萬象",
+          "牽腸掛肚",
+          "不足掛齒"
+        ],
+        "answer": "不足掛齒",
+        "why": "「不足掛齒」（第二課）：小事，不值得一提。",
+        "part": "成語與意思配對"
+      },
+      {
+        "prompt": "選出最適合填入空格的成語：<br>雖然要花很多年才能完成研究，他仍抱著＿＿＿＿的精神，不肯放棄。",
+        "options": [
+          "精衛填海",
+          "人去樓空",
+          "唾手可得",
+          "耳提面命"
+        ],
+        "answer": "精衛填海",
+        "why": "「精衛填海」（第一課）：不怕困難，努力不放棄。",
+        "part": "成語填空"
+      },
+      {
+        "prompt": "選出最適合填入空格的成語：<br>那個人冒充慈善機構人員，到處＿＿＿＿，騙取捐款。",
+        "options": [
+          "招搖撞騙",
+          "柳暗花明",
+          "聚精會神",
+          "耳提面命"
+        ],
+        "answer": "招搖撞騙",
+        "why": "「招搖撞騙」（第六課）：到處說謊，欺騙別人。",
+        "part": "成語填空"
+      },
+      {
+        "prompt": "選出最適合填入空格的成語：<br>爸爸總是＿＿＿＿，要我們過馬路時注意來車。",
+        "options": [
+          "先發制人",
+          "耳提面命",
+          "柳暗花明",
+          "唾手可得"
+        ],
+        "answer": "耳提面命",
+        "why": "「耳提面命」（第四課）：一次又一次認真地教導。",
+        "part": "成語填空"
+      },
+      {
+        "prompt": "選出最適合填入空格的成語：<br>他做事一向＿＿＿＿，總會按照規定完成每個步驟。",
+        "options": [
+          "循規蹈矩",
+          "人去樓空",
+          "耳提面命",
+          "勢均力敵"
+        ],
+        "answer": "循規蹈矩",
+        "why": "「循規蹈矩」（第五課）：按照規則做事，不亂來。",
+        "part": "成語填空"
+      },
+      {
+        "prompt": "選出最適合填入空格的成語：<br>原本大家找不到解決方法，老師的一句提醒讓事情＿＿＿＿。",
+        "options": [
+          "耳提面命",
+          "勢均力敵",
+          "唾手可得",
+          "柳暗花明"
+        ],
+        "answer": "柳暗花明",
+        "why": "「柳暗花明」（第三課）：遇到困難後，又看見希望。",
+        "part": "成語填空"
+      },
+      {
+        "prompt": "選出最適合填入空格的成語：<br>校車一到站，同學們便＿＿＿＿地排隊上車。",
+        "options": [
+          "爭先恐後",
+          "美輪美奐",
+          "循規蹈矩",
+          "招搖撞騙"
+        ],
+        "answer": "爭先恐後",
+        "why": "「爭先恐後」（第二課）：大家搶著做，怕落在後面。",
+        "part": "成語填空"
+      },
+      {
+        "prompt": "選出最適合填入空格的成語：<br>兩隊選手＿＿＿＿，比分一直非常接近。",
+        "options": [
+          "耳提面命",
+          "勢均力敵",
+          "先發制人",
+          "唾手可得"
+        ],
+        "answer": "勢均力敵",
+        "why": "「勢均力敵」（第六課）：雙方的實力差不多。",
+        "part": "成語填空"
+      },
+      {
+        "prompt": "選出最適合填入空格的成語：<br>新落成的音樂廳設計精緻，外觀＿＿＿＿。",
+        "options": [
+          "先發制人",
+          "聚精會神",
+          "柳暗花明",
+          "美輪美奐"
+        ],
+        "answer": "美輪美奐",
+        "why": "「美輪美奐」（第五課）：房子或建築物非常漂亮。",
+        "part": "成語填空"
+      },
+      {
+        "prompt": "選出最適合填入空格的成語：<br>妹妹＿＿＿＿地觀察顯微鏡下的小生物。",
+        "options": [
+          "爭先恐後",
+          "聚精會神",
+          "柳暗花明",
+          "美輪美奐"
+        ],
+        "answer": "聚精會神",
+        "why": "「聚精會神」（第二課）：非常專心。",
+        "part": "成語填空"
+      },
+      {
+        "prompt": "選出最適合填入空格的成語：<br>熱鬧的老戲院關閉多年，如今早已＿＿＿＿。",
+        "options": [
+          "唾手可得",
+          "人去樓空",
+          "招搖撞騙",
+          "爭先恐後"
+        ],
+        "answer": "人去樓空",
+        "why": "「人去樓空」（第三課）：人都離開了，只剩空房子。",
+        "part": "成語填空"
+      },
+      {
+        "prompt": "選出最適合填入空格的成語：<br>籃球比賽開始後，我方採取主動攻勢，＿＿＿＿，先拿下兩分。",
+        "options": [
+          "精衛填海",
+          "先發制人",
+          "唾手可得",
+          "聚精會神"
+        ],
+        "answer": "先發制人",
+        "why": "「先發制人」（第四課）：比別人先行動，取得優勢。",
+        "part": "成語填空"
+      },
+      {
+        "prompt": "選出最適合填入空格的成語：<br>這個獎品只要集滿三張貼紙就能換到，對大家來說簡直是＿＿＿＿。",
+        "options": [
+          "美輪美奐",
+          "唾手可得",
+          "柳暗花明",
+          "人去樓空"
+        ],
+        "answer": "唾手可得",
+        "why": "「唾手可得」（第一課）：很容易就能得到。",
+        "part": "成語填空"
+      },
+      {
+        "prompt": "依照解釋選成語：<br>形容非常出色，沒有其他人或事物可以相比。",
+        "options": [
+          "文思泉湧",
+          "網開一面",
+          "無與倫比",
+          "金科玉律"
+        ],
+        "answer": "無與倫比",
+        "why": "「無與倫比」（第三課）：非常好，沒有比得上的。",
+        "part": "依照中文解釋選成語"
+      },
+      {
+        "prompt": "依照解釋選成語：<br>為了做應該做的事，勇敢向前，絕不退縮。",
+        "options": [
+          "網開一面",
+          "義無反顧",
+          "金科玉律",
+          "無與倫比"
+        ],
+        "answer": "義無反顧",
+        "why": "「義無反顧」（第四課）：為了做對的事，勇敢向前，不退縮。",
+        "part": "依照中文解釋選成語"
+      },
+      {
+        "prompt": "依照解釋選成語：<br>寫文章時靈感不斷出現，想法像泉水一樣湧出。",
+        "options": [
+          "文思泉湧",
+          "義無反顧",
+          "網開一面",
+          "無與倫比"
+        ],
+        "answer": "文思泉湧",
+        "why": "「文思泉湧」（第二課）：寫文章時，想法不斷出現。",
+        "part": "依照中文解釋選成語"
+      },
+      {
+        "prompt": "依照解釋選成語：<br>對犯錯的人從寬處理，給他一次改過的機會。",
+        "options": [
+          "義無反顧",
+          "網開一面",
+          "金科玉律",
+          "無與倫比"
+        ],
+        "answer": "網開一面",
+        "why": "「網開一面」（第三課）：原諒別人，給他一次機會。",
+        "part": "依照中文解釋選成語"
+      },
+      {
+        "prompt": "依照解釋選成語：<br>比喻非常重要、應該遵守的規則或原則。",
+        "options": [
+          "文思泉湧",
+          "義無反顧",
+          "金科玉律",
+          "網開一面"
+        ],
+        "answer": "金科玉律",
+        "why": "「金科玉律」（第五課）：非常重要、應該遵守的規則。",
+        "part": "依照中文解釋選成語"
+      },
+      {
+        "prompt": "哪一個成語最能形容這個情境？<br>幾位朋友聚在一起，興致勃勃地大聲談論各種話題。",
+        "options": [
+          "無懈可擊",
+          "拍案叫絕",
+          "高談闊論",
+          "畫餅充飢"
+        ],
+        "answer": "高談闊論",
+        "why": "「高談闊論」（第四課）：大聲、盡情地談論事情。",
+        "part": "生活情境選成語"
+      },
+      {
+        "prompt": "哪一個成語最能形容這個情境？<br>評審仔細檢查作品，卻找不到任何缺點。",
+        "options": [
+          "無懈可擊",
+          "高談闊論",
+          "畫餅充飢",
+          "街談巷議"
+        ],
+        "answer": "無懈可擊",
+        "why": "「無懈可擊」（第六課）：非常完美，找不到缺點。",
+        "part": "生活情境選成語"
+      },
+      {
+        "prompt": "哪一個成語最能形容這個情境？<br>一則消息傳開後，市場、巷口和學校附近的人都在討論。",
+        "options": [
+          "無懈可擊",
+          "高談闊論",
+          "拍案叫絕",
+          "街談巷議"
+        ],
+        "answer": "街談巷議",
+        "why": "「街談巷議」（第一課）：大家到處討論的事情。",
+        "part": "生活情境選成語"
+      },
+      {
+        "prompt": "哪一個成語最能形容這個情境？<br>觀眾看到精彩的魔術表演，忍不住用力拍桌稱讚。",
+        "options": [
+          "無懈可擊",
+          "高談闊論",
+          "拍案叫絕",
+          "街談巷議"
+        ],
+        "answer": "拍案叫絕",
+        "why": "「拍案叫絕」（第五課）：因為太精彩而大聲稱讚。",
+        "part": "生活情境選成語"
+      },
+      {
+        "prompt": "哪一個成語最能形容這個情境？<br>小華只想像自己會考滿分，卻完全不讀書。",
+        "options": [
+          "畫餅充飢",
+          "高談闊論",
+          "街談巷議",
+          "拍案叫絕"
+        ],
+        "answer": "畫餅充飢",
+        "why": "「畫餅充飢」（第六課）：只靠想像安慰自己，不能真正解決問題。",
+        "part": "生活情境選成語"
+      }
+    ],
+    "round2": [
+      {
+        "prompt": "哪一個成語的意思是「兩邊實力相當，難分高下」？",
+        "options": [
+          "唾手可得",
+          "勢均力敵",
+          "標新立異",
+          "牽腸掛肚"
+        ],
+        "answer": "勢均力敵",
+        "why": "「勢均力敵」（第六課）：雙方的實力差不多。",
+        "part": "成語與意思配對"
+      },
+      {
+        "prompt": "哪一個成語的意思是「想出與眾不同的新點子」？",
+        "options": [
+          "唾手可得",
+          "明鏡高懸",
+          "標新立異",
+          "疊床架屋"
+        ],
+        "answer": "標新立異",
+        "why": "「標新立異」（第四課）：想出和別人不同的新做法。",
+        "part": "成語與意思配對"
+      },
+      {
+        "prompt": "哪一個成語的意思是「十分容易取得或完成」？",
+        "options": [
+          "包羅萬象",
+          "疊床架屋",
+          "明鏡高懸",
+          "唾手可得"
+        ],
+        "answer": "唾手可得",
+        "why": "「唾手可得」（第一課）：很容易就能得到。",
+        "part": "成語與意思配對"
+      },
+      {
+        "prompt": "哪一個成語的意思是「遇到困難時互相扶持」？",
+        "options": [
+          "唾手可得",
+          "牽腸掛肚",
+          "勢均力敵",
+          "相濡以沫"
+        ],
+        "answer": "相濡以沫",
+        "why": "「相濡以沫」（第一課）：困難時互相幫助。",
+        "part": "成語與意思配對"
+      },
+      {
+        "prompt": "哪一個成語的意思是「內容豐富，各種事物都包含在內」？",
+        "options": [
+          "包羅萬象",
+          "相濡以沫",
+          "標新立異",
+          "唾手可得"
+        ],
+        "answer": "包羅萬象",
+        "why": "「包羅萬象」（第六課）：各種各樣的東西都有。",
+        "part": "成語與意思配對"
+      },
+      {
+        "prompt": "哪一個成語的意思是「重複安排不必要的內容」？",
+        "options": [
+          "相濡以沫",
+          "唾手可得",
+          "疊床架屋",
+          "勢均力敵"
+        ],
+        "answer": "疊床架屋",
+        "why": "「疊床架屋」（第二課）：重複做多餘的事。",
+        "part": "成語與意思配對"
+      },
+      {
+        "prompt": "哪一個成語的意思是「判斷公正，不偏袒任何一方」？",
+        "options": [
+          "疊床架屋",
+          "牽腸掛肚",
+          "明鏡高懸",
+          "包羅萬象"
+        ],
+        "answer": "明鏡高懸",
+        "why": "「明鏡高懸」（第三課）：判案公平，不偏心。",
+        "part": "成語與意思配對"
+      },
+      {
+        "prompt": "哪一個成語的意思是「心裡一直掛念、擔心」？",
+        "options": [
+          "標新立異",
+          "牽腸掛肚",
+          "包羅萬象",
+          "勢均力敵"
+        ],
+        "answer": "牽腸掛肚",
+        "why": "「牽腸掛肚」（第五課）：非常擔心、掛念一個人。",
+        "part": "成語與意思配對"
+      },
+      {
+        "prompt": "選出最適合填入空格的成語：<br>聽故事時，全班同學都＿＿＿＿，沒有一個人分心。",
+        "options": [
+          "聚精會神",
+          "爭先恐後",
+          "人去樓空",
+          "畫餅充飢"
+        ],
+        "answer": "聚精會神",
+        "why": "「聚精會神」（第二課）：非常專心。",
+        "part": "看句子填成語"
+      },
+      {
+        "prompt": "選出最適合填入空格的成語：<br>村民搬離後，老街上的房屋漸漸＿＿＿＿。",
+        "options": [
+          "先發制人",
+          "人去樓空",
+          "招搖撞騙",
+          "爭先恐後"
+        ],
+        "answer": "人去樓空",
+        "why": "「人去樓空」（第三課）：人都離開了，只剩空房子。",
+        "part": "看句子填成語"
+      },
+      {
+        "prompt": "選出最適合填入空格的成語：<br>明知救援有危險，他仍＿＿＿＿地前往幫忙。",
+        "options": [
+          "爭先恐後",
+          "義無反顧",
+          "拍案叫絕",
+          "畫餅充飢"
+        ],
+        "answer": "義無反顧",
+        "why": "「義無反顧」（第四課）：為了做對的事，勇敢向前，不退縮。",
+        "part": "看句子填成語"
+      },
+      {
+        "prompt": "選出最適合填入空格的成語：<br>只想得獎卻不肯練習，根本是＿＿＿＿。",
+        "options": [
+          "聚精會神",
+          "文思泉湧",
+          "畫餅充飢",
+          "人去樓空"
+        ],
+        "answer": "畫餅充飢",
+        "why": "「畫餅充飢」（第六課）：只靠想像安慰自己，不能真正解決問題。",
+        "part": "看句子填成語"
+      },
+      {
+        "prompt": "選出最適合填入空格的成語：<br>這段精彩的演出讓觀眾＿＿＿＿，讚不絕口。",
+        "options": [
+          "畫餅充飢",
+          "先發制人",
+          "招搖撞騙",
+          "拍案叫絕"
+        ],
+        "answer": "拍案叫絕",
+        "why": "「拍案叫絕」（第五課）：因為太精彩而大聲稱讚。",
+        "part": "看句子填成語"
+      },
+      {
+        "prompt": "選出最適合填入空格的成語：<br>對手還沒準備好，他便＿＿＿＿，搶得領先。",
+        "options": [
+          "畫餅充飢",
+          "柳暗花明",
+          "爭先恐後",
+          "先發制人"
+        ],
+        "answer": "先發制人",
+        "why": "「先發制人」（第四課）：比別人先行動，取得優勢。",
+        "part": "看句子填成語"
+      },
+      {
+        "prompt": "選出最適合填入空格的成語：<br>修復古老城牆需要多年努力，大家以＿＿＿＿的精神堅持下去。",
+        "options": [
+          "精衛填海",
+          "循規蹈矩",
+          "柳暗花明",
+          "爭先恐後"
+        ],
+        "answer": "精衛填海",
+        "why": "「精衛填海」（第一課）：不怕困難，努力不放棄。",
+        "part": "看句子填成語"
+      },
+      {
+        "prompt": "選出最適合填入空格的成語：<br>他做事一向＿＿＿＿，從不隨便違反規定。",
+        "options": [
+          "畫餅充飢",
+          "循規蹈矩",
+          "義無反顧",
+          "精衛填海"
+        ],
+        "answer": "循規蹈矩",
+        "why": "「循規蹈矩」（第五課）：按照規則做事，不亂來。",
+        "part": "看句子填成語"
+      },
+      {
+        "prompt": "選出最適合填入空格的成語：<br>有人假扮名人募款，在街上＿＿＿＿，大家要小心。",
+        "options": [
+          "招搖撞騙",
+          "聚精會神",
+          "畫餅充飢",
+          "先發制人"
+        ],
+        "answer": "招搖撞騙",
+        "why": "「招搖撞騙」（第六課）：到處說謊，欺騙別人。",
+        "part": "看句子填成語"
+      },
+      {
+        "prompt": "選出最適合填入空格的成語：<br>原本以為活動要取消，後來天氣轉晴，終於＿＿＿＿。",
+        "options": [
+          "招搖撞騙",
+          "循規蹈矩",
+          "拍案叫絕",
+          "柳暗花明"
+        ],
+        "answer": "柳暗花明",
+        "why": "「柳暗花明」（第三課）：遇到困難後，又看見希望。",
+        "part": "看句子填成語"
+      },
+      {
+        "prompt": "選出最適合填入空格的成語：<br>一提到旅行見聞，她便＿＿＿＿，寫下好幾頁文章。",
+        "options": [
+          "先發制人",
+          "義無反顧",
+          "精衛填海",
+          "文思泉湧"
+        ],
+        "answer": "文思泉湧",
+        "why": "「文思泉湧」（第二課）：寫文章時，想法不斷出現。",
+        "part": "看句子填成語"
+      },
+      {
+        "prompt": "選出最適合填入空格的成語：<br>開放報名時，大家＿＿＿＿，希望先搶到名額。",
+        "options": [
+          "精衛填海",
+          "爭先恐後",
+          "拍案叫絕",
+          "循規蹈矩"
+        ],
+        "answer": "爭先恐後",
+        "why": "「爭先恐後」（第二課）：大家搶著做，怕落在後面。",
+        "part": "看句子填成語"
+      },
+      {
+        "prompt": "依照解釋選出成語：<br>不值得特別提起的小事。",
+        "options": [
+          "不足掛齒",
+          "金科玉律",
+          "網開一面",
+          "無懈可擊"
+        ],
+        "answer": "不足掛齒",
+        "why": "「不足掛齒」（第二課）：小事，不值得一提。",
+        "part": "依照解釋選出成語"
+      },
+      {
+        "prompt": "依照解釋選出成語：<br>對犯錯的人從寬處理，給予改過的機會。",
+        "options": [
+          "耳提面命",
+          "網開一面",
+          "先發制人",
+          "街談巷議"
+        ],
+        "answer": "網開一面",
+        "why": "「網開一面」（第三課）：原諒別人，給他一次機會。",
+        "part": "依照解釋選出成語"
+      },
+      {
+        "prompt": "依照解釋選出成語：<br>非常完美，幾乎找不出缺點。",
+        "options": [
+          "無與倫比",
+          "美輪美奐",
+          "無懈可擊",
+          "返老還童"
+        ],
+        "answer": "無懈可擊",
+        "why": "「無懈可擊」（第六課）：非常完美，找不到缺點。",
+        "part": "依照解釋選出成語"
+      },
+      {
+        "prompt": "依照解釋選出成語：<br>認真反覆地叮嚀與教導。",
+        "options": [
+          "高談闊論",
+          "耳提面命",
+          "聚精會神",
+          "街談巷議"
+        ],
+        "answer": "耳提面命",
+        "why": "「耳提面命」（第四課）：一次又一次認真地教導。",
+        "part": "依照解釋選出成語"
+      },
+      {
+        "prompt": "依照解釋選出成語：<br>重要且被奉為準則的規定或道理。",
+        "options": [
+          "疊床架屋",
+          "畫餅充飢",
+          "金科玉律",
+          "標新立異"
+        ],
+        "answer": "金科玉律",
+        "why": "「金科玉律」（第五課）：非常重要、應該遵守的規則。",
+        "part": "依照解釋選出成語"
+      },
+      {
+        "prompt": "哪一個成語最能形容這個情境？<br>多年不見的老同學一見面，就熱烈聊起生活和新聞。",
+        "options": [
+          "高談闊論",
+          "明鏡高懸",
+          "精衛填海",
+          "人去樓空"
+        ],
+        "answer": "高談闊論",
+        "why": "「高談闊論」（第四課）：大聲、盡情地談論事情。",
+        "part": "生活情境選成語"
+      },
+      {
+        "prompt": "哪一個成語最能形容這個情境？<br>一座新落成的表演廳外觀宏偉又漂亮。",
+        "options": [
+          "無懈可擊",
+          "美輪美奐",
+          "唾手可得",
+          "勢均力敵"
+        ],
+        "answer": "美輪美奐",
+        "why": "「美輪美奐」（第五課）：房子或建築物非常漂亮。",
+        "part": "生活情境選成語"
+      },
+      {
+        "prompt": "哪一個成語最能形容這個情境？<br>外婆開始學跳舞後，整個人充滿活力，好像年輕了。",
+        "options": [
+          "返老還童",
+          "牽腸掛肚",
+          "網開一面",
+          "標新立異"
+        ],
+        "answer": "返老還童",
+        "why": "「返老還童」（第一課）：老人變得像年輕人一樣。",
+        "part": "生活情境選成語"
+      },
+      {
+        "prompt": "哪一個成語最能形容這個情境？<br>這場演奏會的表現精彩極了，其他演出都難以相比。",
+        "options": [
+          "循規蹈矩",
+          "無與倫比",
+          "畫餅充飢",
+          "街談巷議"
+        ],
+        "answer": "無與倫比",
+        "why": "「無與倫比」（第三課）：非常好，沒有比得上的。",
+        "part": "生活情境選成語"
+      },
+      {
+        "prompt": "哪一個成語最能形容這個情境？<br>校園裡發生一件新鮮事，學生們在走廊、操場都議論紛紛。",
+        "options": [
+          "義無反顧",
+          "包羅萬象",
+          "街談巷議",
+          "先發制人"
+        ],
+        "answer": "街談巷議",
+        "why": "「街談巷議」（第一課）：大家到處討論的事情。",
+        "part": "生活情境選成語"
+      }
+    ]
   };
 
   const guoyuUnits = Object.keys(GUOYU_UNITS).map((id, i) => ({
     id, icon: String(i + 1), name: GUOYU_UNITS[id].name,
-    status: GUOYU_UNITS[id].quizBank.length ? GUOYU_UNITS[id].quizBank.length + " questions ready" : (GUOYU_UNITS[id].worksheet ? "Worksheet ready" : "Coming soon"),
+    status: (GUOYU_UNITS[id].quizBank.length ? GUOYU_UNITS[id].quizBank.length + " questions ready" : (GUOYU_UNITS[id].worksheet ? "Worksheet ready" : "Coming soon"))
+      + (CHENGYU.cards[id] ? " · " + CHENGYU.cards[id].length + " 成語" : ""),
     enabled: true,
   }));
 
@@ -12961,6 +14030,7 @@
     } else if (subj.id === "science") {
       showScreen("screen-science", "Science");
     } else if (subj.id === "guoyu") {
+      showGuoyuMain("lessons");
       showScreen("screen-guoyu", "國語");
     } else if (subj.id === "novel") {
       showScreen("screen-novel", "Core Novel");
@@ -13124,6 +14194,33 @@
     document.querySelectorAll(".guoyuunit-tab").forEach(el => el.style.display = "none");
     document.getElementById("guoyuunit-" + tab).style.display = "block";
     if (tab === "quiz") renderGuoyuUnitQuiz(); // fresh random set from the question bank every time
+    if (tab === "chengyu") renderGuoyuChengyu();
+  }
+
+  // ---- 成語 ----
+  function chengyuAllQuestions() { return CHENGYU.round1.concat(CHENGYU.round2); }
+  function renderGuoyuChengyu() {
+    const list = CHENGYU.cards[currentGuoyuUnit] || [];
+    document.getElementById("guoyuChengyuCards").innerHTML = list.length ? vocabFlipGrid(list)
+      : `<div class="placeholder-box"><p><strong>${GY().name}</strong> 的成語還沒有加入。</p></div>`;
+    const words = list.map(c => c.word);
+    const qs = shuffle(chengyuAllQuestions().filter(q => words.includes(q.answer)));
+    document.getElementById("guoyuChengyuQuizBlock").style.display = qs.length ? "block" : "none";
+    document.getElementById("guoyuChengyuQuizTitle").textContent = GY().name.split("：")[0] + " 成語小測驗（" + qs.length + "題）";
+    if (qs.length) renderMCQ("guoyuChengyuQuizQs", "guoyuChengyuQuiz", qs);
+  }
+  function showGuoyuMain(tab) {
+    document.querySelectorAll("[data-gy-main]").forEach(b => b.classList.toggle("active", b.dataset.gyMain === tab));
+    document.querySelectorAll(".gymain-tab").forEach(el => el.style.display = "none");
+    document.getElementById("gymain-" + tab).style.display = "block";
+    if (tab === "chengyu" && !document.getElementById("chengyuQuizQs").innerHTML) startChengyuQuiz("round1");
+  }
+  function startChengyuQuiz(round) {
+    document.querySelectorAll("[data-cy-round]").forEach(b => b.classList.toggle("active", b.dataset.cyRound === round));
+    const bank = round === "mix" ? shuffle(chengyuAllQuestions()).slice(0, 30) : CHENGYU[round];
+    const names = { round1: "第一回", round2: "第二回", mix: "綜合隨機" };
+    document.getElementById("chengyuQuizTitle").textContent = "成語測驗 — " + names[round] + "（第一課～第六課）";
+    renderMCQ("chengyuQuizQs", "chengyuQuiz", bank);
   }
 
   function renderGuoyuLesson() {
@@ -13241,12 +14338,13 @@
             <div class="vemoji">${v.emoji}</div>
             <div class="vword">${v.word}</div>
             <div class="vpos">${v.pos}</div>
-            <button class="vspeak" title="Hear it" onclick="event.stopPropagation(); speakWord('${w}')">🔊</button>
+            <button class="vspeak" title="Hear it" onclick="event.stopPropagation(); speakWord('${w}', '${v.lang || "en-US"}')">🔊</button>
             <div class="vhint">tap to flip 🔄</div>
           </div>
           <div class="vface vback">
             <div class="vword">${v.emoji} ${v.word}</div>
             <div class="vdef">${v.def}</div>
+            ${v.en ? `<div class="vtrick">🌏 ${v.en}</div>` : ""}
             <div class="vex">💬 ${v.example}</div>
             ${v.trick ? `<div class="vtrick">🧠 ${v.trick}</div>` : ""}
             ${v.syn && v.syn !== "&mdash;" ? `<div class="vsa"><span class="syn">Synonyms:</span> ${v.syn}</div>` : ""}
@@ -13256,12 +14354,12 @@
       </div>`;
     }).join("")}</div>`;
   }
-  function speakWord(word) {
+  function speakWord(word, lang) {
     try {
       if (!window.speechSynthesis) return;
       speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(word);
-      u.lang = "en-US"; u.rate = 0.85;
+      u.lang = lang || "en-US"; u.rate = 0.85;
       speechSynthesis.speak(u);
     } catch (e) {}
   }
@@ -13463,6 +14561,7 @@
     document.getElementById("printScienceTopicField").style.display = sec === "science" ? "flex" : "none";
     updatePrintScienceLessons();
     document.getElementById("printNovelField").style.display = sec === "novel" ? "flex" : "none";
+    document.getElementById("printChengyuField").style.display = sec === "chengyu" ? "flex" : "none";
     document.getElementById("printVocabTypesField").style.display = sec === "vocab" ? "flex" : "none";
     document.getElementById("printCountField").style.display = sec === "vocab" ? "none" : "flex";
     updatePrintCount();
@@ -13479,6 +14578,7 @@
       if (sec === "social") return SOCIAL_CHAPTERS[val("printSocialChapter")].lessons[val("printSocialLesson")].quizBank;
       if (sec === "science") return printSciencePick().bank;
       if (sec === "novel") return NOVELS[val("printNovel")].quizBank;
+      if (sec === "chengyu") return val("printChengyuRound") === "all" ? chengyuAllQuestions() : CHENGYU[val("printChengyuRound")];
     } catch (e) {}
     return null;
   }
@@ -13939,6 +15039,11 @@
       sectionName = "Social Studies";
       groupName = SOCIAL_CHAPTERS[socialChapterId].name + " — " + SOCIAL_CHAPTERS[socialChapterId].lessons[socialLessonId].name;
       bank = SOCIAL_CHAPTERS[socialChapterId].lessons[socialLessonId].quizBank;
+    } else if (section === "chengyu") {
+      const r = document.getElementById("printChengyuRound").value;
+      sectionName = "國語";
+      groupName = "成語測驗（第一課～第六課）" + (r === "round1" ? " 第一回" : r === "round2" ? " 第二回" : " 第一回＋第二回");
+      bank = r === "all" ? chengyuAllQuestions() : CHENGYU[r];
     } else if (section === "novel") {
       const novelId = document.getElementById("printNovel").value;
       sectionName = "Core Novel";
