@@ -252,7 +252,49 @@
     width: 100%; height: 640px; border: 1px solid var(--border); border-radius: 8px;
     background: #fff; margin-top: 10px;
   }
+  .worksheet-embed .worksheet-img {
+    display: block; width: 100%; height: auto; border: 1px solid var(--border); border-radius: 8px;
+    background: #fff; margin-top: 10px;
+  }
   .worksheet-embed .worksheet-link { display: inline-block; margin-top: 10px; font-size: 0.9rem; }
+
+  /* ---- 生字注音 flashcards (vertical zhuyin) ---- */
+  .sz-controls { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0 4px; }
+  .sz-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(128px, 1fr)); gap: 12px; margin-top: 12px; }
+  .szcard { perspective: 900px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .szcard-inner { display: grid; transition: transform .5s cubic-bezier(.3,1.4,.5,1); transform-style: preserve-3d; }
+  .szcard.flipped .szcard-inner { transform: rotateY(180deg); }
+  .szface { grid-area: 1 / 1; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 16px;
+            padding: 10px 8px 12px; border: 2px solid var(--vc); background: var(--vbg);
+            display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .szback { transform: rotateY(180deg); }
+  /* hide the face turned away (Safari/iPad otherwise shows it through, mirrored) — swaps at mid-flip */
+  .szfront, .szback { transition: visibility 0s linear .22s; }
+  .szcard:not(.flipped) .szback, .szcard.flipped .szfront { visibility: hidden; }
+  .sz-num { font-weight: 700; font-size: 1.1rem; color: var(--vc, #333); }
+  .sz-word { font-size: 1.15rem; font-weight: 700; text-align: center; margin-top: auto; }
+  .szface .sz-speak { position: static; margin-top: auto; flex-shrink: 0; }
+  .szface .sz-speak + .vhint { margin-top: 0; }
+  .szface .vhint { margin-top: auto; }
+  .sz-col { display: inline-flex; flex-direction: column; padding-top: 1.5px; }
+  .sz-cell { display: flex; border: 1.5px solid #333; margin-top: -1.5px; background: #fff; }
+  .sz-cell.red + .sz-cell { border-top-color: #e0362b; }
+  .sz-cell.red { border-color: #e0362b; }
+  .sz-box { width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; font-size: 31px; color: #222;
+            font-family: "Kaiti TC", "BiauKai", "DFKai-SB", "STKaiti", "KaiTi", "TW-Kai", serif; border-right: 1.5px solid #333; }
+  .sz-cell.red .sz-box { border-right-color: #e0362b; color: #c0281e; }
+  .sz-zy { width: 25px; display: flex; align-items: center; justify-content: center; }
+  .zy { display: flex; flex-direction: column; align-items: center; font-size: 13px; line-height: 1.05; color: #222; margin-right: 6px; }
+  .zy b { font-weight: normal; position: relative; display: block; }
+  .zy i { font-style: normal; }
+  .zy-t { position: absolute; left: 100%; top: -0.05em; font-size: 12px; margin-left: 1px; }
+  .zy-n { line-height: .7; }
+  .sz-cell.red .zy { color: #e0362b; }
+  .sz-gap { height: 14px; }
+  .sz-print-grid { display: flex; flex-wrap: wrap; flex-direction: row-reverse; gap: 18px 14px; align-items: flex-start; }
+  .sz-pitem { display: flex; flex-direction: column; align-items: center; gap: 4px; break-inside: avoid; }
+  .sz-pb { page-break-before: always; }
+  #printArea .sz-cell, #printArea .zy { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 
   #printArea { display: none; }
   @media print {
@@ -301,6 +343,8 @@
           <option value="science">Science</option>
           <option value="novel">Core Novel</option>
           <option value="chengyu">國語 成語測驗</option>
+          <option value="shengzi">國語 生字（直排注音）</option>
+          <option value="wenzi">國語 文字大不同</option>
         </select>
       </div>
       <div class="print-field" id="printUnitField">
@@ -344,6 +388,25 @@
           <option value="round1">第一回（30題）</option>
           <option value="round2">第二回（30題）</option>
           <option value="all">第一回＋第二回（60題）</option>
+        </select>
+      </div>
+      <div class="print-field" id="printWenziField" style="display:none">
+        <span>回數:</span>
+        <select id="printWenziRound" onchange="updatePrintCount()">
+          <option value="round1">第一回（30題）</option>
+          <option value="round2">第二回（30題）</option>
+          <option value="all">第一回＋第二回（60題）</option>
+        </select>
+      </div>
+      <div class="print-field" id="printShengziField" style="display:none">
+        <span>課次:</span>
+        <select id="printShengziUnit">
+          <option value="unit1">第一課：美麗島（16題）</option>
+          <option value="unit2">第二課：請到我的家鄉來（15題）</option>
+          <option value="unit3">第三課：鏡頭下的家鄉（15題）</option>
+          <option value="unit4">第四課：飛行夢（15題）</option>
+          <option value="unit5">第五課：月光下（15題）</option>
+          <option value="all">第一課～第五課（全部）</option>
         </select>
       </div>
       <div class="print-field" id="printNovelField" style="display:none">
@@ -544,6 +607,7 @@
     <div class="tabs">
       <button class="tab-btn active" data-gy-main="lessons" onclick="showGuoyuMain('lessons')">📖 課文 Lessons</button>
       <button class="tab-btn" data-gy-main="chengyu" onclick="showGuoyuMain('chengyu')">🀄 成語測驗</button>
+      <button class="tab-btn" data-gy-main="wenzi" onclick="showGuoyuMain('wenzi')">🔤 文字大不同</button>
     </div>
     <div id="gymain-lessons" class="gymain-tab">
       <p class="intro">Choose a lesson.</p>
@@ -562,14 +626,37 @@
         <div id="chengyuQuizQs"></div>
       </div>
     </div>
+    <div id="gymain-wenzi" class="gymain-tab" style="display:none">
+      <p class="intro">第一課～第六課 文字大不同：選出正確的國字，或選出多音字在句子裡的正確讀音。答完會告訴你答案、注音和分辨的小訣竅！</p>
+      <div class="cy-rounds">
+        <button class="print-btn cy-round" data-wz-round="round1" onclick="startWenziQuiz('round1')">第一回（30題）</button>
+        <button class="print-btn cy-round" data-wz-round="round2" onclick="startWenziQuiz('round2')">第二回（30題）</button>
+        <button class="print-btn cy-round" data-wz-round="mix" onclick="startWenziQuiz('mix')">🔀 綜合隨機（30題）</button>
+      </div>
+      <div class="set-controls"><span class="score-pill" id="wenziQuiz-score"></span></div>
+      <div class="practice-block">
+        <h3 id="wenziQuizTitle">文字大不同</h3>
+        <div id="wenziQuizQs"></div>
+      </div>
+    </div>
   </section>
 
   <!-- 國語 (MANDARIN): UNIT SCREEN (shared by all lessons) -->
   <section class="screen" id="screen-guoyuunit">
     <div class="tabs">
-      <button class="tab-btn active" data-guoyu-tab="lesson" onclick="showGuoyuTab('lesson')">Lesson</button>
+      <button class="tab-btn active" data-guoyu-tab="shengzi" onclick="showGuoyuTab('shengzi')">✍️ 生字卡</button>
       <button class="tab-btn" data-guoyu-tab="chengyu" onclick="showGuoyuTab('chengyu')">🀄 成語</button>
       <button class="tab-btn" data-guoyu-tab="quiz" onclick="showGuoyuTab('quiz')">Quiz</button>
+    </div>
+
+    <div id="guoyuunit-shengzi" class="guoyuunit-tab" style="display:none">
+      <p class="intro">看直排注音，想一想（或在紙上寫一寫）國字，再點卡片翻面對答案 🔄。紅框是本課生字。</p>
+      <div class="sz-controls">
+        <button class="tab-btn" onclick="szFlipAll()">🔄 全部翻面</button>
+        <button class="tab-btn" onclick="renderGuoyuShengzi(true)">🔀 洗牌</button>
+        <button class="tab-btn" onclick="renderGuoyuShengzi(false)">↩️ 照順序</button>
+      </div>
+      <div id="guoyuShengziCards"></div>
     </div>
 
     <div id="guoyuunit-chengyu" class="guoyuunit-tab" style="display:none">
@@ -582,10 +669,6 @@
       </div>
     </div>
 
-    <div id="guoyuunit-lesson" class="guoyuunit-tab">
-      <p class="intro">Read each card, then look at the example. Try covering the card and explaining it in your own words.</p>
-      <div id="guoyuLessonCards"></div>
-    </div>
 
     <div id="guoyuunit-quiz" class="guoyuunit-tab" style="display:none">
       <div class="set-controls">
@@ -3915,6 +3998,733 @@
           options: ["Deal with it", "Ignore it", "Forget about it", "Make it bigger"], answer: "Deal with it",
           why: "When you <strong>confront</strong> a problem, you deal with that problem." },
       ],
+    },
+    story4: {
+      "name": "Story 4: Prince Charming Misplaces His Bride",
+      "words": [
+        {
+          "word": "elegant",
+          "pos": "adj.",
+          "def": "someone or something that is stylish and graceful",
+          "example": "The swan moved across the lake with an <strong>elegant</strong> glide."
+        },
+        {
+          "word": "foreboding",
+          "pos": "adj.",
+          "def": "it suggests that something bad is going to happen",
+          "example": "That hallway was the most <strong>foreboding</strong> place in the entire abandoned building."
+        },
+        {
+          "word": "scowl",
+          "pos": "v.",
+          "def": "you frowned or had an angry look on your face",
+          "example": "The student sat in the corner, <strong>scowling</strong> at the paper after seeing his low grade."
+        },
+        {
+          "word": "intimidate",
+          "pos": "v.",
+          "def": "when you feel afraid of someone or something",
+          "example": "The coach's harsh tone often <strong>intimidates</strong> new players during their first practice."
+        },
+        {
+          "word": "subdued",
+          "pos": "adj.",
+          "def": "when something is not strong, loud, or intense",
+          "example": "Gilbert's voice grew more <strong>subdued</strong> as he realized the seriousness of his mistake."
+        },
+        {
+          "word": "disheveled",
+          "pos": "adj.",
+          "def": "when something is not neat or tidy",
+          "example": "After the long overnight journey, the travelers appeared <strong>disheveled</strong> and bleary eyed."
+        },
+        {
+          "word": "rigid",
+          "pos": "adj.",
+          "def": "something that is stiff and does not bend easily",
+          "example": "Of all the teachers, Mr. Kim is known for having the most <strong>rigid</strong> classroom rules."
+        },
+        {
+          "word": "feisty",
+          "pos": "adj.",
+          "def": "someone who is bold, energetic, and determined",
+          "example": "The <strong>feisty</strong> debate team never backed down during competitions."
+        },
+        {
+          "word": "sulk",
+          "pos": "v.",
+          "def": "if you were angry or upset about something and refused to talk about it",
+          "example": "Instead of joining the game, he stood off to the side, <strong>sulking</strong> in silence."
+        },
+        {
+          "word": "devise",
+          "pos": "v.",
+          "def": "you figure out a way to achieve a plan",
+          "example": "The inventor carefully <strong>devised</strong> new experiments before presenting them to the class."
+        }
+      ],
+      "quizBank": [
+        {
+          "prompt": "The swan moved across the lake with an <strong>______</strong> glide.",
+          "options": [
+            "elegant",
+            "disheveled",
+            "rigid",
+            "foreboding"
+          ],
+          "answer": "elegant",
+          "why": "<strong>Elegant</strong> (adj.) means someone or something that is stylish and graceful."
+        },
+        {
+          "prompt": "The dancer wore an <strong>______</strong> silver gown and floated across the stage.",
+          "options": [
+            "elegant",
+            "feisty",
+            "subdued",
+            "disheveled"
+          ],
+          "answer": "elegant",
+          "why": "<strong>Elegant</strong> (adj.) means someone or something that is stylish and graceful."
+        },
+        {
+          "prompt": "Grandma set the table with her most <strong>______</strong> plates and shiny candles for the party.",
+          "options": [
+            "elegant",
+            "foreboding",
+            "disheveled",
+            "rigid"
+          ],
+          "answer": "elegant",
+          "why": "<strong>Elegant</strong> (adj.) means someone or something that is stylish and graceful."
+        },
+        {
+          "prompt": "Which sentence uses <strong>elegant</strong> correctly?",
+          "options": [
+            "The ballerina took an elegant bow at the end of the show.",
+            "The muddy pig rolled around in an elegant way in the dirt.",
+            "My messy room looks elegant with clothes all over the floor.",
+            "He elegant the door shut with a loud bang."
+          ],
+          "answer": "The ballerina took an elegant bow at the end of the show.",
+          "why": "<strong>Elegant</strong> (adj.) means someone or something that is stylish and graceful."
+        },
+        {
+          "prompt": "Which word is the OPPOSITE of <strong>elegant</strong>?",
+          "options": [
+            "clumsy",
+            "graceful",
+            "stylish",
+            "beautiful"
+          ],
+          "answer": "clumsy",
+          "why": "<strong>Elegant</strong> (adj.) means someone or something that is stylish and graceful."
+        },
+        {
+          "prompt": "What does <strong>elegant</strong> mean?",
+          "options": [
+            "when you feel afraid of someone or something",
+            "you frowned or had an angry look on your face",
+            "someone who is bold, energetic, and determined",
+            "someone or something that is stylish and graceful"
+          ],
+          "answer": "someone or something that is stylish and graceful",
+          "why": "<strong>Elegant</strong> means someone or something that is stylish and graceful."
+        },
+        {
+          "prompt": "That hallway was the most <strong>______</strong> place in the entire abandoned building.",
+          "options": [
+            "foreboding",
+            "elegant",
+            "feisty",
+            "subdued"
+          ],
+          "answer": "foreboding",
+          "why": "<strong>Foreboding</strong> (adj.) means it suggests that something bad is going to happen."
+        },
+        {
+          "prompt": "Dark clouds rolled in, and the <strong>______</strong> sky warned us that a storm was coming.",
+          "options": [
+            "foreboding",
+            "elegant",
+            "rigid",
+            "feisty"
+          ],
+          "answer": "foreboding",
+          "why": "<strong>Foreboding</strong> (adj.) means it suggests that something bad is going to happen."
+        },
+        {
+          "prompt": "The creaky old house had a <strong>______</strong> feeling, and we were afraid to go inside.",
+          "options": [
+            "foreboding",
+            "elegant",
+            "feisty",
+            "disheveled"
+          ],
+          "answer": "foreboding",
+          "why": "<strong>Foreboding</strong> (adj.) means it suggests that something bad is going to happen."
+        },
+        {
+          "prompt": "Which sentence uses <strong>foreboding</strong> correctly?",
+          "options": [
+            "The foreboding music in the movie told us something scary would happen.",
+            "We ate a foreboding birthday cake at the happy party.",
+            "The puppy's foreboding tail wagged with joy.",
+            "She foreboding her homework on time."
+          ],
+          "answer": "The foreboding music in the movie told us something scary would happen.",
+          "why": "<strong>Foreboding</strong> (adj.) means it suggests that something bad is going to happen."
+        },
+        {
+          "prompt": "A <strong>foreboding</strong> place makes you feel that...",
+          "options": [
+            "something bad is going to happen",
+            "you are about to win a prize",
+            "everything is neat and tidy",
+            "you want to sing and dance"
+          ],
+          "answer": "something bad is going to happen",
+          "why": "<strong>Foreboding</strong> (adj.) means it suggests that something bad is going to happen."
+        },
+        {
+          "prompt": "What does <strong>foreboding</strong> mean?",
+          "options": [
+            "something that is stiff and does not bend easily",
+            "if you were angry or upset about something and refused to talk about it",
+            "when something is not strong, loud, or intense",
+            "it suggests that something bad is going to happen"
+          ],
+          "answer": "it suggests that something bad is going to happen",
+          "why": "<strong>Foreboding</strong> means it suggests that something bad is going to happen."
+        },
+        {
+          "prompt": "The student sat in the corner, <strong>______</strong> at the paper after seeing his low grade.",
+          "options": [
+            "scowling",
+            "devising",
+            "sulking",
+            "intimidating"
+          ],
+          "answer": "scowling",
+          "why": "<strong>Scowl</strong> (v.) means you frowned or had an angry look on your face."
+        },
+        {
+          "prompt": "The grumpy old man <strong>______</strong> at the kids who ran across his lawn.",
+          "options": [
+            "scowled",
+            "devised",
+            "subdued",
+            "elegant"
+          ],
+          "answer": "scowled",
+          "why": "<strong>Scowl</strong> (v.) means you frowned or had an angry look on your face."
+        },
+        {
+          "prompt": "When my brother lost the game, he crossed his arms and <strong>______</strong> at the screen.",
+          "options": [
+            "scowled",
+            "devised",
+            "elegant",
+            "rigid"
+          ],
+          "answer": "scowled",
+          "why": "<strong>Scowl</strong> (v.) means you frowned or had an angry look on your face."
+        },
+        {
+          "prompt": "Which sentence uses <strong>scowl</strong> correctly?",
+          "options": [
+            "The angry cat let out a hiss and gave us a scowl.",
+            "She gave a happy scowl when she opened her gift.",
+            "The swan scowled gracefully across the lake.",
+            "We scowled a new plan to win the game."
+          ],
+          "answer": "The angry cat let out a hiss and gave us a scowl.",
+          "why": "<strong>Scowl</strong> (v.) means you frowned or had an angry look on your face."
+        },
+        {
+          "prompt": "If you <strong>scowl</strong>, your face looks...",
+          "options": [
+            "angry",
+            "joyful",
+            "sleepy",
+            "surprised and happy"
+          ],
+          "answer": "angry",
+          "why": "<strong>Scowl</strong> (v.) means you frowned or had an angry look on your face."
+        },
+        {
+          "prompt": "What does <strong>scowl</strong> mean?",
+          "options": [
+            "when something is not strong, loud, or intense",
+            "you figure out a way to achieve a plan",
+            "you frowned or had an angry look on your face",
+            "something that is stiff and does not bend easily"
+          ],
+          "answer": "you frowned or had an angry look on your face",
+          "why": "<strong>Scowl</strong> means you frowned or had an angry look on your face."
+        },
+        {
+          "prompt": "The coach's harsh tone often <strong>______</strong> new players during their first practice.",
+          "options": [
+            "intimidates",
+            "devises",
+            "sulks",
+            "scowls"
+          ],
+          "answer": "intimidates",
+          "why": "<strong>Intimidate</strong> (v.) means when you feel afraid of someone or something."
+        },
+        {
+          "prompt": "The big barking dog tried to <strong>______</strong> the mail carrier, but she was not afraid.",
+          "options": [
+            "intimidate",
+            "devise",
+            "sulk",
+            "subdued"
+          ],
+          "answer": "intimidate",
+          "why": "<strong>Intimidate</strong> (v.) means when you feel afraid of someone or something."
+        },
+        {
+          "prompt": "Don't let the tall basketball players <strong>______</strong> you. Just play your best!",
+          "options": [
+            "intimidate",
+            "devise",
+            "sulk",
+            "elegant"
+          ],
+          "answer": "intimidate",
+          "why": "<strong>Intimidate</strong> (v.) means when you feel afraid of someone or something."
+        },
+        {
+          "prompt": "Which sentence uses <strong>intimidate</strong> correctly?",
+          "options": [
+            "The bully tried to intimidate the younger kids by yelling at them.",
+            "The kind teacher intimidated us with a warm hug.",
+            "The flowers intimidated the garden with pretty colors.",
+            "I intimidated a sandwich for lunch."
+          ],
+          "answer": "The bully tried to intimidate the younger kids by yelling at them.",
+          "why": "<strong>Intimidate</strong> (v.) means when you feel afraid of someone or something."
+        },
+        {
+          "prompt": "When someone <strong>intimidates</strong> you, you feel...",
+          "options": [
+            "afraid",
+            "proud",
+            "bored",
+            "hungry"
+          ],
+          "answer": "afraid",
+          "why": "<strong>Intimidate</strong> (v.) means when you feel afraid of someone or something."
+        },
+        {
+          "prompt": "What does <strong>intimidate</strong> mean?",
+          "options": [
+            "someone or something that is stylish and graceful",
+            "something that is stiff and does not bend easily",
+            "when something is not neat or tidy",
+            "when you feel afraid of someone or something"
+          ],
+          "answer": "when you feel afraid of someone or something",
+          "why": "<strong>Intimidate</strong> means when you feel afraid of someone or something."
+        },
+        {
+          "prompt": "Gilbert's voice grew more <strong>______</strong> as he realized the seriousness of his mistake.",
+          "options": [
+            "subdued",
+            "feisty",
+            "elegant",
+            "rigid"
+          ],
+          "answer": "subdued",
+          "why": "<strong>Subdued</strong> (adj.) means when something is not strong, loud, or intense."
+        },
+        {
+          "prompt": "After the noisy party, the house felt calm and <strong>______</strong>.",
+          "options": [
+            "subdued",
+            "feisty",
+            "foreboding",
+            "disheveled"
+          ],
+          "answer": "subdued",
+          "why": "<strong>Subdued</strong> (adj.) means when something is not strong, loud, or intense."
+        },
+        {
+          "prompt": "The lights in the theater became <strong>______</strong> so the movie could begin.",
+          "options": [
+            "subdued",
+            "feisty",
+            "rigid",
+            "disheveled"
+          ],
+          "answer": "subdued",
+          "why": "<strong>Subdued</strong> (adj.) means when something is not strong, loud, or intense."
+        },
+        {
+          "prompt": "Which sentence uses <strong>subdued</strong> correctly?",
+          "options": [
+            "The class was subdued and quiet after hearing the sad news.",
+            "The subdued fireworks boomed loudly across the sky.",
+            "The crowd gave a subdued, ear-splitting scream.",
+            "He subdued his bike to school."
+          ],
+          "answer": "The class was subdued and quiet after hearing the sad news.",
+          "why": "<strong>Subdued</strong> (adj.) means when something is not strong, loud, or intense."
+        },
+        {
+          "prompt": "Which word is the OPPOSITE of <strong>subdued</strong>?",
+          "options": [
+            "loud",
+            "quiet",
+            "soft",
+            "calm"
+          ],
+          "answer": "loud",
+          "why": "<strong>Subdued</strong> (adj.) means when something is not strong, loud, or intense."
+        },
+        {
+          "prompt": "What does <strong>subdued</strong> mean?",
+          "options": [
+            "something that is stiff and does not bend easily",
+            "it suggests that something bad is going to happen",
+            "when something is not strong, loud, or intense",
+            "someone or something that is stylish and graceful"
+          ],
+          "answer": "when something is not strong, loud, or intense",
+          "why": "<strong>Subdued</strong> means when something is not strong, loud, or intense."
+        },
+        {
+          "prompt": "After the long overnight journey, the travelers appeared <strong>______</strong> and bleary eyed.",
+          "options": [
+            "disheveled",
+            "elegant",
+            "rigid",
+            "feisty"
+          ],
+          "answer": "disheveled",
+          "why": "<strong>Disheveled</strong> (adj.) means when something is not neat or tidy."
+        },
+        {
+          "prompt": "I woke up late, and my hair was so <strong>______</strong> that it stuck out everywhere.",
+          "options": [
+            "disheveled",
+            "elegant",
+            "subdued",
+            "foreboding"
+          ],
+          "answer": "disheveled",
+          "why": "<strong>Disheveled</strong> (adj.) means when something is not neat or tidy."
+        },
+        {
+          "prompt": "After playing in the wind all day, the kids came home tired and <strong>______</strong>.",
+          "options": [
+            "disheveled",
+            "elegant",
+            "rigid",
+            "foreboding"
+          ],
+          "answer": "disheveled",
+          "why": "<strong>Disheveled</strong> (adj.) means when something is not neat or tidy."
+        },
+        {
+          "prompt": "Which sentence uses <strong>disheveled</strong> correctly?",
+          "options": [
+            "His shirt was untucked and wrinkled, so he looked disheveled.",
+            "She looked disheveled in her neat, freshly ironed dress.",
+            "The disheveled plan worked perfectly.",
+            "They disheveled the cookies into the oven."
+          ],
+          "answer": "His shirt was untucked and wrinkled, so he looked disheveled.",
+          "why": "<strong>Disheveled</strong> (adj.) means when something is not neat or tidy."
+        },
+        {
+          "prompt": "Which word is the OPPOSITE of <strong>disheveled</strong>?",
+          "options": [
+            "neat",
+            "messy",
+            "untidy",
+            "wrinkled"
+          ],
+          "answer": "neat",
+          "why": "<strong>Disheveled</strong> (adj.) means when something is not neat or tidy."
+        },
+        {
+          "prompt": "What does <strong>disheveled</strong> mean?",
+          "options": [
+            "something that is stiff and does not bend easily",
+            "you figure out a way to achieve a plan",
+            "when something is not neat or tidy",
+            "it suggests that something bad is going to happen"
+          ],
+          "answer": "when something is not neat or tidy",
+          "why": "<strong>Disheveled</strong> means when something is not neat or tidy."
+        },
+        {
+          "prompt": "Of all the teachers, Mr. Kim is known for having the most <strong>______</strong> classroom rules.",
+          "options": [
+            "rigid",
+            "elegant",
+            "feisty",
+            "subdued"
+          ],
+          "answer": "rigid",
+          "why": "<strong>Rigid</strong> (adj.) means something that is stiff and does not bend easily."
+        },
+        {
+          "prompt": "The metal pole was so <strong>______</strong> that it would not bend at all.",
+          "options": [
+            "rigid",
+            "elegant",
+            "subdued",
+            "disheveled"
+          ],
+          "answer": "rigid",
+          "why": "<strong>Rigid</strong> (adj.) means something that is stiff and does not bend easily."
+        },
+        {
+          "prompt": "My new shoes felt <strong>______</strong> and stiff until I wore them for a few weeks.",
+          "options": [
+            "rigid",
+            "elegant",
+            "feisty",
+            "foreboding"
+          ],
+          "answer": "rigid",
+          "why": "<strong>Rigid</strong> (adj.) means something that is stiff and does not bend easily."
+        },
+        {
+          "prompt": "Which sentence uses <strong>rigid</strong> correctly?",
+          "options": [
+            "The cardboard box was rigid enough to stand on without bending.",
+            "The rigid noodle flopped and wiggled off my fork.",
+            "The rigid pillow was soft and squishy.",
+            "She rigid the answer on the test."
+          ],
+          "answer": "The cardboard box was rigid enough to stand on without bending.",
+          "why": "<strong>Rigid</strong> (adj.) means something that is stiff and does not bend easily."
+        },
+        {
+          "prompt": "Something that is <strong>rigid</strong> is...",
+          "options": [
+            "stiff and does not bend easily",
+            "soft and stretchy",
+            "messy and untidy",
+            "bold and energetic"
+          ],
+          "answer": "stiff and does not bend easily",
+          "why": "<strong>Rigid</strong> (adj.) means something that is stiff and does not bend easily."
+        },
+        {
+          "prompt": "What does <strong>rigid</strong> mean?",
+          "options": [
+            "something that is stiff and does not bend easily",
+            "when something is not strong, loud, or intense",
+            "if you were angry or upset about something and refused to talk about it",
+            "someone or something that is stylish and graceful"
+          ],
+          "answer": "something that is stiff and does not bend easily",
+          "why": "<strong>Rigid</strong> means something that is stiff and does not bend easily."
+        },
+        {
+          "prompt": "The <strong>______</strong> debate team never backed down during competitions.",
+          "options": [
+            "feisty",
+            "subdued",
+            "rigid",
+            "disheveled"
+          ],
+          "answer": "feisty",
+          "why": "<strong>Feisty</strong> (adj.) means someone who is bold, energetic, and determined."
+        },
+        {
+          "prompt": "The <strong>______</strong> little puppy barked at the big dog and would not back down.",
+          "options": [
+            "feisty",
+            "subdued",
+            "elegant",
+            "rigid"
+          ],
+          "answer": "feisty",
+          "why": "<strong>Feisty</strong> (adj.) means someone who is bold, energetic, and determined."
+        },
+        {
+          "prompt": "My <strong>______</strong> little sister never gives up, even when she loses a game.",
+          "options": [
+            "feisty",
+            "subdued",
+            "rigid",
+            "foreboding"
+          ],
+          "answer": "feisty",
+          "why": "<strong>Feisty</strong> (adj.) means someone who is bold, energetic, and determined."
+        },
+        {
+          "prompt": "Which sentence uses <strong>feisty</strong> correctly?",
+          "options": [
+            "The feisty goalkeeper dove for every ball and never gave up.",
+            "The feisty kitten slept quietly all day without moving.",
+            "The feisty rock sat still at the bottom of the river.",
+            "He feisty his lunch box in his bag."
+          ],
+          "answer": "The feisty goalkeeper dove for every ball and never gave up.",
+          "why": "<strong>Feisty</strong> (adj.) means someone who is bold, energetic, and determined."
+        },
+        {
+          "prompt": "A <strong>feisty</strong> person is...",
+          "options": [
+            "bold, energetic, and determined",
+            "shy and quiet",
+            "tired and sleepy",
+            "neat and tidy"
+          ],
+          "answer": "bold, energetic, and determined",
+          "why": "<strong>Feisty</strong> (adj.) means someone who is bold, energetic, and determined."
+        },
+        {
+          "prompt": "What does <strong>feisty</strong> mean?",
+          "options": [
+            "when something is not strong, loud, or intense",
+            "if you were angry or upset about something and refused to talk about it",
+            "something that is stiff and does not bend easily",
+            "someone who is bold, energetic, and determined"
+          ],
+          "answer": "someone who is bold, energetic, and determined",
+          "why": "<strong>Feisty</strong> means someone who is bold, energetic, and determined."
+        },
+        {
+          "prompt": "Instead of joining the game, he stood off to the side, <strong>______</strong> in silence.",
+          "options": [
+            "sulking",
+            "devising",
+            "scowled",
+            "intimidating"
+          ],
+          "answer": "sulking",
+          "why": "<strong>Sulk</strong> (v.) means if you were angry or upset about something and refused to talk about it."
+        },
+        {
+          "prompt": "When she didn't get the toy she wanted, my cousin went to her room to <strong>______</strong>.",
+          "options": [
+            "sulk",
+            "devise",
+            "intimidate",
+            "elegant"
+          ],
+          "answer": "sulk",
+          "why": "<strong>Sulk</strong> (v.) means if you were angry or upset about something and refused to talk about it."
+        },
+        {
+          "prompt": "Don't <strong>______</strong> about losing. Let's practice and try again next time!",
+          "options": [
+            "sulk",
+            "devise",
+            "intimidate",
+            "rigid"
+          ],
+          "answer": "sulk",
+          "why": "<strong>Sulk</strong> (v.) means if you were angry or upset about something and refused to talk about it."
+        },
+        {
+          "prompt": "Which sentence uses <strong>sulk</strong> correctly?",
+          "options": [
+            "Tom sulked in the corner and wouldn't talk to anyone after the argument.",
+            "She sulked happily while telling everyone about her trip.",
+            "The bird sulked a beautiful song from the tree.",
+            "We sulked the cake into eight pieces."
+          ],
+          "answer": "Tom sulked in the corner and wouldn't talk to anyone after the argument.",
+          "why": "<strong>Sulk</strong> (v.) means if you were angry or upset about something and refused to talk about it."
+        },
+        {
+          "prompt": "When you <strong>sulk</strong>, you...",
+          "options": [
+            "are upset and refuse to talk about it",
+            "shout and cheer loudly",
+            "come up with a clever plan",
+            "look neat and stylish"
+          ],
+          "answer": "are upset and refuse to talk about it",
+          "why": "<strong>Sulk</strong> (v.) means if you were angry or upset about something and refused to talk about it."
+        },
+        {
+          "prompt": "What does <strong>sulk</strong> mean?",
+          "options": [
+            "it suggests that something bad is going to happen",
+            "you figure out a way to achieve a plan",
+            "when you feel afraid of someone or something",
+            "if you were angry or upset about something and refused to talk about it"
+          ],
+          "answer": "if you were angry or upset about something and refused to talk about it",
+          "why": "<strong>Sulk</strong> means if you were angry or upset about something and refused to talk about it."
+        },
+        {
+          "prompt": "The inventor carefully <strong>______</strong> new experiments before presenting them to the class.",
+          "options": [
+            "devised",
+            "sulked",
+            "scowled",
+            "intimidated"
+          ],
+          "answer": "devised",
+          "why": "<strong>Devise</strong> (v.) means you figure out a way to achieve a plan."
+        },
+        {
+          "prompt": "Our team <strong>______</strong> a clever plan to win the science fair.",
+          "options": [
+            "devised",
+            "sulked",
+            "scowled",
+            "subdued"
+          ],
+          "answer": "devised",
+          "why": "<strong>Devise</strong> (v.) means you figure out a way to achieve a plan."
+        },
+        {
+          "prompt": "The kids tried to <strong>______</strong> a way to get the ball down from the tree.",
+          "options": [
+            "devise",
+            "sulk",
+            "scowl",
+            "intimidate"
+          ],
+          "answer": "devise",
+          "why": "<strong>Devise</strong> (v.) means you figure out a way to achieve a plan."
+        },
+        {
+          "prompt": "Which sentence uses <strong>devise</strong> correctly?",
+          "options": [
+            "The students devised a plan to keep the classroom clean.",
+            "He devised loudly at the angry dog.",
+            "The flowers devised in the warm sunshine.",
+            "She devised her messy hair in the wind."
+          ],
+          "answer": "The students devised a plan to keep the classroom clean.",
+          "why": "<strong>Devise</strong> (v.) means you figure out a way to achieve a plan."
+        },
+        {
+          "prompt": "When you <strong>devise</strong> something, you...",
+          "options": [
+            "figure out a way to achieve a plan",
+            "refuse to talk to anyone",
+            "frown angrily",
+            "make someone afraid"
+          ],
+          "answer": "figure out a way to achieve a plan",
+          "why": "<strong>Devise</strong> (v.) means you figure out a way to achieve a plan."
+        },
+        {
+          "prompt": "What does <strong>devise</strong> mean?",
+          "options": [
+            "when something is not strong, loud, or intense",
+            "you figure out a way to achieve a plan",
+            "someone who is bold, energetic, and determined",
+            "it suggests that something bad is going to happen"
+          ],
+          "answer": "you figure out a way to achieve a plan",
+          "why": "<strong>Devise</strong> means you figure out a way to achieve a plan."
+        }
+      ]
     },
     // __MORE_STORIES__
   };
@@ -10769,7 +11579,7 @@
   // =========================================================================
   const subjects = [
     { id: "vocab", icon: "📖", name: "Vocabulary Workshop", status: "Units 1–18 ready", enabled: true },
-    { id: "reading", icon: "📚", name: "Reading", status: "Stories 1–3 ready", enabled: true },
+    { id: "reading", icon: "📚", name: "Reading", status: "Stories 1–4 ready", enabled: true },
     { id: "math", icon: "🔢", name: "Math", status: "Chapters 1–2 ready", enabled: true },
     { id: "grammar", icon: "✏️", name: "ENG Grammar", status: "Units 1–2 ready", enabled: true },
     { id: "social", icon: "🌍", name: "Social Studies", status: "Chapters 1 & 4 ready", enabled: true },
@@ -10829,11 +11639,15 @@
     },
     unit4: {
       name: "第四課：飛行夢",
+      worksheet: "G4-1 中L4.png",
+      worksheetLabel: "聽寫小考卷 (Dictation Quiz Sheet)",
       lessons: [],
       quizBank: [],
     },
     unit5: {
       name: "第五課：月光下",
+      worksheet: "G4-1 中L5.png",
+      worksheetLabel: "聽寫小考卷 (Dictation Quiz Sheet)",
       lessons: [],
       quizBank: [],
     },
@@ -10843,6 +11657,582 @@
       quizBank: [],
     },
   };
+
+  // 生字注音 flashcards — from the 聽寫小考卷 for each lesson (red = 本課生字)
+  const SHENGZI = {"unit1":[{"n":1,"w":[["拉","ㄌㄚ"],["緊","ㄐㄧㄣˇ"],["忠","ㄓㄨㄥ",1],["實","ㄕˊ"],["守","ㄕㄡˇ"],["衛","ㄨㄟˋ",1]]},{"n":2,"w":[["椰","ㄧㄝˊ",1],["子","˙ㄗ"],["樹","ㄕㄨˋ"],"|",["唾","ㄊㄨㄛˋ",1],["沫","ㄇㄛˋ",1]]},{"n":3,"w":[["寒","ㄏㄢˊ",1],["冷","ㄌㄥˇ"],["冰","ㄅㄧㄥ"],["雪","ㄒㄩㄝˇ"]]},{"n":4,"w":[["臺","ㄊㄞˊ"],["灣","ㄨㄢ",1],["街","ㄐㄧㄝ",1],["上","ㄕㄤˋ"],["跳","ㄊㄧㄠˋ"],["舞","ㄨˇ"]]},{"n":5,"w":[["甜","ㄊㄧㄢˊ",1],["蜜","ㄇㄧˋ"],["香","ㄒㄧㄤ"],["蕉","ㄐㄧㄠ",1],["糖","ㄊㄤˊ",1],["果","ㄍㄨㄛˇ"]]},{"n":6,"w":[["寶","ㄅㄠˇ"],["島","ㄉㄠˇ",1],["童","ㄊㄨㄥˊ",1],["話","ㄏㄨㄚˋ"],["王","ㄨㄤˊ"],["國","ㄍㄨㄛˊ"]]},{"n":7,"w":[["鳳","ㄈㄥˋ"],["梨","ㄌㄧˊ"],["健","ㄐㄧㄢˋ"],["康","ㄎㄤ"],["雲","ㄩㄣˊ"],["雀","ㄑㄩㄝˋ"]]},{"n":8,"w":[["懷","ㄏㄨㄞˊ"],["裡","ㄌㄧˇ"],["微","ㄨㄟˊ"],["笑","ㄒㄧㄠˋ"]]},{"n":9,"w":[["唾","ㄊㄨㄛˋ",1],["手","ㄕㄡˇ"],["可","ㄎㄜˇ"],["得","ㄉㄜˊ"]]},{"n":10,"w":[["相","ㄒㄧㄤ"],["濡","ㄖㄨˊ"],["以","ㄧˇ"],["沫","ㄇㄛˋ",1]]},{"n":11,"w":[["忠","ㄓㄨㄥ",1],["心","ㄒㄧㄣ"],["耿","ㄍㄥˇ"],["耿","ㄍㄥˇ"]]},{"n":12,"w":[["精","ㄐㄧㄥ"],["衛","ㄨㄟˋ",1],["填","ㄊㄧㄢˊ"],["海","ㄏㄞˇ"]]},{"n":13,"w":[["街","ㄐㄧㄝ",1],["談","ㄊㄢˊ"],["巷","ㄒㄧㄤˋ"],["議","ㄧˋ"]]},{"n":14,"w":[["返","ㄈㄢˇ"],["老","ㄌㄠˇ"],["還","ㄏㄨㄢˊ"],["童","ㄊㄨㄥˊ",1]]},{"n":15,"w":[["成","ㄔㄥˊ"],["群","ㄑㄩㄣˊ"],["結","ㄐㄧㄝˊ"],["隊","ㄉㄨㄟˋ",1]]},{"n":16,"w":[["甜","ㄊㄧㄢˊ",1],["言","ㄧㄢˊ"],["蜜","ㄇㄧˋ"],["語","ㄩˇ"]]}],"unit2":[{"n":1,"w":[["台","ㄊㄞˊ"],["南","ㄋㄢˊ"],["家","ㄐㄧㄚ"],["鄉","ㄒㄧㄤ"],["旅","ㄌㄩˇ"],["遊","ㄧㄡˊ"]]},{"n":2,"w":[["布","ㄅㄨˋ"],["袋","ㄉㄞˋ"],["戲","ㄒㄧˋ"],["明","ㄇㄧㄥˊ"],["信","ㄒㄧㄣˋ"],["片","ㄆㄧㄢˋ"]]},{"n":3,"w":[["宜","ㄧˊ"],["蘭","ㄌㄢˊ"],["團","ㄊㄨㄢˊ"],["聚","ㄐㄩˋ",1],["興","ㄒㄧㄥ"],["奮","ㄈㄣˋ"]]},{"n":4,"w":[["驚","ㄐㄧㄥ"],["訝","ㄧㄚˋ",1],["水","ㄕㄨㄟˇ"],["火","ㄏㄨㄛˇ"],["同","ㄊㄨㄥˊ"],["源","ㄩㄢˊ"]]},{"n":5,"w":[["抹","ㄇㄛˇ",1],["蘇","ㄙㄨ"],["澳","ㄠˋ"],["冷","ㄌㄥˇ"],["溫","ㄨㄣ"],["泉","ㄑㄩㄢˊ",1]]},{"n":6,"w":[["汽","ㄑㄧˋ",1],["水","ㄕㄨㄟˇ"],["快","ㄎㄨㄞˋ"],["速","ㄙㄨˋ",1],["布","ㄅㄨˋ"],["滿","ㄇㄢˇ"]]},{"n":7,"w":[["彷","ㄈㄤˇ",1],["彿","ㄈㄨˊ",1],["牙","ㄧㄚˊ",1],["齒","ㄔˇ",1],["打","ㄉㄚˇ"],["架","ㄐㄧㄚˋ",1]]},{"n":8,"w":[["見","ㄐㄧㄢˋ"],["識","ㄕˋ"],["大","ㄉㄚˋ"],["開","ㄎㄞ"],["眼","ㄧㄢˇ"],["界","ㄐㄧㄝˋ"]]},{"n":9,"w":[["左","ㄗㄨㄛˇ"],["鎮","ㄓㄣˋ"],["恐","ㄎㄨㄥˇ",1],["龍","ㄌㄨㄥˊ"],["園","ㄩㄢˊ"],["區","ㄑㄩ",1]]},{"n":10,"w":[["陀","ㄊㄨㄛˊ",1],["螺","ㄌㄨㄛˊ",1],["傳","ㄔㄨㄢˊ"],["統","ㄊㄨㄥˇ"],["藝","ㄧˋ"],["術","ㄕㄨˋ"]]},{"n":11,"w":[["文","ㄨㄣˊ"],["思","ㄙ"],["泉","ㄑㄩㄢˊ",1],["湧","ㄩㄥˇ"]]},{"n":12,"w":[["不","ㄅㄨˋ"],["足","ㄗㄨˊ"],["掛","ㄍㄨㄚˋ"],["齒","ㄔˇ",1]]},{"n":13,"w":[["疊","ㄉㄧㄝˊ"],["床","ㄔㄨㄤˊ"],["架","ㄐㄧㄚˋ",1],["屋","ㄨ"]]},{"n":14,"w":[["爭","ㄓㄥ"],["先","ㄒㄧㄢ"],["恐","ㄎㄨㄥˇ",1],["後","ㄏㄡˋ"]]},{"n":15,"w":[["聚","ㄐㄩˋ",1],["精","ㄐㄧㄥ"],["會","ㄏㄨㄟˋ"],["神","ㄕㄣˊ"]]}],"unit3":[{"n":1,"w":[["鼓","ㄍㄨˇ",1],["腮","ㄙㄞ",1],["幫","ㄅㄤ"],["子","˙ㄗ"],["鏡","ㄐㄧㄥˋ",1],["頭","ㄊㄡˊ"]]},{"n":2,"w":[["沿","ㄧㄢˊ"],["著","˙ㄓㄜ"],["濁","ㄓㄨㄛˊ"],["水","ㄕㄨㄟˇ"],["溪","ㄒㄧ"]]},{"n":3,"w":[["軌","ㄍㄨㄟˇ",1],["道","ㄉㄠˋ"],["與","ㄩˇ",1],["高","ㄍㄠ"],["樓","ㄌㄡˊ",1]]},{"n":4,"w":[["耕","ㄍㄥ",1],["耘","ㄩㄣˊ",1],["種","ㄓㄨㄥˋ"],["植","ㄓˊ"],["蔬","ㄕㄨ",1],["菜","ㄘㄞˋ"]]},{"n":5,"w":[["白","ㄅㄞˊ"],["鷺","ㄌㄨˋ"],["鷥","ㄙ"],["賣","ㄇㄞˋ"],["棉","ㄇㄧㄢˊ"],["花","ㄏㄨㄚ"]]},{"n":6,"w":[["上","ㄕㄤˋ"],["網","ㄨㄤˇ",1],["推","ㄊㄨㄟ"],["廣","ㄍㄨㄤˇ"],["柳","ㄌㄧㄡˇ",1],["丁","ㄉㄧㄥ",1]]},{"n":7,"w":[["參","ㄘㄢ"],["與","ㄩˋ"],["記","ㄐㄧˋ"],["錄","ㄌㄨˋ",1],["容","ㄖㄨㄥˊ"],["顏","ㄧㄢˊ"]]},{"n":8,"w":[["揮","ㄏㄨㄟ"],["汗","ㄏㄢˋ"],["如","ㄖㄨˊ"],["雨","ㄩˇ"],["金","ㄐㄧㄣ"],["粉","ㄈㄣˇ",1]]},{"n":9,"w":[["撿","ㄐㄧㄢˇ"],["字","ㄗˋ"],["紙","ㄓˇ"],["烤","ㄎㄠˇ",1],["香","ㄒㄧㄤ"],["腸","ㄔㄤˊ"]]},{"n":10,"w":[["即","ㄐㄧˊ"],["使","ㄕˇ"],["印","ㄧㄣˋ"],["象","ㄒㄧㄤˋ"],["深","ㄕㄣ"],["刻","ㄎㄜˋ"]]},{"n":11,"w":[["明","ㄇㄧㄥˊ"],["鏡","ㄐㄧㄥˋ",1],["高","ㄍㄠ"],["懸","ㄒㄩㄢˊ"]]},{"n":12,"w":[["無","ㄨˊ"],["與","ㄩˇ",1],["倫","ㄌㄨㄣˊ"],["比","ㄅㄧˇ"]]},{"n":13,"w":[["人","ㄖㄣˊ"],["去","ㄑㄩˋ"],["樓","ㄌㄡˊ",1],["空","ㄎㄨㄥ"]]},{"n":14,"w":[["網","ㄨㄤˇ",1],["開","ㄎㄞ"],["一","ㄧˊ"],["面","ㄇㄧㄢˋ"]]},{"n":15,"w":[["柳","ㄌㄧㄡˇ",1],["暗","ㄢˋ"],["花","ㄏㄨㄚ"],["明","ㄇㄧㄥˊ"]]}],"unit4":[{"n":1,"w":[["萊","ㄌㄞˊ"],["特","ㄊㄜˋ"],["兄","ㄒㄩㄥ",1],["弟","ㄉㄧˋ"],["目","ㄇㄨˋ"],["標","ㄅㄧㄠ",1]]},{"n":2,"w":[["無","ㄨˊ"],["論","ㄌㄨㄣˋ",1],["老","ㄌㄠˇ"],["鷹","ㄧㄥ",1],["飛","ㄈㄟ"],["翔","ㄒㄧㄤˊ",1]]},{"n":3,"w":[["滑","ㄏㄨㄚˊ"],["翔","ㄒㄧㄤˊ"],["機","ㄐㄧ"],["升","ㄕㄥ",1],["空","ㄎㄨㄥ"]]},{"n":4,"w":[["生","ㄕㄥ"],["命","ㄇㄧㄥˋ",1],["意","ㄧˋ"],["義","ㄧˋ",1]]},{"n":5,"w":[["控","ㄎㄨㄥˋ",1],["制","ㄓˋ",1],["改","ㄍㄞˇ"],["良","ㄌㄧㄤˊ",1],["研","ㄧㄢˊ",1],["究","ㄐㄧㄡˋ"]]},{"n":6,"w":[["一","ㄧˊ"],["座","ㄗㄨㄛˋ"],["紀","ㄐㄧˋ",1],["念","ㄋㄧㄢˋ"],["碑","ㄅㄟ",1]]},{"n":7,"w":[["左","ㄗㄨㄛˇ"],["思","ㄙ"],["右","ㄧㄡˋ"],["想","ㄒㄧㄤˇ"]]},{"n":8,"w":[["靈","ㄌㄧㄥˊ",1],["光","ㄍㄨㄤ"],["一","ㄧˋ"],["閃","ㄕㄢˇ"]]},{"n":9,"w":[["異","ㄧˋ"],["想","ㄒㄧㄤˇ"],["天","ㄊㄧㄢ"],["開","ㄎㄞ"]]},{"n":10,"w":[["高","ㄍㄠ"],["談","ㄊㄢˊ"],["闊","ㄎㄨㄛˋ"],["論","ㄌㄨㄣˋ",1]]},{"n":11,"w":[["先","ㄒㄧㄢ"],["發","ㄈㄚ"],["制","ㄓˋ",1],["人","ㄖㄣˊ"]]},{"n":12,"w":[["耳","ㄦˇ"],["提","ㄊㄧˊ"],["面","ㄇㄧㄢˋ"],["命","ㄇㄧㄥˋ",1]]},{"n":13,"w":[["義","ㄧˋ",1],["無","ㄨˊ"],["反","ㄈㄢˇ"],["顧","ㄍㄨˋ"]]},{"n":14,"w":[["標","ㄅㄧㄠ",1],["新","ㄒㄧㄣ"],["立","ㄌㄧˋ"],["異","ㄧˋ"]]},{"n":15,"w":[["良","ㄌㄧㄤˊ",1],["藥","ㄧㄠˋ"],["苦","ㄎㄨˇ"],["口","ㄎㄡˇ"]]}],"unit5":[{"n":1,"w":[["月","ㄩㄝˋ"],["白","ㄅㄞˊ"],["風","ㄈㄥ"],["清","ㄑㄧㄥ"],["皎","ㄐㄧㄠˇ",1],["潔","ㄐㄧㄝˊ"]]},{"n":2,"w":[["倒","ㄉㄠˋ"],["映","ㄧㄥˋ"],"|",["掛","ㄍㄨㄚˋ",1],["布","ㄅㄨˋ"],["幕","ㄇㄨˋ"]]},{"n":3,"w":[["登","ㄉㄥ",1],["月","ㄩㄝˋ"],"|",["科","ㄎㄜ",1],["學","ㄒㄩㄝˊ"]]},{"n":4,"w":[["曾","ㄘㄥˊ",1],["經","ㄐㄧㄥ"],["思","ㄙ"],["考","ㄎㄠˇ",1],["徘","ㄆㄞˊ",1],["徊","ㄏㄨㄞˊ",1]]},{"n":5,"w":[["凝","ㄋㄧㄥˊ",1],["視","ㄕˋ"],["這","ㄓㄜˋ"],["輪","ㄌㄨㄣˊ",1],["明","ㄇㄧㄥˊ"],["月","ㄩㄝˋ"]]},{"n":6,"w":[["李","ㄌㄧˇ"],["白","ㄅㄞˊ"],["靈","ㄌㄧㄥˊ"],["感","ㄍㄢˇ"],["來","ㄌㄞˊ"],["源","ㄩㄢˊ"]]},{"n":7,"w":[["尋","ㄒㄩㄣˊ",1],["找","ㄓㄠˇ"],["文","ㄨㄣˊ"],["學","ㄒㄩㄝˊ"],["答","ㄉㄚˊ"],["案","ㄢˋ",1]]},{"n":8,"w":[["化","ㄏㄨㄚˋ"],["妝","ㄓㄨㄤ",1],["循","ㄒㄩㄣˊ",1],["路","ㄌㄨˋ"],["回","ㄏㄨㄟˊ"],["家","ㄐㄧㄚ"]]},{"n":9,"w":[["牽","ㄑㄧㄢ"],["腸","ㄔㄤˊ"],["掛","ㄍㄨㄚˋ",1],["肚","ㄉㄨˋ"]]},{"n":10,"w":[["美","ㄇㄟˇ"],["輪","ㄌㄨㄣˊ",1],["美","ㄇㄟˇ"],["奐","ㄏㄨㄢˋ"]]},{"n":11,"w":[["金","ㄐㄧㄣ"],["科","ㄎㄜ",1],["玉","ㄩˋ"],["律","ㄌㄩˋ"]]},{"n":12,"w":[["循","ㄒㄩㄣˊ",1],["規","ㄍㄨㄟ"],["蹈","ㄉㄠˋ"],["矩","ㄐㄩˇ"]]},{"n":13,"w":[["拍","ㄆㄞ"],["案","ㄢˋ",1],["叫","ㄐㄧㄠˋ"],["絕","ㄐㄩㄝˊ"]]},{"n":14,"w":[["又","ㄧㄡˋ"],["疑","ㄧˊ"],["瑤","ㄧㄠˊ",1],["臺","ㄊㄞˊ"],["鏡","ㄐㄧㄥˋ"]]},{"n":15,"w":[["飛","ㄈㄟ"],["在","ㄗㄞˋ"],["青","ㄑㄧㄥ"],["雲","ㄩㄣˊ"],["端","ㄉㄨㄢ"]]}]};
+
+  // 文字大不同 (look-alike characters & 多音字) — L1–L6, from G4-1 文字大不同_L1-L6 (1) & (2)
+  const WENZI = {
+ "round1": [
+  {
+   "prompt": "選出正確的國字：學校鼓勵學生多吃（　　）菜。",
+   "options": [
+    "蔬",
+    "疏"
+   ],
+   "answer": "蔬",
+   "why": "答案是「蔬」（ㄕㄨ）：學校鼓勵學生多吃<u>蔬</u>菜。 💡 蔬（草字頭）：蔬菜、蔬果；疏：疏通、疏遠。"
+  },
+  {
+   "prompt": "選出正確的國字：妹妹把餅乾放進烤箱（　　）。",
+   "options": [
+    "烤",
+    "拷",
+    "銬"
+   ],
+   "answer": "烤",
+   "why": "答案是「烤」（ㄎㄠˇ）：妹妹把餅乾放進烤箱<u>烤</u>。 💡 烤（火部）：用火烤，如烤箱、烤地瓜；拷（手部）：拷問、拷打；銬（金部）：手銬。"
+  },
+  {
+   "prompt": "「與」在這裡怎麼念？我們要珍惜<strong><u>與</u></strong>家人相處的時光。",
+   "options": [
+    "ㄩˇ",
+    "ㄩˋ"
+   ],
+   "answer": "ㄩˇ",
+   "why": "答案是 ㄩˇ。💡 「與」讀ㄩˇ時是「和、跟」的意思，如：與家人、老師與同學。"
+  },
+  {
+   "prompt": "選出正確的國字：天空飄著幾朵白雲，看起來十分（　　）曠。",
+   "options": [
+    "空",
+    "控"
+   ],
+   "answer": "空",
+   "why": "答案是「空」（ㄎㄨㄥ）：天空飄著幾朵白雲，看起來十分<u>空</u>曠。 💡 空：天空、空曠、空手、有空；控（手部）：控制。"
+  },
+  {
+   "prompt": "選出正確的國字：這隻野（　　）正在森林裡尋找食物。",
+   "options": [
+    "良",
+    "浪",
+    "狼"
+   ],
+   "answer": "狼",
+   "why": "答案是「狼」（ㄌㄤˊ）：這隻野<u>狼</u>正在森林裡尋找食物。 💡 狼（犬部）：動物，如野狼、灰狼；良：善良；浪（水部）：浪花。"
+  },
+  {
+   "prompt": "「行」在這裡怎麼念？爸爸到銀<strong><u>行</u></strong>辦理存款。",
+   "options": [
+    "ㄒㄧㄥˊ",
+    "ㄏㄤˊ",
+    "ㄒㄧㄥˋ"
+   ],
+   "answer": "ㄏㄤˊ",
+   "why": "答案是 ㄏㄤˊ。💡 「行」讀ㄏㄤˊ：銀行、行業、各行各業。"
+  },
+  {
+   "prompt": "選出正確的國字：姊姊參加舞臺表演前，仔細地化（　　）。",
+   "options": [
+    "妝",
+    "狀"
+   ],
+   "answer": "妝",
+   "why": "答案是「妝」（ㄓㄨㄤ）：姊姊參加舞臺表演前，仔細地化<u>妝</u>。 💡 妝（女部）：化妝、補妝；狀（犬部）：形狀、獎狀、現狀。"
+  },
+  {
+   "prompt": "選出正確的國字：爺爺每天早上都會去公園（　　）山步道散步。",
+   "options": [
+    "燈",
+    "登"
+   ],
+   "answer": "登",
+   "why": "答案是「登」（ㄉㄥ）：爺爺每天早上都會去公園<u>登</u>山步道散步。 💡 登：往上走或寫上去，如登山、登記；燈（火部）：紅綠燈。"
+  },
+  {
+   "prompt": "「曾」在這裡怎麼念？我<strong><u>曾</u></strong>經在這座圖書館借過書。",
+   "options": [
+    "ㄘㄥˊ",
+    "ㄗㄥ"
+   ],
+   "answer": "ㄘㄥˊ",
+   "why": "答案是 ㄘㄥˊ。💡 「曾」讀ㄘㄥˊ：曾經。"
+  },
+  {
+   "prompt": "選出正確的國字：一顆（　　）石落入沙漠。",
+   "options": [
+    "隕",
+    "損"
+   ],
+   "answer": "隕",
+   "why": "答案是「隕」（ㄩㄣˇ）：一顆<u>隕</u>石落入沙漠。 💡 隕（阜部）：從高處落下，如隕石、隕星；損（手部）：損壞、損失。"
+  },
+  {
+   "prompt": "選出正確的國字：老師提醒大家要遵守規（　　）。",
+   "options": [
+    "距",
+    "拒",
+    "矩"
+   ],
+   "answer": "矩",
+   "why": "答案是「矩」（ㄐㄩˇ）：老師提醒大家要遵守規<u>矩</u>。 💡 矩（矢部）：規矩；距（足部）：距離；拒（手部）：拒絕。"
+  },
+  {
+   "prompt": "「好」在這裡怎麼念？妹妹非常<strong><u>好</u></strong>奇盒子裡裝了什麼。",
+   "options": [
+    "ㄏㄠˇ",
+    "ㄏㄠˋ"
+   ],
+   "answer": "ㄏㄠˋ",
+   "why": "答案是 ㄏㄠˋ。💡 「好」讀ㄏㄠˋ：喜歡，如好奇、好動、好學。"
+  },
+  {
+   "prompt": "選出正確的國字：這條河道需要定期（　　）通。",
+   "options": [
+    "蔬",
+    "疏"
+   ],
+   "answer": "疏",
+   "why": "答案是「疏」（ㄕㄨ）：這條河道需要定期<u>疏</u>通。 💡 疏：疏通、疏遠；蔬（草字頭）：蔬菜。"
+  },
+  {
+   "prompt": "選出正確的國字：警察拿出手（　　）控制嫌犯。",
+   "options": [
+    "烤",
+    "拷",
+    "銬"
+   ],
+   "answer": "銬",
+   "why": "答案是「銬」（ㄎㄠˋ）：警察拿出手<u>銬</u>控制嫌犯。 💡 銬（金部）：金屬做的手銬；烤（火部）：烤箱；拷（手部）：拷問。"
+  },
+  {
+   "prompt": "「與」在這裡怎麼念？弟弟積極參<strong><u>與</u></strong>班級活動。",
+   "options": [
+    "ㄩˇ",
+    "ㄩˋ"
+   ],
+   "answer": "ㄩˋ",
+   "why": "答案是 ㄩˋ。💡 「與」讀ㄩˋ時是「參加」的意思，如：參與。"
+  },
+  {
+   "prompt": "選出正確的國字：媽媽希望我能學會（　　）制情緒。",
+   "options": [
+    "空",
+    "控"
+   ],
+   "answer": "控",
+   "why": "答案是「控」（ㄎㄨㄥˋ）：媽媽希望我能學會<u>控</u>制情緒。 💡 控（手部）：用手掌握，如控制；空：天空、有空。"
+  },
+  {
+   "prompt": "選出正確的國字：他是一位善（　　）又熱心的人。",
+   "options": [
+    "良",
+    "浪",
+    "狼"
+   ],
+   "answer": "良",
+   "why": "答案是「良」（ㄌㄧㄤˊ）：他是一位善<u>良</u>又熱心的人。 💡 良：好的，如善良、優良；浪（水部）：浪花、浪費；狼（犬部）：野狼。"
+  },
+  {
+   "prompt": "「行」在這裡怎麼念？這位學生的品<strong><u>行</u></strong>十分端正。",
+   "options": [
+    "ㄒㄧㄥˊ",
+    "ㄏㄤˊ",
+    "ㄒㄧㄥˋ"
+   ],
+   "answer": "ㄒㄧㄥˋ",
+   "why": "答案是 ㄒㄧㄥˋ。💡 「行」讀ㄒㄧㄥˋ：品行（一個人的行為表現）。"
+  },
+  {
+   "prompt": "選出正確的國字：老師請同學描述物品的形（　　）。",
+   "options": [
+    "妝",
+    "狀"
+   ],
+   "answer": "狀",
+   "why": "答案是「狀」（ㄓㄨㄤˋ）：老師請同學描述物品的形<u>狀</u>。 💡 狀（犬部）：形狀、獎狀、現狀；妝（女部）：化妝。"
+  },
+  {
+   "prompt": "選出正確的國字：路口的紅綠（　　）提醒行人注意安全。",
+   "options": [
+    "燈",
+    "登"
+   ],
+   "answer": "燈",
+   "why": "答案是「燈」（ㄉㄥ）：路口的紅綠<u>燈</u>提醒行人注意安全。 💡 燈（火部）：會發光，如紅綠燈、聚光燈；登：往上走或寫上去，如登山、登記。"
+  },
+  {
+   "prompt": "「曾」在這裡怎麼念？我的同桌姓<strong><u>曾</u></strong>，名字叫小明。",
+   "options": [
+    "ㄘㄥˊ",
+    "ㄗㄥ"
+   ],
+   "answer": "ㄗㄥ",
+   "why": "答案是 ㄗㄥ。💡 「曾」讀ㄗㄥ：當姓氏用，如曾先生。"
+  },
+  {
+   "prompt": "選出正確的國字：搬運時要小心，避免物品（　　）壞。",
+   "options": [
+    "隕",
+    "損"
+   ],
+   "answer": "損",
+   "why": "答案是「損」（ㄙㄨㄣˇ）：搬運時要小心，避免物品<u>損</u>壞。 💡 損（手部）：損壞、損失；隕（阜部）：隕石。"
+  },
+  {
+   "prompt": "選出正確的國字：這兩棵樹之間的（　　）離很近。",
+   "options": [
+    "距",
+    "拒",
+    "矩"
+   ],
+   "answer": "距",
+   "why": "答案是「距」（ㄐㄩˋ）：這兩棵樹之間的<u>距</u>離很近。 💡 距（足部）：兩地之間的長度，如距離；拒（手部）：拒絕；矩（矢部）：規矩。"
+  },
+  {
+   "prompt": "「好」在這裡怎麼念？奶奶煮的湯真<strong><u>好</u></strong>喝。",
+   "options": [
+    "ㄏㄠˇ",
+    "ㄏㄠˋ"
+   ],
+   "answer": "ㄏㄠˇ",
+   "why": "答案是 ㄏㄠˇ。💡 「好」讀ㄏㄠˇ：很棒、不錯，如好喝、天氣真好。"
+  },
+  {
+   "prompt": "選出正確的國字：我們不應該隨意（　　）絕別人的好意。",
+   "options": [
+    "距",
+    "拒",
+    "矩"
+   ],
+   "answer": "拒",
+   "why": "答案是「拒」（ㄐㄩˋ）：我們不應該隨意<u>拒</u>絕別人的好意。 💡 拒（手部）：用手推開，如拒絕；距（足部）：距離；矩（矢部）：規矩。"
+  },
+  {
+   "prompt": "選出正確的國字：海邊的（　　）花拍打著礁石。",
+   "options": [
+    "良",
+    "浪",
+    "狼"
+   ],
+   "answer": "浪",
+   "why": "答案是「浪」（ㄌㄤˋ）：海邊的<u>浪</u>花拍打著礁石。 💡 浪（水部）：浪花、浪費；良：善良；狼（犬部）：野狼。"
+  },
+  {
+   "prompt": "選出正確的國字：犯人受到嚴厲的（　　）問。",
+   "options": [
+    "烤",
+    "拷",
+    "銬"
+   ],
+   "answer": "拷",
+   "why": "答案是「拷」（ㄎㄠˇ）：犯人受到嚴厲的<u>拷</u>問。 💡 拷（手部）：用手打，如拷問、拷打；烤（火部）：烤箱；銬（金部）：手銬。"
+  },
+  {
+   "prompt": "「行」在這裡怎麼念？小隊沿著山路繼續前<strong><u>行</u></strong>。",
+   "options": [
+    "ㄒㄧㄥˊ",
+    "ㄏㄤˊ",
+    "ㄒㄧㄥˋ"
+   ],
+   "answer": "ㄒㄧㄥˊ",
+   "why": "答案是 ㄒㄧㄥˊ。💡 「行」讀ㄒㄧㄥˊ：走、做，如前行、言行、行人。"
+  },
+  {
+   "prompt": "選出正確的國字：媽媽提醒弟弟不要在房間裡（　　）手亂揮。",
+   "options": [
+    "空",
+    "控"
+   ],
+   "answer": "空",
+   "why": "答案是「空」（ㄎㄨㄥ）：媽媽提醒弟弟不要在房間裡<u>空</u>手亂揮。 💡 空：天空、空曠、空手、有空；控（手部）：控制。"
+  },
+  {
+   "prompt": "選出正確的國字：校長頒發獎（　　）給表現優秀的學生。",
+   "options": [
+    "妝",
+    "狀"
+   ],
+   "answer": "狀",
+   "why": "答案是「狀」（ㄓㄨㄤˋ）：校長頒發獎<u>狀</u>給表現優秀的學生。 💡 狀（犬部）：形狀、獎狀、現狀；妝（女部）：化妝。"
+  }
+ ],
+ "round2": [
+  {
+   "prompt": "選出正確的國字：警察替犯人解開手（　　）。",
+   "options": [
+    "烤",
+    "拷",
+    "銬"
+   ],
+   "answer": "銬",
+   "why": "答案是「銬」（ㄎㄠˋ）：警察替犯人解開手<u>銬</u>。 💡 銬（金部）：金屬做的手銬；烤（火部）：烤箱；拷（手部）：拷問。"
+  },
+  {
+   "prompt": "選出正確的國字：他把事情的現（　　）向老師說明。",
+   "options": [
+    "妝",
+    "狀"
+   ],
+   "answer": "狀",
+   "why": "答案是「狀」（ㄓㄨㄤˋ）：他把事情的現<u>狀</u>向老師說明。 💡 狀（犬部）：形狀、獎狀、現狀；妝（女部）：化妝。"
+  },
+  {
+   "prompt": "選出正確的國字：因為強風，果園受到不少（　　）失。",
+   "options": [
+    "隕",
+    "損"
+   ],
+   "answer": "損",
+   "why": "答案是「損」（ㄙㄨㄣˇ）：因為強風，果園受到不少<u>損</u>失。 💡 損（手部）：損壞、損失；隕（阜部）：隕石。"
+  },
+  {
+   "prompt": "「好」在這裡怎麼念？弟弟<strong><u>好</u></strong>動，總喜歡跑來跑去。",
+   "options": [
+    "ㄏㄠˇ",
+    "ㄏㄠˋ"
+   ],
+   "answer": "ㄏㄠˋ",
+   "why": "答案是 ㄏㄠˋ。💡 「好」讀ㄏㄠˋ：喜歡，如好奇、好動、好學。"
+  },
+  {
+   "prompt": "「與」在這裡怎麼念？這份禮物是老師<strong><u>與</u></strong>同學共同準備的。",
+   "options": [
+    "ㄩˇ",
+    "ㄩˋ"
+   ],
+   "answer": "ㄩˇ",
+   "why": "答案是 ㄩˇ。💡 「與」讀ㄩˇ時是「和、跟」的意思，如：與家人、老師與同學。"
+  },
+  {
+   "prompt": "選出正確的國字：請和前面的同學保持適當（　　）離。",
+   "options": [
+    "距",
+    "拒",
+    "矩"
+   ],
+   "answer": "距",
+   "why": "答案是「距」（ㄐㄩˋ）：請和前面的同學保持適當<u>距</u>離。 💡 距（足部）：兩地之間的長度，如距離；拒（手部）：拒絕；矩（矢部）：規矩。"
+  },
+  {
+   "prompt": "選出正確的國字：他的建議十分優（　　），值得採納。",
+   "options": [
+    "良",
+    "浪",
+    "狼"
+   ],
+   "answer": "良",
+   "why": "答案是「良」（ㄌㄧㄤˊ）：他的建議十分優<u>良</u>，值得採納。 💡 良：好的，如善良、優良；浪（水部）：浪花、浪費；狼（犬部）：野狼。"
+  },
+  {
+   "prompt": "選出正確的國字：姐姐準備參加舞會，正在鏡子前補（　　）。",
+   "options": [
+    "妝",
+    "狀"
+   ],
+   "answer": "妝",
+   "why": "答案是「妝」（ㄓㄨㄤ）：姐姐準備參加舞會，正在鏡子前補<u>妝</u>。 💡 妝（女部）：化妝、補妝；狀（犬部）：形狀、獎狀、現狀。"
+  },
+  {
+   "prompt": "「好」在這裡怎麼念？今天的天氣真<strong><u>好</u></strong>，適合去郊遊。",
+   "options": [
+    "ㄏㄠˇ",
+    "ㄏㄠˋ"
+   ],
+   "answer": "ㄏㄠˇ",
+   "why": "答案是 ㄏㄠˇ。💡 「好」讀ㄏㄠˇ：很棒、不錯，如好喝、天氣真好。"
+  },
+  {
+   "prompt": "選出正確的國字：做事要守規（　　），不能隨心所欲。",
+   "options": [
+    "距",
+    "拒",
+    "矩"
+   ],
+   "answer": "矩",
+   "why": "答案是「矩」（ㄐㄩˇ）：做事要守規<u>矩</u>，不能隨心所欲。 💡 矩（矢部）：規矩；距（足部）：距離；拒（手部）：拒絕。"
+  },
+  {
+   "prompt": "選出正確的國字：明天下午我有（　　），可以陪你練習。",
+   "options": [
+    "空",
+    "控"
+   ],
+   "answer": "空",
+   "why": "答案是「空」（ㄎㄨㄥˋ）：明天下午我有<u>空</u>，可以陪你練習。 💡 空：天空、空曠、空手、有空；控（手部）：控制。"
+  },
+  {
+   "prompt": "選出正確的國字：駕駛必須（　　）制車速，注意安全。",
+   "options": [
+    "空",
+    "控"
+   ],
+   "answer": "控",
+   "why": "答案是「控」（ㄎㄨㄥˋ）：駕駛必須<u>控</u>制車速，注意安全。 💡 控（手部）：用手掌握，如控制；空：天空、有空。"
+  },
+  {
+   "prompt": "「曾」在這裡怎麼念？<strong><u>曾</u></strong>先生是我們學校的新老師。",
+   "options": [
+    "ㄘㄥˊ",
+    "ㄗㄥ"
+   ],
+   "answer": "ㄗㄥ",
+   "why": "答案是 ㄗㄥ。💡 「曾」讀ㄗㄥ：當姓氏用，如曾先生。"
+  },
+  {
+   "prompt": "選出正確的國字：小羊發現山坡上有一隻灰（　　）。",
+   "options": [
+    "良",
+    "浪",
+    "狼"
+   ],
+   "answer": "狼",
+   "why": "答案是「狼」（ㄌㄤˊ）：小羊發現山坡上有一隻灰<u>狼</u>。 💡 狼（犬部）：動物，如野狼、灰狼；良：善良；浪（水部）：浪花。"
+  },
+  {
+   "prompt": "選出正確的國字：面對陌生人的邀請，要懂得（　　）絕。",
+   "options": [
+    "距",
+    "拒",
+    "矩"
+   ],
+   "answer": "拒",
+   "why": "答案是「拒」（ㄐㄩˋ）：面對陌生人的邀請，要懂得<u>拒</u>絕。 💡 拒（手部）：用手推開，如拒絕；距（足部）：距離；矩（矢部）：規矩。"
+  },
+  {
+   "prompt": "選出正確的國字：媽媽把青菜和水果放進冰箱，保持（　　）果新鮮。",
+   "options": [
+    "蔬",
+    "疏"
+   ],
+   "answer": "蔬",
+   "why": "答案是「蔬」（ㄕㄨ）：媽媽把青菜和水果放進冰箱，保持<u>蔬</u>果新鮮。 💡 蔬（草字頭）：蔬菜、蔬果；疏：疏通、疏遠。"
+  },
+  {
+   "prompt": "選出正確的國字：爸爸用炭火（　　）地瓜，香氣四溢。",
+   "options": [
+    "烤",
+    "拷",
+    "銬"
+   ],
+   "answer": "烤",
+   "why": "答案是「烤」（ㄎㄠˇ）：爸爸用炭火<u>烤</u>地瓜，香氣四溢。 💡 烤（火部）：用火烤，如烤箱、烤地瓜；拷（手部）：拷問、拷打；銬（金部）：手銬。"
+  },
+  {
+   "prompt": "選出正確的國字：放學後，操場上（　　）無一人。",
+   "options": [
+    "空",
+    "控"
+   ],
+   "answer": "空",
+   "why": "答案是「空」（ㄎㄨㄥ）：放學後，操場上<u>空</u>無一人。 💡 空：天空、空曠、空手、有空；控（手部）：控制。"
+  },
+  {
+   "prompt": "選出正確的國字：好朋友搬家後，我們漸漸（　　）遠了。",
+   "options": [
+    "蔬",
+    "疏"
+   ],
+   "answer": "疏",
+   "why": "答案是「疏」（ㄕㄨ）：好朋友搬家後，我們漸漸<u>疏</u>遠了。 💡 疏：疏通、疏遠；蔬（草字頭）：蔬菜。"
+  },
+  {
+   "prompt": "「曾」在這裡怎麼念？外婆<strong><u>曾</u></strong>經住在這條巷子裡。",
+   "options": [
+    "ㄘㄥˊ",
+    "ㄗㄥ"
+   ],
+   "answer": "ㄘㄥˊ",
+   "why": "答案是 ㄘㄥˊ。💡 「曾」讀ㄘㄥˊ：曾經。"
+  },
+  {
+   "prompt": "「好」在這裡怎麼念？哥哥的<strong><u>好</u></strong>學精神值得我們效法。",
+   "options": [
+    "ㄏㄠˇ",
+    "ㄏㄠˋ"
+   ],
+   "answer": "ㄏㄠˋ",
+   "why": "答案是 ㄏㄠˋ。💡 「好」讀ㄏㄠˋ：喜歡，如好奇、好動、好學。"
+  },
+  {
+   "prompt": "「行」在這裡怎麼念？老師說各<strong><u>行</u></strong>各業都值得尊重。",
+   "options": [
+    "ㄒㄧㄥˊ",
+    "ㄏㄤˊ",
+    "ㄒㄧㄥˋ"
+   ],
+   "answer": "ㄏㄤˊ",
+   "why": "答案是 ㄏㄤˊ。💡 「行」讀ㄏㄤˊ：銀行、行業、各行各業。"
+  },
+  {
+   "prompt": "選出正確的國字：故事中的士兵遭到敵人（　　）打。",
+   "options": [
+    "烤",
+    "拷",
+    "銬"
+   ],
+   "answer": "拷",
+   "why": "答案是「拷」（ㄎㄠˇ）：故事中的士兵遭到敵人<u>拷</u>打。 💡 拷（手部）：用手打，如拷問、拷打；烤（火部）：烤箱；銬（金部）：手銬。"
+  },
+  {
+   "prompt": "「行」在這裡怎麼念？一個人的言<strong><u>行</u></strong>會影響別人對他的印象。",
+   "options": [
+    "ㄒㄧㄥˊ",
+    "ㄏㄤˊ",
+    "ㄒㄧㄥˋ"
+   ],
+   "answer": "ㄒㄧㄥˊ",
+   "why": "答案是 ㄒㄧㄥˊ。💡 「行」讀ㄒㄧㄥˊ：走、做，如前行、言行、行人。"
+  },
+  {
+   "prompt": "選出正確的國字：妹妹把（　　）費的紙張收集起來回收。",
+   "options": [
+    "良",
+    "浪",
+    "狼"
+   ],
+   "answer": "浪",
+   "why": "答案是「浪」（ㄌㄤˋ）：妹妹把<u>浪</u>費的紙張收集起來回收。 💡 浪（水部）：浪花、浪費；良：善良；狼（犬部）：野狼。"
+  },
+  {
+   "prompt": "選出正確的國字：科學家正在研究一顆從天而降的（　　）星。",
+   "options": [
+    "隕",
+    "損"
+   ],
+   "answer": "隕",
+   "why": "答案是「隕」（ㄩㄣˇ）：科學家正在研究一顆從天而降的<u>隕</u>星。 💡 隕（阜部）：從高處落下，如隕石、隕星；損（手部）：損壞、損失。"
+  },
+  {
+   "prompt": "選出正確的國字：舞臺上的聚光（　　）照亮了表演者。",
+   "options": [
+    "燈",
+    "登"
+   ],
+   "answer": "燈",
+   "why": "答案是「燈」（ㄉㄥ）：舞臺上的聚光<u>燈</u>照亮了表演者。 💡 燈（火部）：會發光，如紅綠燈、聚光燈；登：往上走或寫上去，如登山、登記。"
+  },
+  {
+   "prompt": "「與」在這裡怎麼念？全班踴躍參<strong><u>與</u></strong>校園清潔活動。",
+   "options": [
+    "ㄩˇ",
+    "ㄩˋ"
+   ],
+   "answer": "ㄩˋ",
+   "why": "答案是 ㄩˋ。💡 「與」讀ㄩˋ時是「參加」的意思，如：參與。"
+  },
+  {
+   "prompt": "「行」在這裡怎麼念？大家排成一列，緩緩前<strong><u>行</u></strong>。",
+   "options": [
+    "ㄒㄧㄥˊ",
+    "ㄏㄤˊ",
+    "ㄒㄧㄥˋ"
+   ],
+   "answer": "ㄒㄧㄥˊ",
+   "why": "答案是 ㄒㄧㄥˊ。💡 「行」讀ㄒㄧㄥˊ：走、做，如前行、言行、行人。"
+  },
+  {
+   "prompt": "選出正確的國字：請先（　　）記姓名，再領取入場證。",
+   "options": [
+    "燈",
+    "登"
+   ],
+   "answer": "登",
+   "why": "答案是「登」（ㄉㄥ）：請先<u>登</u>記姓名，再領取入場證。 💡 登：往上走或寫上去，如登山、登記；燈（火部）：紅綠燈。"
+  }
+ ]
+};
+  function wenziAllQuestions() { return WENZI.round1.concat(WENZI.round2); }
 
   // 成語 (Chinese idioms) — Lessons 1–6, from 第一課至第六課 成語 files
   const CHENGYU = {
@@ -11859,6 +13249,7 @@
   const guoyuUnits = Object.keys(GUOYU_UNITS).map((id, i) => ({
     id, icon: String(i + 1), name: GUOYU_UNITS[id].name,
     status: (GUOYU_UNITS[id].quizBank.length ? GUOYU_UNITS[id].quizBank.length + " questions ready" : (GUOYU_UNITS[id].worksheet ? "Worksheet ready" : "Coming soon"))
+      + (SHENGZI[id] ? " · " + SHENGZI[id].length + " 生字卡" : "")
       + (CHENGYU.cards[id] ? " · " + CHENGYU.cards[id].length + " 成語" : ""),
     enabled: true,
   }));
@@ -14180,8 +15571,7 @@
     navStack.push({ id: "screen-guoyu", title: "國語" });
     if (unit.enabled) {
       currentGuoyuUnit = unit.id;
-      renderGuoyuLesson();
-      showGuoyuTab("lesson");
+      showGuoyuTab(SHENGZI[unit.id] ? "shengzi" : "chengyu");
       showScreen("screen-guoyuunit", "國語 — " + unit.name);
     } else {
       document.getElementById("placeholderSubject").textContent = unit.name;
@@ -14195,6 +15585,50 @@
     document.getElementById("guoyuunit-" + tab).style.display = "block";
     if (tab === "quiz") renderGuoyuUnitQuiz(); // fresh random set from the question bank every time
     if (tab === "chengyu") renderGuoyuChengyu();
+    if (tab === "shengzi") renderGuoyuShengzi(false);
+  }
+
+  // ---- 生字注音 flashcards ----
+  function zyVertical(z) {
+    let neutral = z.startsWith("˙"); if (neutral) z = z.slice(1);
+    let tone = ""; if (/[ˊˇˋ]$/.test(z)) { tone = z.slice(-1); z = z.slice(0, -1); }
+    const syms = [...z];
+    return `<span class="zy">${neutral ? '<i class="zy-n">˙</i>' : ''}${syms.map((c, i) =>
+      `<b>${c}${i === syms.length - 1 && tone ? `<i class="zy-t">${tone}</i>` : ''}</b>`).join("")}</span>`;
+  }
+  function szColumn(item, showAns) {
+    return `<div class="sz-col">` + item.w.map(t => t === "|" ? `<div class="sz-gap"></div>` :
+      `<div class="sz-cell${t[2] ? ' red' : ''}"><div class="sz-box">${showAns ? t[0] : ''}</div><div class="sz-zy">${zyVertical(t[1])}</div></div>`
+    ).join("") + `</div>`;
+  }
+  function szWord(item) { return item.w.map(t => t === "|" ? "、" : t[0]).join(""); }
+  function renderGuoyuShengzi(shuffled) {
+    const list = SHENGZI[currentGuoyuUnit] || [];
+    const box = document.getElementById("guoyuShengziCards");
+    document.querySelector("#guoyuunit-shengzi .sz-controls").style.display = list.length ? "flex" : "none";
+    if (!list.length) {
+      box.innerHTML = `<div class="placeholder-box"><p><strong>${GY().name}</strong> 的生字卡還沒有加入。</p><p>把這課的聽寫小考卷放進資料夾，就可以做生字卡。</p></div>`;
+      return;
+    }
+    const items = shuffled ? shuffle(list) : list;
+    box.innerHTML = `<div class="sz-grid">${items.map((it, i) => {
+      const [c, bg] = VOCAB_COLORS[(it.n - 1) % VOCAB_COLORS.length];
+      const word = szWord(it);
+      return `<div class="szcard" style="--vc:${c};--vbg:${bg}" onclick="this.classList.toggle('flipped')">
+        <div class="szcard-inner">
+          <div class="szface szfront"><div class="sz-num">${it.n}</div>${szColumn(it, false)}
+            <button class="vspeak sz-speak" title="聽讀音" onclick="event.stopPropagation(); speakWord('${word.replace(/、/g, "，")}', 'zh-TW')">🔊</button>
+            <div class="vhint">tap to flip 🔄</div></div>
+          <div class="szface szback"><div class="sz-num">${it.n}</div>${szColumn(it, true)}
+            <div class="sz-word">${word}</div></div>
+        </div>
+      </div>`;
+    }).join("")}</div>`;
+  }
+  function szFlipAll() {
+    const cards = [...document.querySelectorAll("#guoyuShengziCards .szcard")];
+    const anyFront = cards.some(c => !c.classList.contains("flipped"));
+    cards.forEach(c => c.classList.toggle("flipped", anyFront));
   }
 
   // ---- 成語 ----
@@ -14214,6 +15648,14 @@
     document.querySelectorAll(".gymain-tab").forEach(el => el.style.display = "none");
     document.getElementById("gymain-" + tab).style.display = "block";
     if (tab === "chengyu" && !document.getElementById("chengyuQuizQs").innerHTML) startChengyuQuiz("round1");
+    if (tab === "wenzi" && !document.getElementById("wenziQuizQs").innerHTML) startWenziQuiz("round1");
+  }
+  function startWenziQuiz(round) {
+    document.querySelectorAll("[data-wz-round]").forEach(b => b.classList.toggle("active", b.dataset.wzRound === round));
+    const bank = round === "mix" ? shuffle(wenziAllQuestions()).slice(0, 30) : WENZI[round];
+    const names = { round1: "第一回", round2: "第二回", mix: "綜合隨機" };
+    document.getElementById("wenziQuizTitle").textContent = "文字大不同 — " + names[round] + "（第一課～第六課）";
+    renderMCQ("wenziQuizQs", "wenziQuiz", bank);
   }
   function startChengyuQuiz(round) {
     document.querySelectorAll("[data-cy-round]").forEach(b => b.classList.toggle("active", b.dataset.cyRound === round));
@@ -14246,7 +15688,9 @@
       <div class="worksheet-embed">
         <h4>📄 ${GY().worksheetLabel || "Worksheet"}</h4>
         <p class="intro">Practice writing the new characters (生字) for this lesson based on the zhuyin (注音) shown below.</p>
-        <iframe src="${worksheetUrl}" title="${GY().worksheetLabel || "Worksheet"}"></iframe>
+        ${/\.(png|jpe?g|gif|webp)$/i.test(GY().worksheet)
+          ? `<img src="${worksheetUrl}" alt="${GY().worksheetLabel || "Worksheet"}" class="worksheet-img">`
+          : `<iframe src="${worksheetUrl}" title="${GY().worksheetLabel || "Worksheet"}"></iframe>`}
         <br><a class="worksheet-link" href="${worksheetUrl}" target="_blank" rel="noopener">🖨 Open in a new tab to print</a>
       </div>
     ` : "";
@@ -14322,6 +15766,7 @@
     abide:"🚦", contrast:"🌓", depress:"😞", dismal:"🌧️", dispose:"🗑️", exaggerate:"🎣", indifferent:"😐", jubilant:"🥳", manual:"📖", originate:"🌱", recognition:"🏆", tribute:"🌹",
     cautiously:"🧤", trickle:"💧", marvel:"🤩", mighty:"🦍", distant:"🔭", proclaim:"📯", majestic:"🏔️", sumptuous:"🍾", hoard:"💰", inadvertently:"😅",
     luminous:"💡", transparent:"🫙", illuminate:"🔦", judge:"👩‍⚖️", perception:"👁️", aroma:"👃", distinguish:"🔎", relish:"😋", enhance:"⬆️",
+    elegant:"🦢", foreboding:"🌩️", scowl:"😠", intimidate:"😰", subdued:"🤫", disheveled:"🥴", rigid:"🧱", feisty:"🐯", sulk:"😾", devise:"🛠️",
     adoringly:"🥰", capable:"💪", spectator:"👀", disbelief:"🤯", burst:"🎆", opportunity:"🚪", immigration:"✈️", refugee:"🏕️", endurance:"🏃‍♂️", confront:"🥊",
   };
 
@@ -14563,7 +16008,9 @@
     document.getElementById("printNovelField").style.display = sec === "novel" ? "flex" : "none";
     document.getElementById("printChengyuField").style.display = sec === "chengyu" ? "flex" : "none";
     document.getElementById("printVocabTypesField").style.display = sec === "vocab" ? "flex" : "none";
-    document.getElementById("printCountField").style.display = sec === "vocab" ? "none" : "flex";
+    document.getElementById("printShengziField").style.display = sec === "shengzi" ? "flex" : "none";
+    document.getElementById("printWenziField").style.display = sec === "wenzi" ? "flex" : "none";
+    document.getElementById("printCountField").style.display = (sec === "vocab" || sec === "shengzi") ? "none" : "flex";
     updatePrintCount();
   }
 
@@ -14579,6 +16026,7 @@
       if (sec === "science") return printSciencePick().bank;
       if (sec === "novel") return NOVELS[val("printNovel")].quizBank;
       if (sec === "chengyu") return val("printChengyuRound") === "all" ? chengyuAllQuestions() : CHENGYU[val("printChengyuRound")];
+      if (sec === "wenzi") return val("printWenziRound") === "all" ? wenziAllQuestions() : WENZI[val("printWenziRound")];
     } catch (e) {}
     return null;
   }
@@ -14818,6 +16266,7 @@
       else if (setId === "socialLessonQuiz") sectionInfo = { unitName: SS().name + " — " + SL().name, section: "Social Studies" };
       else if (setId === "scienceTopicQuiz") sectionInfo = { unitName: SCI_LABEL(), section: "Science" };
       else if (setId === "guoyuUnitQuiz") sectionInfo = { unitName: GY().name, section: "國語" };
+      else if (setId === "wenziQuiz") sectionInfo = { unitName: "文字大不同（第一課～第六課）", section: "國語" };
       else if (setId === "novelQuiz") sectionInfo = { unitName: NV().name, section: "Core Novel" };
       else sectionInfo = { unitName: U().name };
       mcqInfo[key] = Object.assign(
@@ -14982,6 +16431,21 @@
     const section = document.getElementById("printSection").value;
     const withKey = document.getElementById("pt-key").checked;
 
+    if (section === "shengzi") {
+      const pick = document.getElementById("printShengziUnit").value;
+      const ids = pick === "all" ? Object.keys(SHENGZI) : [pick];
+      const sheet = ans => ids.map((id, k) => `<div${k > 0 ? ' class="sz-pb"' : ''}>
+          <h2>國語 ${GUOYU_UNITS[id].name} — 生字注音${ans ? "（答案）" : ""}</h2>
+          <div class="sz-print-grid">${SHENGZI[id].map(it => `<div class="sz-pitem"><div class="sz-num">${it.n}</div>${szColumn(it, ans)}</div>`).join("")}</div>
+        </div>`).join("");
+      document.getElementById("printArea").innerHTML =
+        `<p>Name: ________________________ &nbsp;&nbsp; Date: ________________</p>
+         ${sheet(false)}
+         ${withKey ? `<div class="key-page">${sheet(true)}</div>` : ""}`;
+      window.print();
+      return;
+    }
+
     if (section === "vocab") {
       const unitId = document.getElementById("printUnit").value;
       const picked = [
@@ -15044,6 +16508,11 @@
       sectionName = "國語";
       groupName = "成語測驗（第一課～第六課）" + (r === "round1" ? " 第一回" : r === "round2" ? " 第二回" : " 第一回＋第二回");
       bank = r === "all" ? chengyuAllQuestions() : CHENGYU[r];
+    } else if (section === "wenzi") {
+      const r = document.getElementById("printWenziRound").value;
+      sectionName = "國語";
+      groupName = "文字大不同（第一課～第六課）" + (r === "round1" ? " 第一回" : r === "round2" ? " 第二回" : " 第一回＋第二回");
+      bank = r === "all" ? wenziAllQuestions() : WENZI[r];
     } else if (section === "novel") {
       const novelId = document.getElementById("printNovel").value;
       sectionName = "Core Novel";
