@@ -348,11 +348,9 @@
         </select>
       </div>
       <div class="print-field" id="printUnitField">
-        <span>Unit:</span>
-        <select id="printUnit">
-          <option value="unit1">Unit 1</option>
-          <option value="unit2">Unit 2</option>
-        </select>
+        <span>Units:</span>
+        <span id="printUnit" style="display:flex;gap:12px;flex-wrap:wrap;align-items:center"></span>
+        <button type="button" class="print-btn" style="padding:4px 10px;font-size:0.85rem;margin:0" onclick="togglePrintUnits()">Select all / none</button>
       </div>
       <div class="print-field" id="printStoryField" style="display:none">
         <span>Story:</span>
@@ -415,9 +413,9 @@
       </div>
       <div class="print-field" id="printVocabTypesField">
         <span>Question types:</span>
-        <label><input type="checkbox" id="pt-fill" checked> Fill in the Blank</label>
-        <label><input type="checkbox" id="pt-syn" checked> Synonyms</label>
-        <label><input type="checkbox" id="pt-ant" checked> Antonyms</label>
+        <label><input type="checkbox" id="pt-fill" checked onchange="updatePrintCount()"> Fill in the Blank</label>
+        <label><input type="checkbox" id="pt-syn" checked onchange="updatePrintCount()"> Synonyms</label>
+        <label><input type="checkbox" id="pt-ant" checked onchange="updatePrintCount()"> Antonyms</label>
       </div>
       <div class="print-field" id="printCountField" style="display:none">
         <span># of Questions:</span>
@@ -425,7 +423,10 @@
           <option value="10">10</option>
           <option value="20">20</option>
           <option value="30" selected>30</option>
+          <option value="40">40</option>
+          <option value="50">50</option>
           <option value="60">60</option>
+          <option value="90">90</option>
           <option value="all" id="printCountAll">All</option>
         </select>
       </div>
@@ -16384,6 +16385,26 @@
     showScreen("screen-print", "Print Worksheets");
   }
 
+  function togglePrintUnits() {
+    const boxes = [...document.querySelectorAll("#printUnit .pu-unit")];
+    const allOn = boxes.every(b => b.checked);
+    boxes.forEach(b => b.checked = !allOn);
+    updatePrintCount();
+  }
+
+  // Vocab print: selected units and question types, as [typeCheckboxId, title, builder].
+  const VOCAB_PRINT_TYPES = [
+    ["pt-fill", "Fill in the Blank", id => buildFillBank(id)],
+    ["pt-syn", "Synonyms", id => buildSynBank(id)],
+    ["pt-ant", "Antonyms", id => buildAntBank(id)],
+  ];
+  function vocabPrintSelection() {
+    const unitIds = [...document.querySelectorAll("#printUnit .pu-unit:checked")].map(cb => cb.value);
+    const types = VOCAB_PRINT_TYPES.filter(t => document.getElementById(t[0]).checked)
+      .map(([id, title, builder]) => ({ title, bank: unitIds.flatMap(u => builder(u)) }));
+    return { unitIds, types };
+  }
+
   function updatePrintFields() {
     const sec = document.getElementById("printSection").value;
     document.getElementById("printUnitField").style.display = sec === "vocab" ? "flex" : "none";
@@ -16399,7 +16420,7 @@
     document.getElementById("printVocabTypesField").style.display = sec === "vocab" ? "flex" : "none";
     document.getElementById("printShengziField").style.display = sec === "shengzi" ? "flex" : "none";
     document.getElementById("printWenziField").style.display = sec === "wenzi" ? "flex" : "none";
-    document.getElementById("printCountField").style.display = (sec === "vocab" || sec === "shengzi") ? "none" : "flex";
+    document.getElementById("printCountField").style.display = sec === "shengzi" ? "none" : "flex";
     updatePrintCount();
   }
 
@@ -16415,6 +16436,7 @@
       if (sec === "science") return printSciencePick().bank;
       if (sec === "novel") return NOVELS[val("printNovel")].quizBank;
       if (sec === "chengyu") return val("printChengyuRound") === "all" ? chengyuAllQuestions() : CHENGYU[val("printChengyuRound")];
+      if (sec === "vocab") return vocabPrintSelection().types.flatMap(t => t.bank);
       if (sec === "wenzi") return val("printWenziRound") === "all" ? wenziAllQuestions() : WENZI[val("printWenziRound")];
     } catch (e) {}
     return null;
@@ -16836,19 +16858,27 @@
     }
 
     if (section === "vocab") {
-      const unitId = document.getElementById("printUnit").value;
-      const picked = [
-        ["pt-fill", "Fill in the Blank", buildFillBank],
-        ["pt-syn", "Synonyms", buildSynBank],
-        ["pt-ant", "Antonyms", buildAntBank],
-      ].filter(t => document.getElementById(t[0]).checked);
-      if (!picked.length) { alert("Check at least one question type to print."); return; }
+      const { unitIds, types } = vocabPrintSelection();
+      if (!unitIds.length) { alert("Check at least one unit to print."); return; }
+      if (!types.length) { alert("Check at least one question type to print."); return; }
+      // Split the chosen number of questions evenly across the question types.
+      const countVal = document.getElementById("printCount").value;
+      const total = types.reduce((n, t) => n + t.bank.length, 0);
+      let want = countVal === "all" ? total : Math.min(parseInt(countVal, 10), total);
+      const per = types.map(() => 0);
+      while (want > 0) {
+        let moved = false;
+        types.forEach((t, i) => { if (want > 0 && per[i] < t.bank.length) { per[i]++; want--; moved = true; } });
+        if (!moved) break;
+      }
+      const picked = types.map((t, i) => [t.title, t.bank, per[i]]).filter(t => t[2] > 0);
       const sectionName = "Vocabulary Workshop";
-      const unitName = UNITS[unitId].name;
+      const unitName = unitIds.length === 1 ? UNITS[unitIds[0]].name
+        : unitIds.map(id => UNITS[id].name.replace(/^Unit\s*/i, "")).reduce((a, b, i, arr) => a + (i === arr.length - 1 ? " & " : ", ") + b, "").replace(/^, /, "Units ");
 
       const keyParts = [];
-      const qParts = picked.map(([id, title, builder], ti) => {
-        const set = shuffle(builder(unitId)).map(q => {
+      const qParts = picked.map(([title, bank, n], ti) => {
+        const set = shuffle(bank).slice(0, n).map(q => {
           const opts = shuffle(q.options);
           return { ...q, opts, correctIdx: opts.indexOf(q.answer) };
         });
@@ -17019,7 +17049,7 @@
   document.getElementById("printNovel").innerHTML =
     Object.keys(NOVELS).map(id => `<option value="${id}">${NOVELS[id].name}</option>`).join("");
   document.getElementById("printUnit").innerHTML =
-    Object.keys(UNITS).map(id => `<option value="${id}">${UNITS[id].name}</option>`).join("");
+    Object.keys(UNITS).map((id, i) => `<label><input type="checkbox" class="pu-unit" value="${id}"${i === 0 ? " checked" : ""} onchange="updatePrintCount()"> ${UNITS[id].name}</label>`).join("");
   document.getElementById("printStory").innerHTML =
     Object.keys(STORIES).map(id => `<option value="${id}">${STORIES[id].name}</option>`).join("");
   document.getElementById("printChapter").innerHTML =
