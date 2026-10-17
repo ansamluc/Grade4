@@ -709,6 +709,7 @@
       <div class="set-controls">
         <span class="score-pill" id="socialLessonQuiz-score"></span>
       </div>
+      <div id="socialQuizModes" style="display:none;margin-bottom:14px;gap:10px;flex-wrap:wrap"></div>
       <div class="practice-block">
         <h3 id="socialLessonQuizTitle">Lesson Quiz</h3>
         <div id="socialLessonQuizQs"></div>
@@ -10030,6 +10031,10 @@
                 {
                   "label": "⚖️ Choice",
                   "text": "Buying the video game fulfills a want, but you lose the chance to buy the soccer ball."
+                },
+                {
+                  "label": "🧠 Spend wisely",
+                  "text": "Consumers spend their money wisely by weighing their needs and wants before spending money."
                 }
               ]
             },
@@ -10076,6 +10081,10 @@
                 {
                   "label": "🏙️ Northeast",
                   "text": "The services sector is important in places like New York."
+                },
+                {
+                  "label": "📋 Sector chart",
+                  "text": "Agricultural = grows crops and raises animals · Mining = takes natural resources from the earth · Manufacturing = makes goods from raw materials · Transportation = moves people and goods · Service = provides services or help for others · Entertainment = creates films, music, and other entertainment."
                 }
               ]
             },
@@ -10095,11 +10104,53 @@
                 {
                   "label": "🚒 Government as producer",
                   "text": "Firefighters and highway bridges."
+                },
+                {
+                  "label": "🛣️ Public goods vs. public services",
+                  "text": "Public goods: roads and schools. Public services: mail delivery and firefighting. Citizens pay for them through taxes. The government also makes laws to guide the economy and protect people's private property."
                 }
               ]
             },
             {
-              "title": "7. 🌟 Lesson 1 Word Wall",
+              "title": "7. ⚖️ Market Economy vs. Command Economy",
+              "rule": "Compare the two types of economies: <br><strong>Decision-making:</strong> Market → <strong>individuals</strong> (producers &amp; consumers) · Command → the <strong>government</strong> or a <strong>central planner</strong><br><strong>Ownership:</strong> Market → <strong>private</strong> · Command → <strong>government</strong><br><strong>Consumer choice:</strong> Market → <strong>many choices</strong> · Command → <strong>limited choices</strong><br><strong>Examples:</strong> Market → the <strong>United States</strong> · Command → <strong>North Korea</strong>",
+              "tip": "The United States has a <strong>market</strong> economy, which is also called a <strong>free enterprise system</strong>.",
+              "examples": [
+                {
+                  "label": "🟧 Market economy",
+                  "text": "Individuals decide, people and companies own property, and consumers have many choices. Example: the United States."
+                },
+                {
+                  "label": "🟥 Command economy",
+                  "text": "The government or a central planner decides, the government owns, and consumers have limited choices. Example: North Korea."
+                }
+              ]
+            },
+            {
+              "title": "8. 🚀 Going Further: The Three Economic Sectors",
+              "rule": "All the parts of the economy can be grouped into three main sectors. The <strong>Primary Sector</strong> harvests or uses <strong>natural resources</strong> directly. The <strong>Secondary Sector</strong> turns <strong>raw materials</strong> into <strong>products</strong> or <strong>builds structures</strong>. The <strong>Tertiary Sector</strong> (also called the <strong>Service Sector</strong>) provides <strong>services</strong> to people or businesses.",
+              "tip": "1st = take it from nature 🌱 → 2nd = make or build it 🏗️ → 3rd = serve people 🤝",
+              "examples": [
+                {
+                  "label": "🌱 Primary",
+                  "text": "Agriculture, ranching, and mining"
+                },
+                {
+                  "label": "🏗️ Secondary",
+                  "text": "Manufacturing and construction"
+                },
+                {
+                  "label": "🤝 Tertiary (Service)",
+                  "text": "Transportation, tourism, education, and healthcare"
+                },
+                {
+                  "label": "👕 Follow a T-shirt",
+                  "text": "A farmer grows cotton (primary) → a factory makes it into a T-shirt (secondary) → a truck driver delivers it and a store sells it (tertiary)."
+                }
+              ]
+            },
+            {
+              "title": "9. 🌟 Lesson 1 Word Wall",
               "rule": "Tap a card to flip it! 🔄 Tap 🔊 to hear the word.",
               "tip": "Academic vocabulary: <strong>involve</strong> and <strong>individual</strong>.",
               "vocab": [
@@ -10809,6 +10860,330 @@
               ],
               "answer": "A tent for shelter",
               "why": "A tent gives you shelter, which is a need. The others are wants."
+            },
+            {
+              "prompt": "In a MARKET economy, who makes the decisions?",
+              "options": [
+                "Individuals (producers and consumers)",
+                "The government only",
+                "A central planner",
+                "The army"
+              ],
+              "answer": "Individuals (producers and consumers)",
+              "why": "In a market economy, individuals, both producers and consumers, make the decisions.",
+              "ws": true
+            },
+            {
+              "prompt": "In a COMMAND economy, who makes the decisions?",
+              "options": [
+                "The government or a central planner",
+                "Each consumer",
+                "Each store owner",
+                "Tourists"
+              ],
+              "answer": "The government or a central planner",
+              "why": "In a command economy, the government or a central planner makes the decisions.",
+              "ws": true
+            },
+            {
+              "prompt": "In a market economy, who owns most land, homes, and businesses?",
+              "options": [
+                "Private owners (people and companies)",
+                "The government",
+                "No one",
+                "Other countries"
+              ],
+              "answer": "Private owners (people and companies)",
+              "why": "Ownership in a market economy is private.",
+              "ws": true
+            },
+            {
+              "prompt": "In a command economy, who owns most businesses and property?",
+              "options": [
+                "The government",
+                "Private families",
+                "Consumers",
+                "Tourists"
+              ],
+              "answer": "The government",
+              "why": "Ownership in a command economy belongs to the government.",
+              "ws": true
+            },
+            {
+              "prompt": "How much consumer choice is there in a market economy?",
+              "options": [
+                "Many choices",
+                "Limited choices",
+                "No choices",
+                "Only one choice"
+              ],
+              "answer": "Many choices",
+              "why": "Many producers compete, so consumers have many choices.",
+              "ws": true
+            },
+            {
+              "prompt": "How much consumer choice is there in a command economy?",
+              "options": [
+                "Limited choices",
+                "Many choices",
+                "Unlimited choices",
+                "Choices made by consumers only"
+              ],
+              "answer": "Limited choices",
+              "why": "The government decides what is made, so consumers have limited choices.",
+              "ws": true
+            },
+            {
+              "prompt": "Which country is an example of a MARKET economy?",
+              "options": [
+                "The United States",
+                "North Korea",
+                "A country where the government decides everything",
+                "None"
+              ],
+              "answer": "The United States",
+              "why": "The United States has a market economy.",
+              "ws": true
+            },
+            {
+              "prompt": "Fill in the blank: The United States has a ____ economy.",
+              "options": [
+                "market",
+                "command",
+                "barter",
+                "central"
+              ],
+              "answer": "market",
+              "why": "The United States has a market economy (free enterprise system).",
+              "ws": true
+            },
+            {
+              "prompt": "How do consumers spend their money wisely?",
+              "options": [
+                "They weigh their needs and wants before spending money",
+                "They buy everything they see",
+                "They only buy wants",
+                "They never spend money"
+              ],
+              "answer": "They weigh their needs and wants before spending money",
+              "why": "Wise consumers think about needs and wants before they spend.",
+              "ws": true
+            },
+            {
+              "prompt": "What are the two types of needs and wants?",
+              "options": [
+                "Goods and services",
+                "Money and taxes",
+                "Producers and consumers",
+                "Laws and rules"
+              ],
+              "answer": "Goods and services",
+              "why": "Needs and wants come in two types: goods and services.",
+              "ws": true
+            },
+            {
+              "prompt": "Which sector takes natural resources from the earth?",
+              "options": [
+                "Mining",
+                "Entertainment",
+                "Service",
+                "Transportation"
+              ],
+              "answer": "Mining",
+              "why": "The mining sector takes natural resources, such as coal, from the earth.",
+              "ws": true
+            },
+            {
+              "prompt": "Which sector makes goods from raw materials?",
+              "options": [
+                "Manufacturing",
+                "Agricultural",
+                "Entertainment",
+                "Service"
+              ],
+              "answer": "Manufacturing",
+              "why": "The manufacturing sector makes goods from raw materials.",
+              "ws": true
+            },
+            {
+              "prompt": "Which sector creates films, music, and other forms of entertainment?",
+              "options": [
+                "Entertainment",
+                "Mining",
+                "Manufacturing",
+                "Agricultural"
+              ],
+              "answer": "Entertainment",
+              "why": "The entertainment sector creates films, music, and other entertainment.",
+              "ws": true
+            },
+            {
+              "prompt": "Which sector provides services or assistance (help) for others?",
+              "options": [
+                "Service",
+                "Mining",
+                "Manufacturing",
+                "Agricultural"
+              ],
+              "answer": "Service",
+              "why": "The service sector provides services or assistance for others.",
+              "ws": true
+            },
+            {
+              "prompt": "The services sector is especially important in which state?",
+              "options": [
+                "New York",
+                "West Virginia",
+                "Texas",
+                "Michigan"
+              ],
+              "answer": "New York",
+              "why": "Services are an important part of New York's economy.",
+              "ws": true
+            },
+            {
+              "prompt": "What does the PRIMARY sector do?",
+              "options": [
+                "Harvests or uses natural resources directly",
+                "Turns raw materials into products",
+                "Provides services to people",
+                "Makes laws"
+              ],
+              "answer": "Harvests or uses natural resources directly",
+              "why": "The primary sector harvests or uses natural resources directly.",
+              "ws": true
+            },
+            {
+              "prompt": "What does the SECONDARY sector do?",
+              "options": [
+                "Turns raw materials into products or builds structures",
+                "Harvests natural resources",
+                "Provides services to people or businesses",
+                "Collects taxes"
+              ],
+              "answer": "Turns raw materials into products or builds structures",
+              "why": "The secondary sector turns raw materials into products or builds structures.",
+              "ws": true
+            },
+            {
+              "prompt": "What does the TERTIARY sector do?",
+              "options": [
+                "Provides services to people or businesses",
+                "Harvests natural resources",
+                "Builds structures",
+                "Mines coal"
+              ],
+              "answer": "Provides services to people or businesses",
+              "why": "The tertiary sector provides services to people or businesses.",
+              "ws": true
+            },
+            {
+              "prompt": "What is another name for the tertiary sector?",
+              "options": [
+                "The service sector",
+                "The mining sector",
+                "The farming sector",
+                "The building sector"
+              ],
+              "answer": "The service sector",
+              "why": "The tertiary sector is also called the service sector.",
+              "ws": true
+            },
+            {
+              "prompt": "Agriculture, ranching, and mining belong to which sector?",
+              "options": [
+                "Primary",
+                "Secondary",
+                "Tertiary",
+                "Entertainment"
+              ],
+              "answer": "Primary",
+              "why": "They use natural resources directly, so they are in the primary sector.",
+              "ws": true
+            },
+            {
+              "prompt": "Manufacturing and construction belong to which sector?",
+              "options": [
+                "Secondary",
+                "Primary",
+                "Tertiary",
+                "Agricultural"
+              ],
+              "answer": "Secondary",
+              "why": "They turn raw materials into products or build structures, so they are in the secondary sector.",
+              "ws": true
+            },
+            {
+              "prompt": "Transportation, tourism, education, and healthcare belong to which sector?",
+              "options": [
+                "Tertiary",
+                "Primary",
+                "Secondary",
+                "Mining"
+              ],
+              "answer": "Tertiary",
+              "why": "They provide services, so they are in the tertiary (service) sector.",
+              "ws": true
+            },
+            {
+              "prompt": "A factory turns cotton into T-shirts. Which sector is this?",
+              "options": [
+                "Secondary",
+                "Primary",
+                "Tertiary",
+                "None"
+              ],
+              "answer": "Secondary",
+              "why": "Turning raw materials (cotton) into products (T-shirts) is the secondary sector.",
+              "ws": true
+            },
+            {
+              "prompt": "A nurse takes care of sick people at a hospital. Which sector is this?",
+              "options": [
+                "Tertiary",
+                "Primary",
+                "Secondary",
+                "Mining"
+              ],
+              "answer": "Tertiary",
+              "why": "Healthcare is a service, so it is in the tertiary sector.",
+              "ws": true
+            },
+            {
+              "prompt": "Fill in the blank: The government makes ____ to guide the economy and protect people's private property.",
+              "options": [
+                "laws",
+                "toys",
+                "profits",
+                "sectors"
+              ],
+              "answer": "laws",
+              "why": "The government makes laws to guide the economy and protect private property.",
+              "ws": true
+            },
+            {
+              "prompt": "Roads and schools are examples of...",
+              "options": [
+                "Public goods",
+                "Private property",
+                "Wants",
+                "Capital resources"
+              ],
+              "answer": "Public goods",
+              "why": "The government provides public goods, such as roads and schools.",
+              "ws": true
+            },
+            {
+              "prompt": "Mail delivery and firefighting are examples of...",
+              "options": [
+                "Public services",
+                "Private goods",
+                "The primary sector",
+                "Entertainment"
+              ],
+              "answer": "Public services",
+              "why": "The government provides public services, such as mail delivery and firefighting.",
+              "ws": true
             }
           ]
         },
@@ -15829,10 +16204,24 @@
     const qs = document.getElementById("socialLessonQuizQs");
     if (!SL().quizBank.length) {
       document.getElementById("socialLessonQuiz-score").textContent = "";
+      document.getElementById("socialQuizModes").style.display = "none";
       qs.innerHTML = `<div class="placeholder-box"><p><strong>${SL().name}</strong> quiz hasn't been added yet.</p><p>Drop the material into this project folder and this lesson's quiz can be built out next.</p></div>`;
       return;
     }
-    renderMCQ("socialLessonQuizQs", "socialLessonQuiz", shuffle(SL().quizBank).slice(0, SOCIAL_QUIZ_SIZE));
+    const wsQs = SL().quizBank.filter(q => q.ws);
+    const modes = document.getElementById("socialQuizModes");
+    if (wsQs.length) {
+      modes.style.display = "flex";
+      modes.innerHTML = `<button class="print-btn" onclick="startSocialQuiz('all')">🎲 Lesson Quiz (${SOCIAL_QUIZ_SIZE} random)</button><button class="print-btn" onclick="startSocialQuiz('ws')">📝 Worksheet Review Quiz (${wsQs.length})</button>`;
+    } else { modes.style.display = "none"; modes.innerHTML = ""; }
+    startSocialQuiz('all');
+  }
+
+  function startSocialQuiz(mode) {
+    const ws = mode === 'ws';
+    const list = ws ? SL().quizBank.filter(q => q.ws) : shuffle(SL().quizBank).slice(0, SOCIAL_QUIZ_SIZE);
+    document.getElementById("socialLessonQuizTitle").textContent = SL().name + (ws ? " — Worksheet Review Quiz" : " — Quiz");
+    renderMCQ("socialLessonQuizQs", "socialLessonQuiz", list);
   }
 
   // =========================================================================
