@@ -565,12 +565,33 @@
 
   <!-- MATH: CHAPTER SCREEN (shared by all chapters) -->
   <section class="screen" id="screen-chapter">
-    <div class="set-controls">
-      <span class="score-pill" id="chapterQuiz-score"></span>
+    <div class="tabs" id="chapterTabs" style="display:none">
+      <button class="tab-btn active" data-chapter-tab="lesson" onclick="showChapterTab('lesson')">Lesson</button>
+      <button class="tab-btn" data-chapter-tab="quiz" onclick="showChapterTab('quiz')">Quiz</button>
     </div>
-    <div class="practice-block">
-      <h3 id="chapterQuizTitle">Chapter Quiz</h3>
-      <div id="chapterQuizQs"></div>
+
+    <div id="chapter-lesson" class="chapter-tab" style="display:none">
+      <p class="intro" id="chapterLessonIntro"></p>
+      <div id="chapterLessonCards"></div>
+      <div id="chapterLessonWorksheet"></div>
+      <div class="set-controls">
+        <span class="score-pill" id="chapterLessonQuiz-score"></span>
+        <button class="print-btn" style="margin:0" onclick="renderChapterLessonPractice()">🔄 New practice set</button>
+      </div>
+      <div class="practice-block">
+        <h3 id="chapterLessonQuizTitle">Lesson Practice</h3>
+        <div id="chapterLessonQuizQs"></div>
+      </div>
+    </div>
+
+    <div id="chapter-quiz" class="chapter-tab">
+      <div class="set-controls">
+        <span class="score-pill" id="chapterQuiz-score"></span>
+      </div>
+      <div class="practice-block">
+        <h3 id="chapterQuizTitle">Chapter Quiz</h3>
+        <div id="chapterQuizQs"></div>
+      </div>
     </div>
   </section>
 
@@ -5133,6 +5154,18 @@
     },
     chapter2: {
       name: "Chapter 2: Multiplication and Division",
+      lessonName: "Lesson: Multiples 1–10 Quick Recognition",
+      worksheet: "G4-1 Math Ch2 Multiples 1-10 Quick Recognition.pdf",
+      worksheetLabel: "Multiples 1–10: Quick Recognition (chart)",
+      lessons: [
+        {"title": "1. 🔢 What Is a Multiple?", "rule": "A <strong>multiple</strong> of a number is what you get when you multiply that number by a whole number. 3, 6, 9, 12, 15 … are all multiples of 3. If a number is a multiple of 3, it can be <strong>divided by 3 with no remainder</strong>. The quick tests below are <strong>divisibility tricks</strong>: they tell you if a number is a multiple of 1–10 without a multiplication chart!", "tip": "Multiple of 4 = divisible by 4 = 4 goes into it evenly (remainder 0).", "examples": [{"label": "✅ 24 is a multiple of 4", "text": "4 × 6 = 24, and 24 ÷ 4 = 6 R 0."}, {"label": "❌ 25 is not a multiple of 4", "text": "25 ÷ 4 = 6 R 1. There is a remainder."}]},
+        {"title": "2. 👀 Just Look at the Last Digit: 1, 2, 5, 10", "rule": "<strong>1:</strong> Every whole number is a multiple of 1.<br><strong>2:</strong> The last digit is <strong>0, 2, 4, 6, or 8</strong> (an even number).<br><strong>5:</strong> The last digit is <strong>0 or 5</strong>.<br><strong>10:</strong> The last digit is <strong>0</strong>.", "tip": "A number ending in 0 passes the 2, 5, AND 10 tests!", "examples": [{"label": "1️⃣ Example", "text": "47 is a multiple of 1."}, {"label": "2️⃣ Example", "text": "146 ends in 6 → multiple of 2."}, {"label": "5️⃣ Example", "text": "235 ends in 5 → multiple of 5."}, {"label": "🔟 Example", "text": "450 ends in 0 → multiple of 10 (and 2 and 5)."}]},
+        {"title": "3. ➕ Add the Digits: 3 and 9", "rule": "<strong>3:</strong> Add the digits. If the sum is divisible by 3, the number is a multiple of 3.<br><strong>9:</strong> Add the digits. If the sum is divisible by 9, the number is a multiple of 9.", "tip": "Every multiple of 9 is also a multiple of 3, but not every multiple of 3 is a multiple of 9 (123 passes 3 but not 9).", "examples": [{"label": "3️⃣ Example", "text": "123: 1 + 2 + 3 = 6, and 6 is divisible by 3 ✅"}, {"label": "9️⃣ Example", "text": "729: 7 + 2 + 9 = 18, and 18 is divisible by 9 ✅"}]},
+        {"title": "4. 🔚 Look at the Last TWO or THREE Digits: 4 and 8", "rule": "<strong>4:</strong> Look at the <strong>last two digits</strong>. If they make a number divisible by 4, the whole number is a multiple of 4.<br><strong>8:</strong> Look at the <strong>last three digits</strong>. If they make a number divisible by 8, the whole number is a multiple of 8.", "tip": "2 → check the last 1 digit · 4 → the last 2 digits · 8 → the last 3 digits. The bigger the number, the more digits you check!", "examples": [{"label": "4️⃣ Example", "text": "316: last two digits are 16, and 16 ÷ 4 = 4 ✅"}, {"label": "8️⃣ Example", "text": "1,024: last three digits are 024 = 24, and 24 ÷ 8 = 3 ✅"}]},
+        {"title": "5. 🤝 Pass BOTH Tests: 6", "rule": "A number is a multiple of <strong>6</strong> only if it passes <strong>BOTH</strong> the <strong>2 test</strong> (even) and the <strong>3 test</strong> (digit sum divisible by 3).", "tip": "Even is not enough! 146 is even, but 1 + 4 + 6 = 11, so it is NOT a multiple of 6.", "examples": [{"label": "6️⃣ Example", "text": "234: even ✅ and 2 + 3 + 4 = 9 ✅ → multiple of 6."}, {"label": "❌ Not 6", "text": "123: digit sum 6 ✅ but it's odd ❌ → not a multiple of 6."}]},
+        {"title": "6. ✂️ The Tricky One: 7", "rule": "<strong>Double the last digit</strong>, then <strong>subtract</strong> it from the rest of the number. If the result is divisible by 7, the number is a multiple of 7. <strong>Repeat</strong> the trick if the number is still big.", "tip": "203: the rest is 20, the last digit is 3. 20 − (2 × 3) = 14, and 14 ÷ 7 = 2 ✅", "examples": [{"label": "7️⃣ Example", "text": "203 → 20 − 6 = 14 → multiple of 7."}, {"label": "🔁 Repeat if needed", "text": "672 → 67 − (2 × 2) = 63, and 63 is divisible by 7 ✅"}]},
+        {"title": "7. 🎯 Try It: Is 1,248 a Multiple of 2, 3, 4, 6, and 8?", "rule": "Test each one: <strong>2:</strong> ends in 8 ✅ · <strong>3:</strong> 1 + 2 + 4 + 8 = 15 ✅ · <strong>4:</strong> last two digits 48 ÷ 4 = 12 ✅ · <strong>6:</strong> passes 2 and 3 ✅ · <strong>8:</strong> last three digits 248 ÷ 8 = 31 ✅", "tip": "Yes to all five! 🎉", "examples": [{"label": "📋 Quick chart", "text": "1 every number · 2 last digit even · 3 digit sum ÷ 3 · 4 last 2 digits ÷ 4 · 5 ends in 0/5 · 6 tests 2 + 3 · 7 double, subtract · 8 last 3 digits ÷ 8 · 9 digit sum ÷ 9 · 10 ends in 0"}]}
+      ],
       quizBank: [
         { prompt: "What is <strong>2,436 × 4</strong>?",
           options: ["9,744", "10,744", "9,644", "9,754"], answer: "9,744",
@@ -5512,6 +5545,38 @@
         { prompt: "A bus has 48 seats. It made 13 full trips. How many passengers did it carry in all?",
           options: ["624", "61", "592", "634"], answer: "624",
           why: "48 × 13: 48 × 3 = 144 and 48 × 10 = 480. 144 + 480 = <strong>624</strong> passengers." },
+        // --- Lesson: Multiples 1–10 Quick Recognition ---
+        {"prompt": "What is the quick test for a multiple of <strong>2</strong>?", "options": ["The last digit is 0, 2, 4, 6, or 8", "The last digit is 0 or 5", "Add the digits; the sum is divisible by 2", "The last two digits are divisible by 2"], "answer": "The last digit is 0, 2, 4, 6, or 8", "why": "A number is a multiple of 2 if it is even — its last digit is 0, 2, 4, 6, or 8.", "mult": true},
+        {"prompt": "What is the quick test for a multiple of <strong>3</strong>?", "options": ["Add the digits; the sum is divisible by 3", "The last digit is 3", "The last two digits are divisible by 3", "The number is odd"], "answer": "Add the digits; the sum is divisible by 3", "why": "For 3, add the digits. If the sum is divisible by 3, the number is a multiple of 3.", "mult": true},
+        {"prompt": "What is the quick test for a multiple of <strong>4</strong>?", "options": ["The last TWO digits are divisible by 4", "The last digit is 4", "Add the digits; the sum is divisible by 4", "The last THREE digits are divisible by 4"], "answer": "The last TWO digits are divisible by 4", "why": "For 4, look at the last two digits.", "mult": true},
+        {"prompt": "What is the quick test for a multiple of <strong>5</strong>?", "options": ["The last digit is 0 or 5", "The last digit is 5 only", "Add the digits; the sum is divisible by 5", "The number is even"], "answer": "The last digit is 0 or 5", "why": "Multiples of 5 end in 0 or 5.", "mult": true},
+        {"prompt": "What is the quick test for a multiple of <strong>6</strong>?", "options": ["It passes BOTH the 2 test and the 3 test", "The last digit is 6", "It is an even number", "Add the digits; the sum is 6"], "answer": "It passes BOTH the 2 test and the 3 test", "why": "A number is a multiple of 6 only if it is even AND its digit sum is divisible by 3.", "mult": true},
+        {"prompt": "What is the quick test for a multiple of <strong>7</strong>?", "options": ["Double the last digit and subtract it from the rest; the result is divisible by 7", "The last digit is 7", "Add the digits; the sum is divisible by 7", "The last two digits are divisible by 7"], "answer": "Double the last digit and subtract it from the rest; the result is divisible by 7", "why": "For 7: double the last digit, subtract from the rest, and check if the result is divisible by 7.", "mult": true},
+        {"prompt": "What is the quick test for a multiple of <strong>8</strong>?", "options": ["The last THREE digits are divisible by 8", "The last TWO digits are divisible by 8", "The last digit is 8", "Add the digits; the sum is divisible by 8"], "answer": "The last THREE digits are divisible by 8", "why": "For 8, look at the last three digits.", "mult": true},
+        {"prompt": "What is the quick test for a multiple of <strong>9</strong>?", "options": ["Add the digits; the sum is divisible by 9", "The last digit is 9", "The last two digits are divisible by 9", "Double the last digit"], "answer": "Add the digits; the sum is divisible by 9", "why": "For 9, add the digits. If the sum is divisible by 9, the number is a multiple of 9.", "mult": true},
+        {"prompt": "What is the quick test for a multiple of <strong>10</strong>?", "options": ["The last digit is 0", "The last digit is 0 or 5", "The last digit is 1", "Add the digits; the sum is 10"], "answer": "The last digit is 0", "why": "Multiples of 10 always end in 0.", "mult": true},
+        {"prompt": "Which numbers is <strong>every</strong> whole number a multiple of?", "options": ["1", "2", "10", "0"], "answer": "1", "why": "Every whole number is a multiple of 1.", "mult": true},
+        {"prompt": "Which number is a multiple of <strong>2</strong>?", "options": ["146", "235", "317", "409"], "answer": "146", "why": "146 ends in 6, an even digit, so it is a multiple of 2.", "mult": true},
+        {"prompt": "Which number is a multiple of <strong>3</strong>?", "options": ["123", "124", "125", "128"], "answer": "123", "why": "123: 1 + 2 + 3 = 6, which is divisible by 3.", "mult": true},
+        {"prompt": "Which number is a multiple of <strong>4</strong>?", "options": ["316", "318", "322", "326"], "answer": "316", "why": "Look at the last two digits: 16 ÷ 4 = 4. The others (18, 22, 26) are not divisible by 4.", "mult": true},
+        {"prompt": "Which number is a multiple of <strong>5</strong>?", "options": ["235", "238", "241", "252"], "answer": "235", "why": "235 ends in 5, so it is a multiple of 5.", "mult": true},
+        {"prompt": "Which number is a multiple of <strong>6</strong>?", "options": ["234", "146", "123", "215"], "answer": "234", "why": "234 is even AND 2 + 3 + 4 = 9 is divisible by 3, so it passes both tests.", "mult": true},
+        {"prompt": "Which number is a multiple of <strong>7</strong>?", "options": ["203", "205", "209", "211"], "answer": "203", "why": "203: 20 − (2 × 3) = 14, and 14 is divisible by 7.", "mult": true},
+        {"prompt": "Which number is a multiple of <strong>8</strong>?", "options": ["1,024", "1,028", "1,034", "1,036"], "answer": "1,024", "why": "Last three digits: 024 = 24, and 24 ÷ 8 = 3. The others (28, 34, 36) are not divisible by 8.", "mult": true},
+        {"prompt": "Which number is a multiple of <strong>9</strong>?", "options": ["729", "728", "731", "734"], "answer": "729", "why": "729: 7 + 2 + 9 = 18, which is divisible by 9.", "mult": true},
+        {"prompt": "Which number is a multiple of <strong>10</strong>?", "options": ["450", "455", "405", "504"], "answer": "450", "why": "450 ends in 0, so it is a multiple of 10.", "mult": true},
+        {"prompt": "Which number is <strong>NOT</strong> a multiple of <strong>3</strong>?", "options": ["111", "222", "341", "405"], "answer": "341", "why": "341: 3 + 4 + 1 = 8, and 8 is not divisible by 3. The others have digit sums 3, 6, and 9.", "mult": true},
+        {"prompt": "Which number is <strong>NOT</strong> a multiple of <strong>5</strong>?", "options": ["120", "345", "990", "452"], "answer": "452", "why": "452 ends in 2, not 0 or 5.", "mult": true},
+        {"prompt": "Which number is <strong>NOT</strong> a multiple of <strong>9</strong>?", "options": ["189", "369", "459", "578"], "answer": "578", "why": "578: 5 + 7 + 8 = 20, not divisible by 9. The others all have digit sums of 18.", "mult": true},
+        {"prompt": "Which number is <strong>NOT</strong> a multiple of <strong>4</strong>?", "options": ["112", "524", "736", "950"], "answer": "950", "why": "950: the last two digits are 50, and 50 ÷ 4 = 12 R 2. So it's not a multiple of 4.", "mult": true},
+        {"prompt": "146 is an even number. Is it a multiple of <strong>6</strong>?", "options": ["No, because 1 + 4 + 6 = 11 is not divisible by 3", "Yes, because it is even", "Yes, because it ends in 6", "No, because it is odd"], "answer": "No, because 1 + 4 + 6 = 11 is not divisible by 3", "why": "To be a multiple of 6, it must pass BOTH the 2 test and the 3 test. 146 passes 2 but fails 3.", "mult": true},
+        {"prompt": "Use the 7 trick on <strong>672</strong>: 67 − (2 × 2) = ?", "options": ["63", "65", "59", "70"], "answer": "63", "why": "Double the last digit: 2 × 2 = 4. Then 67 − 4 = 63, and 63 ÷ 7 = 9, so 672 is a multiple of 7.", "mult": true},
+        {"prompt": "Use the 7 trick on <strong>203</strong>. What number do you get?", "options": ["14", "17", "26", "23"], "answer": "14", "why": "The rest is 20 and the last digit is 3. 20 − (2 × 3) = 20 − 6 = 14. 14 is divisible by 7 ✅", "mult": true},
+        {"prompt": "Is <strong>1,248</strong> a multiple of 2, 3, 4, 6, and 8?", "options": ["Yes to all five", "Only 2 and 4", "Only 2, 4, and 8", "Only 3 and 6"], "answer": "Yes to all five", "why": "2: ends in 8 ✅ · 3: 1+2+4+8 = 15 ✅ · 4: 48 ÷ 4 ✅ · 6: passes 2 and 3 ✅ · 8: 248 ÷ 8 = 31 ✅", "mult": true},
+        {"prompt": "To check if <strong>1,024</strong> is a multiple of 8, which digits do you look at?", "options": ["024 (the last three digits)", "24 (the last two digits)", "4 (the last digit)", "1 + 0 + 2 + 4 (add all the digits)"], "answer": "024 (the last three digits)", "why": "For 8, look at the last three digits: 024 = 24, and 24 ÷ 8 = 3 ✅", "mult": true},
+        {"prompt": "A number ends in <strong>0</strong>. It is definitely a multiple of which numbers?", "options": ["2, 5, and 10", "3 and 9", "4 and 8", "only 10"], "answer": "2, 5, and 10", "why": "A last digit of 0 passes the 2 test (even), the 5 test (0 or 5), and the 10 test (0).", "mult": true},
+        {"prompt": "729 is a multiple of 9. Is it also a multiple of 3?", "options": ["Yes — its digit sum, 18, is divisible by 3", "No — only 9", "No — it is odd", "Yes — it ends in 9"], "answer": "Yes — its digit sum, 18, is divisible by 3", "why": "Every multiple of 9 is also a multiple of 3, because a sum divisible by 9 is also divisible by 3.", "mult": true},
+        {"prompt": "Which number is a multiple of <strong>both 2 and 5</strong>?", "options": ["340", "345", "342", "335"], "answer": "340", "why": "It must end in 0 to be even AND end in 0 or 5. 340 ends in 0.", "mult": true},
       ],
     },
     // __MORE_CHAPTERS__
@@ -11286,7 +11351,68 @@
               ]
             },
             {
-              "title": "7. 🌟 Lesson 2 Word Wall",
+              "title": "7. 💱 Trade and Money: Then and Now",
+              "rule": "<strong>Ancient times:</strong> People <strong>bartered</strong> one thing for another before the development of money. <strong>Modern economies:</strong> People use <strong>money</strong> to trade. Every country has its own currency, and the <strong>exchange rate</strong> of the currency can change. The <strong>exchange rate</strong> tells how much of one country's money you can get for another country's money. A rise in the usual price of many goods and services is called <strong>inflation</strong>.",
+              "tip": "Exchange rate = how many of THEIR dollars you get for ONE of YOUR dollars. It can go up and down! 💱",
+              "examples": [
+                {
+                  "label": "🏺 Ancient time",
+                  "text": "Trade a shirt 👕 for a clay jar 🏺 — no money needed. That's bartering."
+                },
+                {
+                  "label": "💵 Modern economies",
+                  "text": "People pay for things with money (bills, coins, or cards)."
+                },
+                {
+                  "label": "✈️ Exchange rate",
+                  "text": "Going on a trip from Taiwan to the U.S.? You trade New Taiwan dollars for U.S. dollars. One U.S. dollar costs about 30 NT dollars, but that number changes over time."
+                }
+              ]
+            },
+            {
+              "title": "8. 👕 Calculating Profit: Sam's T-Shirt Business",
+              "rule": "Sam printed <strong>100 T-shirts</strong>. Each T-shirt cost him <strong>$5</strong> to make, and he paid <strong>$50</strong> for advertising. He sold all 100 T-shirts for <strong>$12 each</strong>.<br>① <strong>Total costs (expenses)</strong> = all the money spent: 100 × $5 = $500, then $500 + $50 = <strong>$550</strong><br>② <strong>Sales figure</strong> = the total amount earned: 100 × $12 = <strong>$1,200</strong><br>③ <strong>Profit</strong> = $1,200 − $550 = <strong>$650</strong>",
+              "tip": "🔑 <strong>Profit = Sales figure − Total cost</strong>. Don't forget to add EVERY cost, like advertising!",
+              "examples": [
+                {
+                  "label": "⬆️ Higher profit way 1",
+                  "text": "Increase the price of the item (sell each T-shirt for more)."
+                },
+                {
+                  "label": "⬇️ Higher profit way 2",
+                  "text": "Decrease the total cost (spend less to make or advertise each T-shirt)."
+                },
+                {
+                  "label": "🧮 Try it",
+                  "text": "If Sam sold each shirt for $15: 100 × $15 = $1,500 → $1,500 − $550 = $950 profit."
+                }
+              ]
+            },
+            {
+              "title": "9. 🎃 Supply and Demand in Real Life",
+              "rule": "<strong>Supply</strong> is how much or how little of an item is available. <strong>Demand</strong> is how much customers (consumers) want to purchase a good or service. Holidays and special events change demand. <strong>Before</strong> a holiday, lots of people want holiday items → <strong>high demand / low supply</strong>. <strong>After</strong> a holiday, few people want them and stores have leftovers → <strong>low demand / high supply</strong>.",
+              "tip": "If supply increases but demand decreases, the price usually <strong>decreases</strong> ⬇️. If supply decreases but demand increases, the price usually <strong>increases</strong> ⬆️.",
+              "examples": [
+                {
+                  "label": "🍬 Low demand / high supply",
+                  "text": "Christmas has passed, and there are candy canes left over at the grocery store."
+                },
+                {
+                  "label": "🐰 High demand / low supply",
+                  "text": "It is almost Easter, and the store is running low on jelly beans."
+                },
+                {
+                  "label": "🧻 High demand / low supply",
+                  "text": "During quarantine, many stores ran out of toilet paper."
+                },
+                {
+                  "label": "🎃 Low demand / high supply",
+                  "text": "The store drops the price of Halloween decorations in November."
+                }
+              ]
+            },
+            {
+              "title": "10. 🌟 Lesson 2 Word Wall",
               "rule": "Tap a card to flip it! 🔄 Tap 🔊 to hear the word.",
               "tip": "Academic vocabulary: <strong>borrow</strong> and <strong>available</strong>.",
               "vocab": [
@@ -11347,6 +11473,46 @@
                   "trick": "Demand = what BUYERS want. More wanting means higher prices!"
                 },
                 {
+                  "emoji": "💡",
+                  "word": "entrepreneur",
+                  "pos": "noun",
+                  "def": "a person who takes a risk and opens a business",
+                  "example": "Mia started her own bracelet business at the school fair. She is an entrepreneur!",
+                  "trick": "Spell it in chunks: en-tre-pre-neur. Don't forget the second R! ✍️"
+                },
+                {
+                  "emoji": "🤝",
+                  "word": "investor",
+                  "pos": "noun",
+                  "def": "a person who loans money in the hope of making a profit when the new business has grown",
+                  "example": "Grandpa gave Mia $20 to buy beads. When her business grows, she will pay him back with a little extra. Grandpa is an investor.",
+                  "trick": "An INVESTor puts money IN to help a business grow. 🌱"
+                },
+                {
+                  "emoji": "💱",
+                  "word": "exchange rate",
+                  "pos": "noun",
+                  "def": "how much of one country's money you can get for another country's money",
+                  "example": "Before the trip, Dad checked the exchange rate to see how many U.S. dollars he could get for his NT dollars.",
+                  "trick": "Exchange = trade. Rate = how much. 💱"
+                },
+                {
+                  "emoji": "🧾",
+                  "word": "sales figure",
+                  "pos": "noun",
+                  "def": "the total amount of money a business earns from selling",
+                  "example": "Sam sold 100 T-shirts for $12 each. His sales figure was $1,200.",
+                  "trick": "Sales figure = ALL the money that came in from selling. 💰"
+                },
+                {
+                  "emoji": "📉",
+                  "word": "total cost (expenses)",
+                  "pos": "noun",
+                  "def": "all the money a business spends to make and sell its products",
+                  "example": "Sam spent $500 making shirts and $50 on ads. His total cost was $550.",
+                  "trick": "Add up EVERY cost — materials, ads, rent — to get the total. ➕"
+                },
+                {
                   "emoji": "🤲",
                   "word": "borrow",
                   "pos": "verb",
@@ -11393,6 +11559,26 @@
                   "text": "the amount of a product that consumers are willing to buy"
                 },
                 {
+                  "label": "entrepreneur",
+                  "text": "a person who takes a risk and opens a business"
+                },
+                {
+                  "label": "investor",
+                  "text": "a person who loans money in the hope of making a profit when the new business has grown"
+                },
+                {
+                  "label": "exchange rate",
+                  "text": "how much of one country's money you can get for another country's money"
+                },
+                {
+                  "label": "sales figure",
+                  "text": "the total amount of money a business earns from selling"
+                },
+                {
+                  "label": "total cost (expenses)",
+                  "text": "all the money a business spends to make and sell its products"
+                },
+                {
                   "label": "borrow (v.)",
                   "text": "to take and use something with the agreement of returning it at a later time"
                 },
@@ -11413,7 +11599,8 @@
                 "Money left over after paying costs"
               ],
               "answer": "The type of money used in a particular place",
-              "why": "Currency is the type of money used in a particular place."
+              "why": "Currency is the type of money used in a particular place.",
+              "ws": true
             },
             {
               "prompt": "What is the currency of the United States?",
@@ -11468,7 +11655,8 @@
                 "To raise prices"
               ],
               "answer": "To trade one type of good or service for another type",
-              "why": "To barter means to trade one type of good or service for another type."
+              "why": "To barter means to trade one type of good or service for another type.",
+              "ws": true
             },
             {
               "prompt": "Before money was developed, how did people get goods and services?",
@@ -11479,7 +11667,8 @@
                 "They borrowed from banks"
               ],
               "answer": "They bartered",
-              "why": "Before the development of money, people would barter."
+              "why": "Before the development of money, people would barter.",
+              "ws": true
             },
             {
               "prompt": "A music teacher gives guitar lessons to a baker. The baker gives the teacher fresh bread. This is an example of...",
@@ -11545,7 +11734,8 @@
                 "The money a business earns in a year"
               ],
               "answer": "A rise in the usual price of many goods and services",
-              "why": "A rise in the usual price of many goods and services is called inflation."
+              "why": "A rise in the usual price of many goods and services is called inflation.",
+              "ws": true
             },
             {
               "prompt": "What does inflation mean for your money?",
@@ -11600,7 +11790,8 @@
                 "A loan from a bank"
               ],
               "answer": "The money a business has left over after it pays all its costs",
-              "why": "Profit is the money a business has left over after it pays all its costs."
+              "why": "Profit is the money a business has left over after it pays all its costs.",
+              "ws": true
             },
             {
               "prompt": "What is the goal of a business?",
@@ -11699,7 +11890,8 @@
                 "A type of currency"
               ],
               "answer": "A person who takes a risk and opens a business",
-              "why": "A person who takes a risk and opens a business is called an entrepreneur."
+              "why": "A person who takes a risk and opens a business is called an entrepreneur.",
+              "ws": true
             },
             {
               "prompt": "Reading Check: Which are costs of opening a new business?",
@@ -11754,7 +11946,8 @@
                 "A type of currency"
               ],
               "answer": "Someone who loans money hoping to make a profit when the new business grows",
-              "why": "An investor loans money in the hopes of making a profit when the new business has grown."
+              "why": "An investor loans money in the hopes of making a profit when the new business has grown.",
+              "ws": true
             },
             {
               "prompt": "What does the word BORROW mean?",
@@ -11942,6 +12135,366 @@
               ],
               "answer": "Fewer people want it, or businesses make too much of it",
               "why": "Low demand or too much supply can cause prices to go down."
+            },
+            {
+              "prompt": "_______ is how much or how little of an item is available.",
+              "options": [
+                "Supply",
+                "Demand",
+                "Profit",
+                "Currency"
+              ],
+              "answer": "Supply",
+              "why": "Supply is how much or how little of an item is available.",
+              "ws": true
+            },
+            {
+              "prompt": "_______ is how much customers (consumers) want to purchase a good or service.",
+              "options": [
+                "Demand",
+                "Supply",
+                "Inflation",
+                "Barter"
+              ],
+              "answer": "Demand",
+              "why": "Demand is how much customers want to purchase a good or service.",
+              "ws": true
+            },
+            {
+              "prompt": "Christmas has passed, and there are candy canes left over at the grocery store. This is...",
+              "options": [
+                "Low demand / high supply",
+                "High demand / low supply",
+                "High demand / high supply",
+                "No supply"
+              ],
+              "answer": "Low demand / high supply",
+              "why": "After Christmas, few people want candy canes (low demand), and the store has lots left over (high supply).",
+              "ws": true
+            },
+            {
+              "prompt": "It is almost Easter, and the store is running low on jelly beans. This is...",
+              "options": [
+                "High demand / low supply",
+                "Low demand / high supply",
+                "Low demand / low supply",
+                "High supply"
+              ],
+              "answer": "High demand / low supply",
+              "why": "Before Easter, many people want jelly beans (high demand), and the store is running out (low supply).",
+              "ws": true
+            },
+            {
+              "prompt": "During quarantine, many stores ran out of toilet paper. This is...",
+              "options": [
+                "High demand / low supply",
+                "Low demand / high supply",
+                "Low demand / low supply",
+                "High supply"
+              ],
+              "answer": "High demand / low supply",
+              "why": "Lots of people rushed to buy toilet paper (high demand), so stores ran out (low supply).",
+              "ws": true
+            },
+            {
+              "prompt": "The store drops the price of Halloween decorations in November. This is...",
+              "options": [
+                "Low demand / high supply",
+                "High demand / low supply",
+                "High demand / high supply",
+                "Inflation"
+              ],
+              "answer": "Low demand / high supply",
+              "why": "Halloween is over, so few people want decorations (low demand) and the store has extras (high supply).",
+              "ws": true
+            },
+            {
+              "prompt": "Why does a store lower the price of Halloween decorations in November?",
+              "options": [
+                "Halloween is over, so demand is low and the store has too much supply",
+                "Everyone wants decorations in November",
+                "The store ran out of decorations",
+                "Because of inflation"
+              ],
+              "answer": "Halloween is over, so demand is low and the store has too much supply",
+              "why": "Stores lower prices when demand is low and supply is high, to get people to buy the leftovers.",
+              "ws": true
+            },
+            {
+              "prompt": "The supply increased, but the demand decreased. What happens to the price?",
+              "options": [
+                "The price usually decreases",
+                "The price usually increases",
+                "The price stays exactly the same",
+                "The item becomes free"
+              ],
+              "answer": "The price usually decreases",
+              "why": "More items available + fewer people who want them = the price usually goes down.",
+              "ws": true
+            },
+            {
+              "prompt": "The supply decreased, but the demand increased. What happens to the price?",
+              "options": [
+                "The price usually increases",
+                "The price usually decreases",
+                "The price stays exactly the same",
+                "The store closes"
+              ],
+              "answer": "The price usually increases",
+              "why": "Fewer items available + more people who want them = the price usually goes up.",
+              "ws": true
+            },
+            {
+              "prompt": "In ancient times, people _______ one thing for another before the development of money.",
+              "options": [
+                "bartered",
+                "borrowed",
+                "invested",
+                "advertised"
+              ],
+              "answer": "bartered",
+              "why": "Before money, people bartered — they traded one thing for another.",
+              "ws": true
+            },
+            {
+              "prompt": "In modern economies, people use _______ to trade.",
+              "options": [
+                "money",
+                "seashells only",
+                "animal furs",
+                "jelly beans"
+              ],
+              "answer": "money",
+              "why": "In modern economies, people use money to trade.",
+              "ws": true
+            },
+            {
+              "prompt": "The _______ of a currency can change.",
+              "options": [
+                "exchange rate",
+                "supply",
+                "entrepreneur",
+                "barter"
+              ],
+              "answer": "exchange rate",
+              "why": "The exchange rate of a currency can change over time.",
+              "ws": true
+            },
+            {
+              "prompt": "What is an exchange rate?",
+              "options": [
+                "How much of one country's money you can get for another country's money",
+                "The money left over after paying costs",
+                "A rise in the price of many goods",
+                "Trading goods without money"
+              ],
+              "answer": "How much of one country's money you can get for another country's money",
+              "why": "The exchange rate tells how much of one currency you get for another, like NT dollars for U.S. dollars.",
+              "ws": true
+            },
+            {
+              "prompt": "A rise in the usual price of many goods and services is called...",
+              "options": [
+                "inflation",
+                "profit",
+                "barter",
+                "supply"
+              ],
+              "answer": "inflation",
+              "why": "A rise in the usual price of many goods and services is called inflation.",
+              "ws": true
+            },
+            {
+              "prompt": "Sam printed 100 T-shirts. Each cost $5 to make, and he paid $50 for advertising. What were Sam's total costs?",
+              "options": [
+                "$550",
+                "$500",
+                "$1,200",
+                "$650"
+              ],
+              "answer": "$550",
+              "why": "100 × $5 = $500 for the shirts, then $500 + $50 advertising = $550.",
+              "ws": true
+            },
+            {
+              "prompt": "Sam sold all 100 T-shirts for $12 each. What was his sales figure (the total amount he earned)?",
+              "options": [
+                "$1,200",
+                "$650",
+                "$550",
+                "$120"
+              ],
+              "answer": "$1,200",
+              "why": "100 × $12 = $1,200.",
+              "ws": true
+            },
+            {
+              "prompt": "Sam's sales figure was $1,200 and his total costs were $550. How much profit did he make?",
+              "options": [
+                "$650",
+                "$1,750",
+                "$550",
+                "$700"
+              ],
+              "answer": "$650",
+              "why": "Profit = $1,200 − $550 = $650.",
+              "ws": true
+            },
+            {
+              "prompt": "Which formula shows how to find profit?",
+              "options": [
+                "Profit = Sales figure − Total cost",
+                "Profit = Sales figure + Total cost",
+                "Profit = Total cost − Sales figure",
+                "Profit = Price × Advertising"
+              ],
+              "answer": "Profit = Sales figure − Total cost",
+              "why": "Profit is what's left after you subtract the total cost from the sales figure.",
+              "ws": true
+            },
+            {
+              "prompt": "Another word for a business's total costs is...",
+              "options": [
+                "expenses",
+                "profit",
+                "income",
+                "demand"
+              ],
+              "answer": "expenses",
+              "why": "Total costs are also called expenses — all the money a business spends.",
+              "ws": true
+            },
+            {
+              "prompt": "What is a sales figure?",
+              "options": [
+                "The total amount of money a business earns from selling",
+                "The money left after paying all costs",
+                "The cost of advertising",
+                "The number of workers in a business"
+              ],
+              "answer": "The total amount of money a business earns from selling",
+              "why": "The sales figure is the total amount a business earns, before costs are subtracted.",
+              "ws": true
+            },
+            {
+              "prompt": "Sam forgot to count his $50 advertising cost. What mistake would he make?",
+              "options": [
+                "He would think his profit was $50 more than it really is",
+                "He would think his profit was $50 less than it really is",
+                "His sales figure would change",
+                "Nothing would change"
+              ],
+              "answer": "He would think his profit was $50 more than it really is",
+              "why": "Without the $50, costs look like $500, so profit looks like $700 instead of the real $650.",
+              "ws": true
+            },
+            {
+              "prompt": "What are TWO ways to make a higher profit?",
+              "options": [
+                "Increase the price of the item and decrease the total cost",
+                "Decrease the price and increase the total cost",
+                "Spend more on materials and sell fewer items",
+                "Give the items away for free"
+              ],
+              "answer": "Increase the price of the item and decrease the total cost",
+              "why": "Raising the price brings in more money, and lowering costs means less is spent — both increase profit.",
+              "ws": true
+            },
+            {
+              "prompt": "If Sam sold each T-shirt for $15 instead of $12 (same $550 total cost), what would his profit be?",
+              "options": [
+                "$950",
+                "$650",
+                "$1,500",
+                "$1,050"
+              ],
+              "answer": "$950",
+              "why": "100 × $15 = $1,500, then $1,500 − $550 = $950. Raising the price increased his profit!",
+              "ws": true
+            },
+            {
+              "prompt": "If each T-shirt cost Sam only $4 to make (still $50 for ads, sold 100 for $12 each), what would his profit be?",
+              "options": [
+                "$750",
+                "$650",
+                "$800",
+                "$450"
+              ],
+              "answer": "$750",
+              "why": "Costs: 100 × $4 = $400 + $50 = $450. Profit: $1,200 − $450 = $750. Lowering costs increased his profit!",
+              "ws": true
+            },
+            {
+              "prompt": "Which change would make Sam's profit go DOWN?",
+              "options": [
+                "Paying more for fabric and printing",
+                "Raising the price of each T-shirt",
+                "Finding cheaper materials",
+                "Selling more T-shirts at the same price"
+              ],
+              "answer": "Paying more for fabric and printing",
+              "why": "Higher costs mean more money is subtracted from sales, so profit goes down.",
+              "ws": true
+            },
+            {
+              "prompt": "A person who takes a risk and opens a business is called an...",
+              "options": [
+                "entrepreneur",
+                "investor",
+                "consumer",
+                "employee"
+              ],
+              "answer": "entrepreneur",
+              "why": "An entrepreneur takes a risk and opens a business.",
+              "ws": true
+            },
+            {
+              "prompt": "Which is the correct spelling?",
+              "options": [
+                "entrepreneur",
+                "entrepeneur",
+                "entreprenuer",
+                "enterpreneur"
+              ],
+              "answer": "entrepreneur",
+              "why": "Spell it in chunks: en-tre-pre-neur. Remember the R in \"pre\"!",
+              "ws": true
+            },
+            {
+              "prompt": "A person who loans money in the hope of making a profit when the new business has grown is an...",
+              "options": [
+                "investor",
+                "entrepreneur",
+                "consumer",
+                "producer"
+              ],
+              "answer": "investor",
+              "why": "An investor loans money to a new business, hoping to make a profit when it grows.",
+              "ws": true
+            },
+            {
+              "prompt": "To trade one type of good or service for another type is to...",
+              "options": [
+                "barter",
+                "borrow",
+                "invest",
+                "advertise"
+              ],
+              "answer": "barter",
+              "why": "To barter is to trade one type of good or service for another type.",
+              "ws": true
+            },
+            {
+              "prompt": "The type of money used in a particular place is called...",
+              "options": [
+                "currency",
+                "inflation",
+                "profit",
+                "supply"
+              ],
+              "answer": "currency",
+              "why": "Currency is the type of money used in a particular place.",
+              "ws": true
             }
           ]
         }
@@ -15964,7 +16517,10 @@
     navStack.push({ id: "screen-math", title: "Math" });
     if (chapter.enabled) {
       currentChapter = chapter.id;
-      renderChapterQuiz();
+      const hasLesson = !!(M().lessons && M().lessons.length);
+      document.getElementById("chapterTabs").style.display = hasLesson ? "flex" : "none";
+      if (hasLesson) { renderChapterLesson(); showChapterTab("lesson"); }
+      else { showChapterTab("quiz"); }
       showScreen("screen-chapter", "Math — " + chapter.name);
     } else {
       document.getElementById("placeholderSubject").textContent = chapter.name;
@@ -16044,6 +16600,40 @@
 
   // How many questions to pull from the chapter's quiz bank per attempt.
   const CHAPTER_QUIZ_SIZE = 30;
+
+  function showChapterTab(tab) {
+    document.querySelectorAll("[data-chapter-tab]").forEach(b => b.classList.toggle("active", b.dataset.chapterTab === tab));
+    document.querySelectorAll(".chapter-tab").forEach(el => el.style.display = "none");
+    document.getElementById("chapter-" + tab).style.display = "block";
+    if (tab === "quiz") renderChapterQuiz(); // fresh random set from the question bank every time
+  }
+
+  function renderChapterLesson() {
+    const ch = M();
+    document.getElementById("chapterLessonIntro").innerHTML = "<strong>" + (ch.lessonName || "Lesson") + "</strong> — read each card, then try the practice questions below.";
+    document.getElementById("chapterLessonCards").innerHTML = (ch.lessons || []).map(l => `
+      <div class="lesson-card">
+        <h4>${l.title}</h4>
+        <p>${l.rule}</p>
+        ${l.tip ? `<p class="trick">💡 <strong>Tip:</strong> ${l.tip}</p>` : ""}
+        ${l.examples.map(ex => `<p><span class="syn">${ex.label}:</span> ${ex.text}</p>`).join("")}
+      </div>
+    `).join("");
+    const url = ch.worksheet ? encodeURI(ch.worksheet) : null;
+    document.getElementById("chapterLessonWorksheet").innerHTML = url ? `
+      <div class="worksheet-embed">
+        <h4>📄 ${ch.worksheetLabel || "Worksheet"}</h4>
+        <iframe src="${url}" title="${ch.worksheetLabel || "Worksheet"}"></iframe>
+        <br><a class="worksheet-link" href="${url}" target="_blank" rel="noopener">🖨 Open in a new tab to print</a>
+      </div>` : "";
+    renderChapterLessonPractice();
+  }
+
+  function renderChapterLessonPractice() {
+    const qs = M().quizBank.filter(q => q.mult);
+    document.getElementById("chapterLessonQuizTitle").textContent = (M().lessonName || "Lesson") + " — Practice (" + Math.min(qs.length, 15) + " questions)";
+    renderMCQ("chapterLessonQuizQs", "chapterLessonQuiz", shuffle(qs).slice(0, 15));
+  }
 
   function renderChapterQuiz() {
     document.getElementById("chapterQuizTitle").textContent = M().name + " — Quiz";
@@ -16826,6 +17416,7 @@
       let sectionInfo;
       if (setId === "storyQuiz") sectionInfo = { unitName: S().name, section: "Reading" };
       else if (setId === "chapterQuiz") sectionInfo = { unitName: M().name, section: "Math" };
+      else if (setId === "chapterLessonQuiz") sectionInfo = { unitName: M().name + " — " + (M().lessonName || "Lesson"), section: "Math" };
       else if (setId === "grammarUnitQuiz") sectionInfo = { unitName: G().name, section: "ENG Grammar" };
       else if (setId === "socialLessonQuiz") sectionInfo = { unitName: SS().name + " — " + SL().name, section: "Social Studies" };
       else if (setId === "scienceTopicQuiz") sectionInfo = { unitName: SCI_LABEL(), section: "Science" };
