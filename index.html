@@ -521,8 +521,24 @@
 
   <!-- READING: STORY LIST -->
   <section class="screen" id="screen-reading">
-    <p class="intro">Choose a story.</p>
-    <div class="subject-grid" id="storyGrid"></div>
+    <div class="tabs">
+      <button class="tab-btn active" data-rd-main="stories" onclick="showReadingMain('stories')">📖 Stories</button>
+      <button class="tab-btn" data-rd-main="skills" onclick="showReadingMain('skills')">🧠 Skills</button>
+    </div>
+    <div id="rdmain-stories" class="rdmain-tab">
+      <p class="intro">Choose a story.</p>
+      <div class="subject-grid" id="storyGrid"></div>
+    </div>
+    <div id="rdmain-skills" class="rdmain-tab" style="display:none">
+      <p class="intro">Choose a reading skill to download its practice worksheets.</p>
+      <div class="subject-grid" id="skillGrid"></div>
+    </div>
+  </section>
+
+  <!-- READING: SKILL SCREEN (downloadable worksheets) -->
+  <section class="screen" id="screen-skill">
+    <p class="intro">Download or print the worksheet, then write your answers on it. ✏️</p>
+    <div id="skillFiles"></div>
   </section>
 
   <!-- STORY SCREEN (shared by all stories) -->
@@ -12505,11 +12521,24 @@
   };
 
   // =========================================================================
+  // READING SKILLS — downloadable written-answer worksheets (files live in the Quiz folder)
+  // =========================================================================
+  const READING_SKILLS = {
+    summary:  { name: "Summary", icon: "📝", files: ["G4-1 Summary Quiz.pdf"] },
+    mainidea: { name: "Main Ideas and Supporting Details", icon: "🎯", files: ["G4-1 Main Idea Quiz 1.pdf", "G4-1 Main Idea Quiz 2.pdf"] },
+    features: { name: "Text and Graphic Features", icon: "🗺️", files: ["G4-1 Text Graphic Feature quiz 1.pdf", "G4-1 Text Graphic Feature quiz 2.pdf"] },
+    idioms:   { name: "Idioms", icon: "💬", files: ["G4-1 Idiom Quiz 1.pdf", "G4-1 Idiom Quiz 2.pdf"] },
+    themes:   { name: "Themes", icon: "💡", files: ["G4-1 Theme quiz 1.pdf", "G4-1 Theme quiz 2.pdf"] },
+    purpose:  { name: "Author's Purpose", icon: "✍️", files: [] },
+    cause:    { name: "Cause and Effect", icon: "🔗", files: ["G4-1 Cause and Effect quiz 1.pdf", "G4-1 Cause and Effect quiz 2.pdf"] },
+  };
+
+  // =========================================================================
   // NAVIGATION
   // =========================================================================
   const subjects = [
     { id: "vocab", icon: "📖", name: "Vocabulary Workshop", status: "Units 1–18 ready", enabled: true },
-    { id: "reading", icon: "📚", name: "Reading", status: "Stories 1–4 ready", enabled: true },
+    { id: "reading", icon: "📚", name: "Reading", status: "Stories 1–4 · 7 Skills", enabled: true },
     { id: "math", icon: "🔢", name: "Math", status: "Chapters 1–2 ready", enabled: true },
     { id: "grammar", icon: "✏️", name: "ENG Grammar", status: "Units 1–2 ready", enabled: true },
     { id: "social", icon: "🌍", name: "Social Studies", status: "Chapters 1 & 4 ready", enabled: true },
@@ -16496,6 +16525,7 @@
     if (subj.id === "vocab") {
       showScreen("screen-vocab", "Vocabulary Workshop");
     } else if (subj.id === "reading") {
+      showReadingMain("stories");
       showScreen("screen-reading", "Reading");
     } else if (subj.id === "math") {
       showScreen("screen-math", "Math");
@@ -17109,6 +17139,28 @@
       document.getElementById("placeholderSubject").textContent = "Vocabulary Workshop " + unit.name;
       showScreen("screen-placeholder", unit.name);
     }
+  }
+
+  // ---- Reading: Stories / Skills ----
+  function showReadingMain(tab) {
+    document.querySelectorAll("[data-rd-main]").forEach(b => b.classList.toggle("active", b.dataset.rdMain === tab));
+    document.querySelectorAll(".rdmain-tab").forEach(el => el.style.display = "none");
+    document.getElementById("rdmain-" + tab).style.display = "block";
+  }
+
+  function openSkill(skill) {
+    const sk = READING_SKILLS[skill.id];
+    navStack.push({ id: "screen-reading", title: "Reading" });
+    document.getElementById("skillFiles").innerHTML = sk.files.map(f => {
+      const href = "Quiz/" + encodeURIComponent(f);
+      const label = f.replace(/^G4-1\s*/, "").replace(/\.pdf$/i, "");
+      return `<div class="worksheet-embed">
+        <h4>📄 ${label}</h4>
+        <a class="print-btn" href="${href}" download>⬇ Download</a>
+        <a class="print-btn" href="${href}" target="_blank">👀 Open / Print</a>
+      </div>`;
+    }).join("") || `<div class="placeholder-box"><p><strong>${sk.name}</strong> worksheets haven't been added yet.</p></div>`;
+    showScreen("screen-skill", "Reading Skills — " + sk.name);
   }
 
   function openStory(story) {
@@ -17787,6 +17839,11 @@
   renderGrid("subjectGrid", subjects, openSubject);
   renderGrid("unitGrid", units, openUnit);
   renderGrid("storyGrid", stories, openStory);
+  renderGrid("skillGrid", Object.keys(READING_SKILLS).map(id => ({
+    id, icon: READING_SKILLS[id].icon, name: READING_SKILLS[id].name,
+    status: READING_SKILLS[id].files.length ? READING_SKILLS[id].files.length + " worksheet" + (READING_SKILLS[id].files.length > 1 ? "s" : "") : "Coming soon",
+    enabled: true,
+  })), openSkill);
   renderGrid("chapterGrid", chapters, openChapter);
   renderGrid("grammarUnitGrid", grammarUnits, openGrammarUnit);
   renderGrid("socialChapterGrid", socialChapters, openSocialChapter);
