@@ -352,33 +352,10 @@
         <span id="printUnit" style="display:flex;gap:12px;flex-wrap:wrap;align-items:center"></span>
         <button type="button" class="print-btn" style="padding:4px 10px;font-size:0.85rem;margin:0" onclick="togglePrintUnits()">Select all / none</button>
       </div>
-      <div class="print-field" id="printStoryField" style="display:none">
-        <span>Story:</span>
-        <select id="printStory" onchange="updatePrintCount()"></select>
-      </div>
-      <div class="print-field" id="printChapterField" style="display:none">
-        <span>Chapter:</span>
-        <select id="printChapter" onchange="updatePrintCount()"></select>
-      </div>
-      <div class="print-field" id="printGrammarUnitField" style="display:none">
-        <span>Unit:</span>
-        <select id="printGrammarUnit" onchange="updatePrintCount()"></select>
-      </div>
-      <div class="print-field" id="printSocialChapterField" style="display:none">
-        <span>Chapter:</span>
-        <select id="printSocialChapter" onchange="updatePrintSocialLessons(); updatePrintCount()"></select>
-      </div>
-      <div class="print-field" id="printSocialLessonField" style="display:none">
-        <span>Lesson:</span>
-        <select id="printSocialLesson" onchange="updatePrintCount()"></select>
-      </div>
-      <div class="print-field" id="printScienceTopicField" style="display:none">
-        <span>Topic:</span>
-        <select id="printScienceTopic" onchange="updatePrintScienceLessons(); updatePrintCount()"></select>
-      </div>
-      <div class="print-field" id="printScienceLessonField" style="display:none">
-        <span>Lesson:</span>
-        <select id="printScienceLesson" onchange="updatePrintCount()"></select>
+      <div class="print-field" id="printPickField" style="display:none;align-items:flex-start">
+        <span id="printPickLabel">Select:</span>
+        <div id="printPick" style="display:flex;flex-direction:column;gap:6px;flex:1"></div>
+        <button type="button" class="print-btn" style="padding:4px 10px;font-size:0.85rem;margin:0" onclick="togglePrintPick()">Select all / none</button>
       </div>
       <div class="print-field" id="printChengyuField" style="display:none">
         <span>回數:</span>
@@ -407,10 +384,6 @@
           <option value="unit6">第六課：又遠又近的月亮（16題）</option>
           <option value="all">第一課～第六課（全部）</option>
         </select>
-      </div>
-      <div class="print-field" id="printNovelField" style="display:none">
-        <span>Novel:</span>
-        <select id="printNovel" onchange="updatePrintCount()"></select>
       </div>
       <div class="print-field" id="printVocabTypesField">
         <span>Question types:</span>
@@ -17206,14 +17179,9 @@
   function updatePrintFields() {
     const sec = document.getElementById("printSection").value;
     document.getElementById("printUnitField").style.display = sec === "vocab" ? "flex" : "none";
-    document.getElementById("printStoryField").style.display = sec === "reading" ? "flex" : "none";
-    document.getElementById("printChapterField").style.display = sec === "math" ? "flex" : "none";
-    document.getElementById("printGrammarUnitField").style.display = sec === "grammar" ? "flex" : "none";
-    document.getElementById("printSocialChapterField").style.display = sec === "social" ? "flex" : "none";
-    document.getElementById("printSocialLessonField").style.display = sec === "social" ? "flex" : "none";
-    document.getElementById("printScienceTopicField").style.display = sec === "science" ? "flex" : "none";
-    updatePrintScienceLessons();
-    document.getElementById("printNovelField").style.display = sec === "novel" ? "flex" : "none";
+    const pickable = !!PRINT_PICK_LABELS[sec];
+    document.getElementById("printPickField").style.display = pickable ? "flex" : "none";
+    if (pickable) renderPrintPick(sec);
     document.getElementById("printChengyuField").style.display = sec === "chengyu" ? "flex" : "none";
     document.getElementById("printVocabTypesField").style.display = sec === "vocab" ? "flex" : "none";
     document.getElementById("printShengziField").style.display = sec === "shengzi" ? "flex" : "none";
@@ -17227,12 +17195,7 @@
     const sec = document.getElementById("printSection").value;
     const val = id => document.getElementById(id).value;
     try {
-      if (sec === "reading") return STORIES[val("printStory")].quizBank;
-      if (sec === "math") return MATH_CHAPTERS[val("printChapter")].quizBank;
-      if (sec === "grammar") return GRAMMAR_UNITS[val("printGrammarUnit")].quizBank;
-      if (sec === "social") return SOCIAL_CHAPTERS[val("printSocialChapter")].lessons[val("printSocialLesson")].quizBank;
-      if (sec === "science") return printSciencePick().bank;
-      if (sec === "novel") return NOVELS[val("printNovel")].quizBank;
+      if (PRINT_PICK_LABELS[sec]) return printPickSelected().flatMap(it => it.bank);
       if (sec === "chengyu") return val("printChengyuRound") === "all" ? chengyuAllQuestions() : CHENGYU[val("printChengyuRound")];
       if (sec === "vocab") return vocabPrintSelection().types.flatMap(t => t.bank);
       if (sec === "wenzi") return val("printWenziRound") === "all" ? wenziAllQuestions() : WENZI[val("printWenziRound")];
@@ -17251,34 +17214,103 @@
     if (sel.selectedOptions[0] && sel.selectedOptions[0].disabled) sel.value = "all";
   }
 
-  // Science topics with lessons get a Lesson dropdown (plus an "All lessons" review option).
-  function updatePrintScienceLessons() {
-    const topic = SCIENCE_TOPICS[document.getElementById("printScienceTopic").value];
+  // ---- Multi-select picker (Reading / Math / Grammar / Social / Science / Novel) ----
+  // Tick several stories / chapters / lessons to print one combined quiz.
+  const PRINT_PICK_LABELS = { reading: "Stories:", math: "Chapters:", grammar: "Units:", social: "Lessons:", science: "Lessons:", novel: "Novels:" };
+  const SECTION_NAMES = { reading: "Reading", math: "Math", grammar: "ENG Grammar", social: "Social Studies", science: "Science", novel: "Core Novel" };
+
+  function printPickItems(sec) {
+    const flat = (obj) => Object.keys(obj).map(id => ({ key: id, group: "", label: obj[id].name, bank: obj[id].quizBank || [] }));
+    if (sec === "reading") return flat(STORIES);
+    if (sec === "math") return flat(MATH_CHAPTERS);
+    if (sec === "grammar") return flat(GRAMMAR_UNITS);
+    if (sec === "novel") return flat(NOVELS);
+    if (sec === "social") return Object.keys(SOCIAL_CHAPTERS).flatMap(c => Object.keys(SOCIAL_CHAPTERS[c].lessons).map(l => ({
+      key: c + "|" + l, group: SOCIAL_CHAPTERS[c].name, label: SOCIAL_CHAPTERS[c].lessons[l].name, bank: SOCIAL_CHAPTERS[c].lessons[l].quizBank || [] })));
+    if (sec === "science") return Object.keys(SCIENCE_TOPICS).flatMap(t => {
+      const T = SCIENCE_TOPICS[t];
+      if (!T.lessons) return [{ key: t, group: "", label: T.name, bank: T.quizBank || [] }];
+      return Object.keys(T.lessons).map(l => ({ key: t + "|" + l, group: T.name, label: T.lessons[l].name, bank: T.lessons[l].quizBank || [] }));
+    });
+    return [];
+  }
+
+  let printPickSec = null;
+  function renderPrintPick(sec) {
+    if (printPickSec === sec) return; // keep the ticks when re-opening the same section
+    printPickSec = sec;
+    document.getElementById("printPickLabel").textContent = PRINT_PICK_LABELS[sec];
+    const items = printPickItems(sec);
+    const groups = [...new Set(items.map(it => it.group))];
+    let first = true;
+    document.getElementById("printPick").innerHTML = groups.map((g, gi) => {
+      const rows = items.filter(it => it.group === g).map(it => {
+        const html = `<label style="${g ? "margin-left:18px" : ""}"><input type="checkbox" class="pp-item" value="${it.key}" data-g="${gi}"${first && it.bank.length ? " checked" : ""}${it.bank.length ? "" : " disabled"} onchange="updatePrintCount()"> ${it.label} <span style="color:#888">(${it.bank.length})</span></label>`;
+        if (it.bank.length) first = false;
+        return html;
+      }).join("");
+      const head = g ? `<div style="font-weight:600;margin-top:4px">${g} <button type="button" class="print-btn" style="padding:1px 8px;font-size:0.75rem;margin:0 0 0 6px" onclick="togglePrintPickGroup(${gi})">all</button></div>` : "";
+      return head + rows;
+    }).join("");
+  }
+
+  function printPickSelected() {
     const sec = document.getElementById("printSection").value;
-    const field = document.getElementById("printScienceLessonField");
-    if (!topic || !topic.lessons) { field.style.display = "none"; return; }
-    field.style.display = sec === "science" ? "flex" : "none";
-    const sel = document.getElementById("printScienceLesson");
-    const prev = sel.value;
-    sel.innerHTML = `<option value="all">All lessons (topic review)</option>` +
-      Object.keys(topic.lessons).map(id => `<option value="${id}">${topic.lessons[id].name}</option>`).join("");
-    if ([...sel.options].some(o => o.value === prev)) sel.value = prev;
+    const keys = [...document.querySelectorAll("#printPick .pp-item:checked")].map(cb => cb.value);
+    return printPickItems(sec).filter(it => keys.includes(it.key));
   }
 
-  function printSciencePick() {
-    const topic = SCIENCE_TOPICS[document.getElementById("printScienceTopic").value];
-    const lessonId = document.getElementById("printScienceLesson").value;
-    if (topic.lessons && lessonId && lessonId !== "all" && topic.lessons[lessonId]) {
-      return { name: topic.name + " — " + topic.lessons[lessonId].name, bank: topic.lessons[lessonId].quizBank };
+  function togglePrintPick(gi) {
+    const boxes = [...document.querySelectorAll("#printPick .pp-item:not(:disabled)")].filter(b => gi === undefined || b.dataset.g === String(gi));
+    const allOn = boxes.every(b => b.checked);
+    boxes.forEach(b => b.checked = !allOn);
+    updatePrintCount();
+  }
+  function togglePrintPickGroup(gi) { togglePrintPick(gi); }
+
+  // Combined print for picker sections: split the question count evenly across the ticked items,
+  // print each item's questions under its own heading with continuous numbering.
+  function printPickedWorksheet(section, withKey) {
+    const items = printPickSelected().filter(it => it.bank.length);
+    if (!items.length) { alert("Tick at least one item (with questions) to print."); return; }
+    const total = items.reduce((n, it) => n + it.bank.length, 0);
+    const countVal = document.getElementById("printCount").value;
+    let want = countVal === "all" ? total : Math.min(parseInt(countVal, 10), total);
+    const per = items.map(() => 0);
+    while (want > 0) {
+      let moved = false;
+      items.forEach((it, i) => { if (want > 0 && per[i] < it.bank.length) { per[i]++; want--; moved = true; } });
+      if (!moved) break;
     }
-    return { name: topic.name, bank: topic.quizBank };
-  }
-
-  function updatePrintSocialLessons() {
-    const chapterId = document.getElementById("printSocialChapter").value;
-    const lessons = SOCIAL_CHAPTERS[chapterId].lessons;
-    document.getElementById("printSocialLesson").innerHTML =
-      Object.keys(lessons).map(id => `<option value="${id}">${lessons[id].name}</option>`).join("");
+    const sectionName = SECTION_NAMES[section];
+    const fullName = it => it.group ? it.group + " — " + it.label : it.label;
+    const title = items.length === 1 ? fullName(items[0]) : "Combined Quiz";
+    const includes = items.length > 1 ? `<p style="margin:-6px 0 12px;color:#555;font-size:0.9rem">Includes: ${items.map(it => it.label).join(" · ")}</p>` : "";
+    let num = 0;
+    const qParts = [], keyParts = [];
+    items.forEach((it, i) => {
+      if (!per[i]) return;
+      const set = shuffle(it.bank).slice(0, per[i]).map(q => {
+        const opts = shuffle(q.options);
+        return { ...q, opts, correctIdx: opts.indexOf(q.answer) };
+      });
+      const start = num;
+      const qs = set.map(q => {
+        num++;
+        const opts = q.opts.map((o, j) => `${LETTERS[j]}. ${o}`).join("&nbsp;&nbsp;&nbsp;&nbsp;");
+        const bm = q.barModel ? `<p style="margin:6px 0 4px;font-style:italic">Sketch a bar model to solve, then fill in the blanks:</p>${q.barModel}` : "";
+        return `<div class="pq">${num}. ${q.prompt}${bm}<br>${opts}</div>`;
+      }).join("");
+      const sub = items.length > 1 ? `<h3>${fullName(it)}</h3>` : "";
+      qParts.push(sub + qs);
+      keyParts.push(sub + `<p style="line-height:1.8">` +
+        set.map((q, k) => `${start + k + 1}. ${LETTERS[q.correctIdx]} — ${q.answer}`).join("<br>") + `</p>`);
+    });
+    document.getElementById("printArea").innerHTML =
+      `<p>Name: ________________________ &nbsp;&nbsp; Date: ________________</p>
+       <div><h2>${sectionName} — ${title}</h2>${includes}${qParts.join("")}</div>
+       ${withKey ? `<div class="key-page"><h2>Answer Key — ${sectionName}</h2>${keyParts.join("")}</div>` : ""}`;
+    window.print();
   }
 
   function renderGrid(elId, items, onClick) {
@@ -17698,30 +17730,11 @@
       return;
     }
 
-    // Reading, Math, or Grammar: sample from the section's quiz bank
+    if (PRINT_PICK_LABELS[section]) { printPickedWorksheet(section, withKey); return; }
+
+    // 國語 成語 / 文字大不同: sample from the chosen round(s)
     let sectionName, groupName, bank;
-    if (section === "reading") {
-      const storyId = document.getElementById("printStory").value;
-      sectionName = "Reading";
-      groupName = STORIES[storyId].name;
-      bank = STORIES[storyId].quizBank;
-    } else if (section === "math") {
-      const chapterId = document.getElementById("printChapter").value;
-      sectionName = "Math";
-      groupName = MATH_CHAPTERS[chapterId].name;
-      bank = MATH_CHAPTERS[chapterId].quizBank;
-    } else if (section === "grammar") {
-      const grammarUnitId = document.getElementById("printGrammarUnit").value;
-      sectionName = "ENG Grammar";
-      groupName = GRAMMAR_UNITS[grammarUnitId].name;
-      bank = GRAMMAR_UNITS[grammarUnitId].quizBank;
-    } else if (section === "social") {
-      const socialChapterId = document.getElementById("printSocialChapter").value;
-      const socialLessonId = document.getElementById("printSocialLesson").value;
-      sectionName = "Social Studies";
-      groupName = SOCIAL_CHAPTERS[socialChapterId].name + " — " + SOCIAL_CHAPTERS[socialChapterId].lessons[socialLessonId].name;
-      bank = SOCIAL_CHAPTERS[socialChapterId].lessons[socialLessonId].quizBank;
-    } else if (section === "chengyu") {
+    if (section === "chengyu") {
       const r = document.getElementById("printChengyuRound").value;
       sectionName = "國語";
       groupName = "成語測驗（第一課～第六課）" + (r === "round1" ? " 第一回" : r === "round2" ? " 第二回" : " 第一回＋第二回");
@@ -17731,16 +17744,8 @@
       sectionName = "國語";
       groupName = "文字大不同（第一課～第六課）" + (r === "round1" ? " 第一回" : r === "round2" ? " 第二回" : " 第一回＋第二回");
       bank = r === "all" ? wenziAllQuestions() : WENZI[r];
-    } else if (section === "novel") {
-      const novelId = document.getElementById("printNovel").value;
-      sectionName = "Core Novel";
-      groupName = NOVELS[novelId].name;
-      bank = NOVELS[novelId].quizBank;
     } else {
-      const sciencePick = printSciencePick();
-      sectionName = "Science";
-      groupName = sciencePick.name;
-      bank = sciencePick.bank;
+      return;
     }
     if (!bank.length) { alert("This unit doesn't have any quiz questions to print yet."); return; }
     const countVal = document.getElementById("printCount").value;
@@ -17850,22 +17855,8 @@
   renderGrid("scienceTopicGrid", scienceTopics, openScienceTopic);
   renderGrid("guoyuUnitGrid", guoyuUnits, openGuoyuUnit);
   renderGrid("novelGrid", novels, openNovel);
-  document.getElementById("printNovel").innerHTML =
-    Object.keys(NOVELS).map(id => `<option value="${id}">${NOVELS[id].name}</option>`).join("");
   document.getElementById("printUnit").innerHTML =
     Object.keys(UNITS).map((id, i) => `<label><input type="checkbox" class="pu-unit" value="${id}"${i === 0 ? " checked" : ""} onchange="updatePrintCount()"> ${UNITS[id].name}</label>`).join("");
-  document.getElementById("printStory").innerHTML =
-    Object.keys(STORIES).map(id => `<option value="${id}">${STORIES[id].name}</option>`).join("");
-  document.getElementById("printChapter").innerHTML =
-    Object.keys(MATH_CHAPTERS).map(id => `<option value="${id}">${MATH_CHAPTERS[id].name}</option>`).join("");
-  document.getElementById("printGrammarUnit").innerHTML =
-    Object.keys(GRAMMAR_UNITS).map(id => `<option value="${id}">${GRAMMAR_UNITS[id].name}</option>`).join("");
-  document.getElementById("printSocialChapter").innerHTML =
-    Object.keys(SOCIAL_CHAPTERS).map(id => `<option value="${id}">${SOCIAL_CHAPTERS[id].name}</option>`).join("");
-  updatePrintSocialLessons();
-  document.getElementById("printScienceTopic").innerHTML =
-    Object.keys(SCIENCE_TOPICS).map(id => `<option value="${id}">${SCIENCE_TOPICS[id].name}</option>`).join("");
-  updatePrintScienceLessons();
   renderUnitContent();
   updateGlobalScore();
 </script>
