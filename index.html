@@ -336,11 +336,17 @@
         <span>Section:</span>
         <select id="printSection" onchange="updatePrintFields()">
           <option value="vocab">Vocabulary Workshop</option>
+          <option value="vocabreview">Vocabulary Workshop — Review (Units 1–4)</option>
           <option value="reading">Reading</option>
+          <option value="readingreview">Reading — Review (Stories 1–5)</option>
           <option value="math">Math</option>
+          <option value="mathreview">Math — Overall Quiz (Chapters 1 &amp; 2)</option>
           <option value="grammar">ENG Grammar</option>
+          <option value="grammarreview">ENG Grammar — Mixed Review (Units 1–2)</option>
           <option value="social">Social Studies</option>
+          <option value="socialreview">Social Studies — Overall Quiz (Chapters 1 &amp; 4)</option>
           <option value="science">Science</option>
+          <option value="sciencereview">Science — Overall Quiz (Topics 1 &amp; 2)</option>
           <option value="novel">Core Novel</option>
           <option value="chengyu">國語 成語測驗</option>
           <option value="shengzi">國語 生字（直排注音）</option>
@@ -391,6 +397,14 @@
         <label><input type="checkbox" id="pt-syn" checked onchange="updatePrintCount()"> Synonyms</label>
         <label><input type="checkbox" id="pt-ant" checked onchange="updatePrintCount()"> Antonyms</label>
       </div>
+      <div class="print-field" id="printReviewTypesField" style="display:none">
+        <span>Question types:</span>
+        <label><input type="checkbox" id="rv-fill" checked onchange="updatePrintCount()"> Fill in the Blank</label>
+        <label><input type="checkbox" id="rv-syn" checked onchange="updatePrintCount()"> Synonyms</label>
+        <label><input type="checkbox" id="rv-ant" checked onchange="updatePrintCount()"> Antonyms</label>
+        <label><input type="checkbox" id="rv-def" checked onchange="updatePrintCount()"> Word Meanings</label>
+      </div>
+      <div id="printReadingReviewTypesField" style="display:none"></div>
       <div class="print-field" id="printCountField" style="display:none">
         <span># of Questions:</span>
         <select id="printCount">
@@ -414,8 +428,25 @@
 
   <!-- VOCABULARY WORKSHOP: UNIT LIST -->
   <section class="screen" id="screen-vocab">
-    <p class="intro">Choose a unit.</p>
+    <p class="intro">Review several units at once, or choose a unit.</p>
+    <div class="subject-grid" id="vocabReviewGrid" style="margin-bottom:18px"></div>
     <div class="subject-grid" id="unitGrid"></div>
+  </section>
+
+  <!-- VOCABULARY WORKSHOP: REVIEW (Units 1-4) -->
+  <section class="screen" id="screen-vocabreview">
+    <div id="rv-quiz">
+      <p class="intro">Pick a review. Every visit gives a fresh random set mixed from all four units.</p>
+      <div class="cy-rounds" id="reviewModes"></div>
+      <div class="set-controls">
+        <span class="score-pill" id="vocabReview-score"></span>
+        <button class="print-btn" onclick="printReviewShortcut()">🖨 Print a review worksheet</button>
+      </div>
+      <div class="practice-block">
+        <h3 id="reviewQuizTitle">Mixed Review</h3>
+        <div id="vocabReviewQs"></div>
+      </div>
+    </div>
   </section>
 
   <!-- UNIT SCREEN (shared by all units) -->
@@ -499,12 +530,27 @@
       <button class="tab-btn" data-rd-main="skills" onclick="showReadingMain('skills')">🧠 Skills</button>
     </div>
     <div id="rdmain-stories" class="rdmain-tab">
-      <p class="intro">Choose a story.</p>
+      <p class="intro">Review several stories at once, or choose a story.</p>
+      <div class="subject-grid" id="readingReviewGrid" style="margin-bottom:18px"></div>
       <div class="subject-grid" id="storyGrid"></div>
     </div>
     <div id="rdmain-skills" class="rdmain-tab" style="display:none">
       <p class="intro">Choose a reading skill to download its practice worksheets.</p>
       <div class="subject-grid" id="skillGrid"></div>
+    </div>
+  </section>
+
+  <!-- READING: REVIEW QUIZ (Stories 1-5) -->
+  <section class="screen" id="screen-readingreview">
+    <p class="intro">30 questions mixed from all five stories. Every visit gives a fresh random set.</p>
+    <div class="set-controls">
+      <span class="score-pill" id="readingReview-score"></span>
+      <button class="print-btn" onclick="startReadingReview()">🔄 New set</button>
+      <button class="print-btn" onclick="printReadingReviewShortcut()">🖨 Print a review worksheet</button>
+    </div>
+    <div class="practice-block">
+      <h3 id="readingReviewTitle">Stories 1–5 — Review Quiz</h3>
+      <div id="readingReviewQs"></div>
     </div>
   </section>
 
@@ -549,8 +595,23 @@
 
   <!-- MATH: CHAPTER LIST -->
   <section class="screen" id="screen-math">
-    <p class="intro">Choose a chapter.</p>
+    <p class="intro">Review several chapters at once, or choose a chapter.</p>
+    <div class="subject-grid" id="mathReviewGrid" style="margin-bottom:18px"></div>
     <div class="subject-grid" id="chapterGrid"></div>
+  </section>
+
+  <!-- MATH: OVERALL QUIZ (Chapters 1 & 2) -->
+  <section class="screen" id="screen-mathreview">
+    <p class="intro">30 questions mixed from Chapter 1 and Chapter 2. Every visit gives a fresh random set.</p>
+    <div class="set-controls">
+      <span class="score-pill" id="mathReview-score"></span>
+      <button class="print-btn" onclick="startMathReview()">🔄 New set</button>
+      <button class="print-btn" onclick="printMathReviewShortcut()">🖨 Print a review worksheet</button>
+    </div>
+    <div class="practice-block">
+      <h3>Chapters 1 &amp; 2 — Overall Quiz</h3>
+      <div id="mathReviewQs"></div>
+    </div>
   </section>
 
   <!-- MATH: CHAPTER SCREEN (shared by all chapters) -->
@@ -587,8 +648,23 @@
 
   <!-- ENG GRAMMAR: UNIT LIST -->
   <section class="screen" id="screen-grammar">
-    <p class="intro">Choose a unit.</p>
+    <p class="intro">Review several units at once, or choose a unit.</p>
+    <div class="subject-grid" id="grammarReviewGrid" style="margin-bottom:18px"></div>
     <div class="subject-grid" id="grammarUnitGrid"></div>
+  </section>
+
+  <!-- ENG GRAMMAR: MIXED REVIEW QUIZ (Units 1-2) -->
+  <section class="screen" id="screen-grammarreview">
+    <p class="intro">30 questions mixed from Unit 1 and Unit 2. Every visit gives a fresh random set.</p>
+    <div class="set-controls">
+      <span class="score-pill" id="grammarReview-score"></span>
+      <button class="print-btn" onclick="startGrammarReview()">🔄 New set</button>
+      <button class="print-btn" onclick="printGrammarReviewShortcut()">🖨 Print a review worksheet</button>
+    </div>
+    <div class="practice-block">
+      <h3>Units 1–2 — Mixed Review Quiz</h3>
+      <div id="grammarReviewQs"></div>
+    </div>
   </section>
 
   <!-- ENG GRAMMAR: UNIT SCREEN (shared by all units) -->
@@ -695,8 +771,23 @@
 
   <!-- SOCIAL STUDIES: CHAPTER LIST -->
   <section class="screen" id="screen-social">
-    <p class="intro">Choose a chapter.</p>
+    <p class="intro">Review several chapters at once, or choose a chapter.</p>
+    <div class="subject-grid" id="socialReviewGrid" style="margin-bottom:18px"></div>
     <div class="subject-grid" id="socialChapterGrid"></div>
+  </section>
+
+  <!-- SOCIAL STUDIES: OVERALL QUIZ (Chapters 1 & 4) -->
+  <section class="screen" id="screen-socialreview">
+    <p class="intro">30 questions mixed from every lesson in Chapter 1 and Chapter 4. Every visit gives a fresh random set.</p>
+    <div class="set-controls">
+      <span class="score-pill" id="socialReview-score"></span>
+      <button class="print-btn" onclick="startSocialReview()">🔄 New set</button>
+      <button class="print-btn" onclick="printSocialReviewShortcut()">🖨 Print a review worksheet</button>
+    </div>
+    <div class="practice-block">
+      <h3>Chapters 1 &amp; 4 — Overall Quiz</h3>
+      <div id="socialReviewQs"></div>
+    </div>
   </section>
 
   <!-- SOCIAL STUDIES: CHAPTER SCREEN (shared by all chapters) -->
@@ -731,8 +822,23 @@
 
   <!-- SCIENCE: TOPIC LIST -->
   <section class="screen" id="screen-science">
-    <p class="intro">Choose a topic.</p>
+    <p class="intro">Review several topics at once, or choose a topic.</p>
+    <div class="subject-grid" id="scienceReviewGrid" style="margin-bottom:18px"></div>
     <div class="subject-grid" id="scienceTopicGrid"></div>
+  </section>
+
+  <!-- SCIENCE: OVERALL QUIZ (Topics 1 & 2) -->
+  <section class="screen" id="screen-sciencereview">
+    <p class="intro">30 questions mixed from Topic 1 and every lesson in Topic 2. Every visit gives a fresh random set.</p>
+    <div class="set-controls">
+      <span class="score-pill" id="scienceReview-score"></span>
+      <button class="print-btn" onclick="startScienceReview()">🔄 New set</button>
+      <button class="print-btn" onclick="printScienceReviewShortcut()">🖨 Print a review worksheet</button>
+    </div>
+    <div class="practice-block">
+      <h3>Topics 1 &amp; 2 — Overall Quiz</h3>
+      <div id="scienceReviewQs"></div>
+    </div>
   </section>
 
   <!-- SCIENCE: LESSON LIST (for topics split into lessons) -->
@@ -18040,6 +18146,8 @@
     if (pickable) renderPrintPick(sec);
     document.getElementById("printChengyuField").style.display = sec === "chengyu" ? "flex" : "none";
     document.getElementById("printVocabTypesField").style.display = sec === "vocab" ? "flex" : "none";
+    document.getElementById("printReviewTypesField").style.display = sec === "vocabreview" ? "flex" : "none";
+    document.getElementById("printReadingReviewTypesField").style.display = sec === "readingreview" ? "flex" : "none";
     document.getElementById("printShengziField").style.display = sec === "shengzi" ? "flex" : "none";
     document.getElementById("printWenziField").style.display = sec === "wenzi" ? "flex" : "none";
     document.getElementById("printCountField").style.display = sec === "shengzi" ? "none" : "flex";
@@ -18054,6 +18162,12 @@
       if (PRINT_PICK_LABELS[sec]) return printPickSelected().flatMap(it => it.bank);
       if (sec === "chengyu") return val("printChengyuRound") === "all" ? chengyuAllQuestions() : CHENGYU[val("printChengyuRound")];
       if (sec === "vocab") return vocabPrintSelection().types.flatMap(t => t.bank);
+      if (sec === "vocabreview") return reviewPrintSelection().types.flatMap(t => t.bank);
+      if (sec === "mathreview") return mathReviewPrintSelection().types.flatMap(t => t.bank);
+      if (sec === "sciencereview") return scienceReviewPrintSelection().types.flatMap(t => t.bank);
+      if (sec === "socialreview") return socialReviewPrintSelection().types.flatMap(t => t.bank);
+      if (sec === "grammarreview") return grammarReviewPrintSelection().types.flatMap(t => t.bank);
+      if (sec === "readingreview") return readingReviewPrintSelection().types.flatMap(t => t.bank);
       if (sec === "wenzi") return val("printWenziRound") === "all" ? wenziAllQuestions() : WENZI[val("printWenziRound")];
     } catch (e) {}
     return null;
@@ -18366,6 +18480,12 @@
       else if (setId === "guoyuUnitQuiz") sectionInfo = { unitName: GY().name, section: "國語" };
       else if (setId === "wenziQuiz") sectionInfo = { unitName: "文字大不同（第一課～第六課）", section: "國語" };
       else if (setId === "novelQuiz") sectionInfo = { unitName: NV().name, section: "Core Novel" };
+      else if (setId === "mathReview") sectionInfo = { unitName: "Overall Quiz: Chapters 1 & 2", section: "Math" };
+      else if (setId === "scienceReview") sectionInfo = { unitName: "Overall Quiz: Topics 1 & 2", section: "Science" };
+      else if (setId === "socialReview") sectionInfo = { unitName: "Overall Quiz: Chapters 1 & 4", section: "Social Studies" };
+      else if (setId === "grammarReview") sectionInfo = { unitName: "Mixed Review: Units 1–2", section: "ENG Grammar" };
+      else if (setId === "readingReview") sectionInfo = { unitName: "Review: Stories 1–5", section: "Reading" };
+      else if (setId === "vocabReview") sectionInfo = { unitName: "Review: Units 1–4", section: "Vocabulary Workshop" };
       else sectionInfo = { unitName: U().name };
       mcqInfo[key] = Object.assign(
         { letter: LETTERS[q.correctIdx], answer: q.answer, why: q.why, set: setId, prompt: q.prompt },
@@ -18523,6 +18643,283 @@
   }
 
   // =========================================================================
+  // VOCABULARY WORKSHOP: REVIEW (Units 1-4)
+  // =========================================================================
+  const REVIEW_UNITS = ["unit1", "unit2", "unit3", "unit4"];
+  const REVIEW_SIZE = 30;
+  function reviewWords() {
+    return REVIEW_UNITS.flatMap(u => UNITS[u].words.map(w => ({ ...w, unitId: u, unitName: UNITS[u].name })));
+  }
+
+  // Word Meanings: cross-unit questions, so distractors come from all four units
+  function buildReviewDefBank() {
+    const all = reviewWords();
+    const fwd = all.map(w => {
+      const others = shuffle(all.filter(o => o.word !== w.word)).slice(0, 3);
+      return {
+        prompt: `Which word means <strong>&ldquo;${w.short}&rdquo;</strong>?`,
+        options: [w.word, ...others.map(o => o.word)], answer: w.word,
+        why: `<strong>${w.word}</strong> (${w.unitName}) means ${w.short}. ` +
+          others.map(o => `<em>${o.word}</em> means ${o.short}`).join("; ") + ".",
+      };
+    });
+    const rev = all.map(w => {
+      const others = shuffle(all.filter(o => o.word !== w.word && o.short !== w.short)).slice(0, 3);
+      return {
+        prompt: `What does <strong>${w.word}</strong> mean?`,
+        options: [w.short, ...others.map(o => o.short)], answer: w.short,
+        why: `<strong>${w.word}</strong> (${w.unitName}) means ${w.short}. Example: ${w.example}`,
+      };
+    });
+    return [...fwd, ...rev];
+  }
+
+  const REVIEW_TYPES = [
+    { id: "fill", icon: "✍️", title: "Fill in the Blank", build: () => REVIEW_UNITS.flatMap(u => buildFillBank(u)), perUnit: u => buildFillBank(u) },
+    { id: "syn", icon: "🤝", title: "Synonyms", build: () => REVIEW_UNITS.flatMap(u => buildSynBank(u)), perUnit: u => buildSynBank(u) },
+    { id: "ant", icon: "↔️", title: "Antonyms", build: () => REVIEW_UNITS.flatMap(u => buildAntBank(u)), perUnit: u => buildAntBank(u) },
+    { id: "def", icon: "📖", title: "Word Meanings", build: buildReviewDefBank },
+  ];
+
+  // Mixed review: spread REVIEW_SIZE questions over the four types and the four units
+  function buildMixedReview() {
+    const per = Math.floor(REVIEW_SIZE / REVIEW_TYPES.length);
+    let extra = REVIEW_SIZE - per * REVIEW_TYPES.length;
+    return REVIEW_TYPES.flatMap(t => {
+      const n = per + (extra-- > 0 ? 1 : 0);
+      if (!t.perUnit) return shuffle(t.build()).slice(0, n);
+      const pools = REVIEW_UNITS.map(u => shuffle(t.perUnit(u)));
+      const out = [];
+      for (let i = 0; out.length < n && i < 200; i++) {
+        const pool = pools[i % pools.length];
+        if (pool.length) out.push(pool.pop());
+      }
+      return out;
+    });
+  }
+
+  function openVocabReview() {
+    navStack.push({ id: "screen-vocab", title: "Vocabulary Workshop" });
+    renderReviewModes();
+    startReview("mixed");
+    showScreen("screen-vocabreview", "Vocabulary Workshop — Review Quiz: Units 1–4");
+  }
+
+  let currentReviewMode = "mixed";
+  function renderReviewModes() {
+    const modes = [{ id: "mixed", icon: "🎲", title: `Mixed Review (${REVIEW_SIZE})` }, ...REVIEW_TYPES];
+    document.getElementById("reviewModes").innerHTML = modes.map(m =>
+      `<button class="print-btn cy-round${m.id === currentReviewMode ? " active" : ""}" data-rv-mode="${m.id}" onclick="startReview('${m.id}')">${m.icon} ${m.title}</button>`
+    ).join("");
+  }
+
+  function startReview(mode) {
+    currentReviewMode = mode;
+    document.querySelectorAll("[data-rv-mode]").forEach(b => b.classList.toggle("active", b.dataset.rvMode === mode));
+    const t = REVIEW_TYPES.find(x => x.id === mode);
+    const bank = t ? shuffle(t.build()).slice(0, REVIEW_SIZE) : buildMixedReview();
+    document.getElementById("reviewQuizTitle").textContent = "Units 1–4 — " + (t ? t.title : "Mixed Review");
+    renderMCQ("vocabReviewQs", "vocabReview", bank);
+  }
+
+  // Print: full review bank by type (all questions from Units 1-4)
+  function reviewPrintSelection() {
+    const types = REVIEW_TYPES.filter(t => document.getElementById("rv-" + t.id).checked)
+      .map(t => ({ title: t.title, bank: t.build() }));
+    return { unitIds: REVIEW_UNITS, types };
+  }
+
+  function printReviewShortcut() {
+    openPrintScreen();
+    document.getElementById("printSection").value = "vocabreview";
+    updatePrintFields();
+  }
+
+  // =========================================================================
+  // READING: REVIEW QUIZ (Stories 1-5)
+  // =========================================================================
+  const RR_STORIES = ["story1", "story2", "story3", "story4", "story5"];
+  function plainShort(s) { return String(s).replace(/<[^>]*>/g, ""); }
+
+  // Word Meanings across all five stories (distractors come from other stories too)
+  function buildReadingDefBank() {
+    const all = RR_STORIES.flatMap(id => STORIES[id].words.map(w => ({ ...w, story: STORIES[id].name.replace(/:.*/, "") })));
+    const fwd = all.map(w => {
+      const others = shuffle(all.filter(o => o.word !== w.word)).slice(0, 3);
+      return {
+        prompt: `Which word fits this meaning: <strong>&ldquo;${plainShort(w.def)}&rdquo;</strong>?`,
+        options: [w.word, ...others.map(o => o.word)], answer: w.word,
+        why: `<strong>${w.word}</strong> (${w.story}): ${w.def}. Example: ${w.example}`,
+      };
+    });
+    const rev = all.map(w => {
+      const others = shuffle(all.filter(o => o.word !== w.word && o.def !== w.def)).slice(0, 3);
+      return {
+        prompt: `What does <strong>${w.word}</strong> mean?`,
+        options: [plainShort(w.def), ...others.map(o => plainShort(o.def))], answer: plainShort(w.def),
+        why: `<strong>${w.word}</strong> (${w.story}): ${w.def}. Example: ${w.example}`,
+      };
+    });
+    return [...fwd, ...rev];
+  }
+  function buildReadingStoryBank() { return RR_STORIES.flatMap(id => STORIES[id].quizBank || []); }
+
+  // One mixed quiz: 30 questions — even share from each story's quiz bank, plus cross-story word-meaning questions
+  function buildReadingMixed() {
+    const defN = 10, perStory = Math.floor((STORY_QUIZ_SIZE - defN) / RR_STORIES.length);
+    const qs = RR_STORIES.flatMap(id => shuffle(STORIES[id].quizBank || []).slice(0, perStory));
+    return [...qs, ...shuffle(buildReadingDefBank()).slice(0, STORY_QUIZ_SIZE - qs.length)];
+  }
+
+  function openReadingReview() {
+    navStack.push({ id: "screen-reading", title: "Reading" });
+    startReadingReview();
+    showScreen("screen-readingreview", "Reading — Review Quiz: Stories 1–5");
+  }
+
+  function startReadingReview() {
+    renderMCQ("readingReviewQs", "readingReview", buildReadingMixed());
+  }
+
+  function readingReviewPrintSelection() {
+    return { unitIds: RR_STORIES, types: [{ title: "Review Quiz", bank: [...buildReadingStoryBank(), ...buildReadingDefBank()] }] };
+  }
+
+  function printReadingReviewShortcut() {
+    openPrintScreen();
+    document.getElementById("printSection").value = "readingreview";
+    updatePrintFields();
+  }
+
+  // =========================================================================
+  // ENG GRAMMAR: MIXED REVIEW QUIZ (Units 1-2)
+  // =========================================================================
+  const GR_UNITS = ["unit1", "unit2"];
+  function buildGrammarMixed() {
+    const per = Math.floor(GRAMMAR_QUIZ_SIZE / GR_UNITS.length);
+    return GR_UNITS.flatMap((id, i) => shuffle(GRAMMAR_UNITS[id].quizBank)
+      .slice(0, i === GR_UNITS.length - 1 ? GRAMMAR_QUIZ_SIZE - per * (GR_UNITS.length - 1) : per));
+  }
+  function openGrammarReview() {
+    navStack.push({ id: "screen-grammar", title: "ENG Grammar" });
+    startGrammarReview();
+    showScreen("screen-grammarreview", "ENG Grammar — Mixed Review: Units 1–2");
+  }
+  function startGrammarReview() {
+    renderMCQ("grammarReviewQs", "grammarReview", buildGrammarMixed());
+  }
+  function grammarReviewPrintSelection() {
+    return { unitIds: GR_UNITS, types: [{ title: "Mixed Review Quiz", bank: GR_UNITS.flatMap(id => GRAMMAR_UNITS[id].quizBank) }] };
+  }
+  function printGrammarReviewShortcut() {
+    openPrintScreen();
+    document.getElementById("printSection").value = "grammarreview";
+    updatePrintFields();
+  }
+
+  // =========================================================================
+  // SOCIAL STUDIES: OVERALL QUIZ (Chapters 1 & 4)
+  // =========================================================================
+  const SR_CHAPTERS = ["chapter1", "chapter4"];
+  function socialReviewBanks() {
+    return SR_CHAPTERS.flatMap(c => Object.keys(SOCIAL_CHAPTERS[c].lessons).map(l => SOCIAL_CHAPTERS[c].lessons[l].quizBank || []))
+      .filter(b => b.length);
+  }
+  // Even share from every lesson; leftovers go to random lessons
+  function buildSocialMixed() {
+    const pools = socialReviewBanks().map(b => shuffle(b));
+    const out = [];
+    for (let i = 0; out.length < SOCIAL_QUIZ_SIZE && i < 1000; i++) {
+      const pool = pools[i % pools.length];
+      if (pool.length) out.push(pool.pop());
+    }
+    return out;
+  }
+  function openSocialReview() {
+    navStack.push({ id: "screen-social", title: "Social Studies" });
+    startSocialReview();
+    showScreen("screen-socialreview", "Social Studies — Overall Quiz: Chapters 1 & 4");
+  }
+  function startSocialReview() {
+    renderMCQ("socialReviewQs", "socialReview", buildSocialMixed());
+  }
+  function socialReviewPrintSelection() {
+    return { unitIds: SR_CHAPTERS, types: [{ title: "Overall Quiz", bank: socialReviewBanks().flat() }] };
+  }
+  function printSocialReviewShortcut() {
+    openPrintScreen();
+    document.getElementById("printSection").value = "socialreview";
+    updatePrintFields();
+  }
+
+  // =========================================================================
+  // SCIENCE: OVERALL QUIZ (Topics 1 & 2)
+  // =========================================================================
+  const SCR_TOPICS = ["topic1", "topic2"];
+  // One list of lesson banks per topic (a topic without lessons is one bank)
+  function scienceTopicBanks(t) {
+    const T = SCIENCE_TOPICS[t];
+    if (!T.lessons) return [T.quizBank || []];
+    return Object.keys(T.lessons).map(l => T.lessons[l].quizBank || []).filter(b => b.length);
+  }
+  // Equal share per topic; inside a topic, spread evenly over its lessons
+  function buildScienceMixed() {
+    const per = Math.floor(SCIENCE_QUIZ_SIZE / SCR_TOPICS.length);
+    return SCR_TOPICS.flatMap((t, ti) => {
+      const n = ti === SCR_TOPICS.length - 1 ? SCIENCE_QUIZ_SIZE - per * (SCR_TOPICS.length - 1) : per;
+      const pools = shuffle(scienceTopicBanks(t)).map(b => shuffle(b));
+      const out = [];
+      for (let i = 0; out.length < n && i < 1000; i++) {
+        const pool = pools[i % pools.length];
+        if (pool.length) out.push(pool.pop());
+      }
+      return out;
+    });
+  }
+  function openScienceReview() {
+    navStack.push({ id: "screen-science", title: "Science" });
+    startScienceReview();
+    showScreen("screen-sciencereview", "Science — Overall Quiz: Topics 1 & 2");
+  }
+  function startScienceReview() {
+    renderMCQ("scienceReviewQs", "scienceReview", buildScienceMixed());
+  }
+  function scienceReviewPrintSelection() {
+    return { unitIds: SCR_TOPICS, types: [{ title: "Overall Quiz", bank: SCR_TOPICS.flatMap(t => scienceTopicBanks(t).flat()) }] };
+  }
+  function printScienceReviewShortcut() {
+    openPrintScreen();
+    document.getElementById("printSection").value = "sciencereview";
+    updatePrintFields();
+  }
+
+  // =========================================================================
+  // MATH: OVERALL QUIZ (Chapters 1 & 2)
+  // =========================================================================
+  const MR_CHAPTERS = ["chapter1", "chapter2"];
+  function buildMathMixed() {
+    const per = Math.floor(CHAPTER_QUIZ_SIZE / MR_CHAPTERS.length);
+    return MR_CHAPTERS.flatMap((c, i) => shuffle(MATH_CHAPTERS[c].quizBank)
+      .slice(0, i === MR_CHAPTERS.length - 1 ? CHAPTER_QUIZ_SIZE - per * (MR_CHAPTERS.length - 1) : per));
+  }
+  function openMathReview() {
+    navStack.push({ id: "screen-math", title: "Math" });
+    startMathReview();
+    showScreen("screen-mathreview", "Math — Overall Quiz: Chapters 1 & 2");
+  }
+  function startMathReview() {
+    renderMCQ("mathReviewQs", "mathReview", buildMathMixed());
+  }
+  function mathReviewPrintSelection() {
+    return { unitIds: MR_CHAPTERS, types: [{ title: "Overall Quiz", bank: MR_CHAPTERS.flatMap(c => MATH_CHAPTERS[c].quizBank) }] };
+  }
+  function printMathReviewShortcut() {
+    openPrintScreen();
+    document.getElementById("printSection").value = "mathreview";
+    updatePrintFields();
+  }
+
+  // =========================================================================
   // PRINT
   // =========================================================================
   function printWorksheets() {
@@ -18544,8 +18941,13 @@
       return;
     }
 
-    if (section === "vocab") {
-      const { unitIds, types } = vocabPrintSelection();
+    if (section === "vocab" || section === "vocabreview" || section === "readingreview" || section === "grammarreview" || section === "socialreview" || section === "sciencereview" || section === "mathreview") {
+      const { unitIds, types } = section === "vocab" ? vocabPrintSelection()
+        : section === "vocabreview" ? reviewPrintSelection()
+        : section === "grammarreview" ? grammarReviewPrintSelection()
+        : section === "socialreview" ? socialReviewPrintSelection()
+        : section === "sciencereview" ? scienceReviewPrintSelection()
+        : section === "mathreview" ? mathReviewPrintSelection() : readingReviewPrintSelection();
       if (!unitIds.length) { alert("Check at least one unit to print."); return; }
       if (!types.length) { alert("Check at least one question type to print."); return; }
       // Split the chosen number of questions evenly across the question types.
@@ -18559,8 +18961,14 @@
         if (!moved) break;
       }
       const picked = types.map((t, i) => [t.title, t.bank, per[i]]).filter(t => t[2] > 0);
-      const sectionName = "Vocabulary Workshop";
-      const unitName = unitIds.length === 1 ? UNITS[unitIds[0]].name
+      const sectionName = section === "readingreview" ? "Reading" : section === "grammarreview" ? "ENG Grammar" : section === "socialreview" ? "Social Studies" : section === "sciencereview" ? "Science" : section === "mathreview" ? "Math" : "Vocabulary Workshop";
+      const unitName = section === "readingreview" ? "Review: Stories 1–5"
+        : section === "grammarreview" ? "Mixed Review: Units 1–2"
+        : section === "socialreview" ? "Overall Quiz: Chapters 1 & 4"
+        : section === "sciencereview" ? "Overall Quiz: Topics 1 & 2"
+        : section === "mathreview" ? "Overall Quiz: Chapters 1 & 2"
+        : section === "vocabreview" ? "Review: Units 1–4"
+        : unitIds.length === 1 ? UNITS[unitIds[0]].name
         : unitIds.map(id => UNITS[id].name.replace(/^Unit\s*/i, "")).reduce((a, b, i, arr) => a + (i === arr.length - 1 ? " & " : ", ") + b, "").replace(/^, /, "Units ");
 
       const keyParts = [];
@@ -18573,7 +18981,8 @@
           set.map((q, i) => `${i+1}. ${LETTERS[q.correctIdx]} — ${q.answer}`).join("<br>") + `</p>`);
         const qs = set.map((q, i) => {
           const opts = q.opts.map((o, j) => `${LETTERS[j]}. ${o}`).join("&nbsp;&nbsp;&nbsp;&nbsp;");
-          return `<div class="pq">${i+1}. ${q.prompt}<br>${opts}</div>`;
+          const bm = q.barModel ? `<p style="margin:6px 0 4px;font-style:italic">Sketch a bar model to solve, then fill in the blanks:</p>${q.barModel}` : "";
+          return `<div class="pq">${i+1}. ${q.prompt}${bm}<br>${opts}</div>`;
         }).join("");
         return `<div${ti > 0 ? ' class="key-page"' : ''}><h2>${sectionName} ${unitName} — ${title}</h2>${qs}</div>`;
       }).join("");
@@ -18631,7 +19040,7 @@
   // =========================================================================
   // ATTEMPT LOG + EXCEL EXPORT
   // =========================================================================
-  const SET_NAMES = { fill: "Fill in the Blank", syn: "Synonyms", ant: "Antonyms", storyQuiz: "Vocabulary Quiz", chapterQuiz: "Chapter Quiz", novelQuiz: "Novel Quiz" };
+  const SET_NAMES = { fill: "Fill in the Blank", syn: "Synonyms", ant: "Antonyms", storyQuiz: "Vocabulary Quiz", chapterQuiz: "Chapter Quiz", novelQuiz: "Novel Quiz", vocabReview: "Units 1–4 Review", readingReview: "Stories 1–5 Review", grammarReview: "Units 1–2 Mixed Review", socialReview: "Chapters 1 & 4 Overall Quiz", scienceReview: "Topics 1 & 2 Overall Quiz", mathReview: "Chapters 1 & 2 Overall Quiz" };
   let attemptLog = [];
   try { attemptLog = JSON.parse(localStorage.getItem("g4hub-log")) || []; } catch (e) {}
 
@@ -18699,16 +19108,28 @@
   // =========================================================================
   renderGrid("subjectGrid", subjects, openSubject);
   renderGrid("unitGrid", units, openUnit);
+  renderGrid("vocabReviewGrid", [{ id: "review14", icon: "📝", name: "Review Quiz: Units 1–4",
+    status: reviewWords().length + " words · review quiz", enabled: true }], openVocabReview);
   renderGrid("storyGrid", stories, openStory);
+  renderGrid("readingReviewGrid", [{ id: "rreview", icon: "📝", name: "Review Quiz: Stories 1–5",
+    status: "30-question mixed quiz", enabled: true }], openReadingReview);
   renderGrid("skillGrid", Object.keys(READING_SKILLS).map(id => ({
     id, icon: READING_SKILLS[id].icon, name: READING_SKILLS[id].name,
     status: READING_SKILLS[id].files.length ? READING_SKILLS[id].files.length + " worksheet" + (READING_SKILLS[id].files.length > 1 ? "s" : "") : "Coming soon",
     enabled: true,
   })), openSkill);
   renderGrid("chapterGrid", chapters, openChapter);
+  renderGrid("mathReviewGrid", [{ id: "mreview", icon: "📝", name: "Overall Quiz: Chapters 1 & 2",
+    status: CHAPTER_QUIZ_SIZE + "-question mixed quiz", enabled: true }], openMathReview);
   renderGrid("grammarUnitGrid", grammarUnits, openGrammarUnit);
+  renderGrid("grammarReviewGrid", [{ id: "greview", icon: "📝", name: "Mixed Review: Units 1–2",
+    status: GRAMMAR_QUIZ_SIZE + "-question mixed quiz", enabled: true }], openGrammarReview);
   renderGrid("socialChapterGrid", socialChapters, openSocialChapter);
+  renderGrid("socialReviewGrid", [{ id: "sreview", icon: "📝", name: "Overall Quiz: Chapters 1 & 4",
+    status: SOCIAL_QUIZ_SIZE + "-question mixed quiz", enabled: true }], openSocialReview);
   renderGrid("scienceTopicGrid", scienceTopics, openScienceTopic);
+  renderGrid("scienceReviewGrid", [{ id: "scireview", icon: "📝", name: "Overall Quiz: Topics 1 & 2",
+    status: SCIENCE_QUIZ_SIZE + "-question mixed quiz", enabled: true }], openScienceReview);
   renderGrid("guoyuUnitGrid", guoyuUnits, openGuoyuUnit);
   renderGrid("novelGrid", novels, openNovel);
   document.getElementById("printUnit").innerHTML =
